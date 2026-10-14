@@ -29,4 +29,10 @@ app.post('/api/users',auth,admin,async(req,res)=>{try{const {username,password,r
 app.patch('/api/users/:id',auth,admin,async(req,res)=>{try{const {active,role,password}=req.body||{};if(role&&!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Role tidak valid.'});if(Number(req.params.id)===Number(req.session.user.id)&&active===false)return res.status(400).json({error:'Admin aktif tidak dapat menonaktifkan akunnya sendiri.'});if(password){if(password.length<12)return res.status(400).json({error:'Password minimal 12 karakter.'});await pool.query('UPDATE app_users SET password_hash=$1 WHERE id=$2',[await bcrypt.hash(password,12),req.params.id])}if(role||active!==undefined)await pool.query('UPDATE app_users SET role=COALESCE($1,role),active=COALESCE($2,active) WHERE id=$3',[role||null,active===undefined?null:!!active,req.params.id]);res.json({ok:true})}catch(e){res.status(500).json({error:'Gagal memperbarui pengguna.'})}});
 app.use(express.static(path.join(__dirname,'public')));
 app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
-init().then(()=>app.listen(PORT,'0.0.0.0',()=>console.log(`Santri Accounting Cloud listening on ${PORT}`))).catch(e=>{console.error('Database initialization failed',e);process.exit(1)});
+init().catch(e => console.error('Database initialization failed', e));
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, '0.0.0.0', () => console.log(`Santri Accounting Cloud listening on ${PORT}`));
+}
+
+module.exports = app;
