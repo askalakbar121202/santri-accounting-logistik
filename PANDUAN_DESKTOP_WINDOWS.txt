@@ -1,0 +1,36 @@
+SANTRI ACCOUNTING - LOGISTIC V8.5 — PAKET PERSIAPAN DESKTOP WINDOWS
+
+PENTING
+Paket ini menambahkan pembungkus Electron untuk Windows. Ini BELUM berupa file installer .exe dan BELUM membuat server online secara otomatis. Server + PostgreSQL harus dideploy lebih dahulu.
+
+ISI TAMBAHAN
+- desktop-electron/main.js: jendela desktop Electron, penyimpanan URL server, menu pengaturan server.
+- desktop-electron/setup.html: layar pengaturan URL server saat pertama kali dijalankan.
+- desktop-electron/setup-preload.js: komunikasi terbatas untuk menyimpan URL.
+- desktop-electron/package.json: konfigurasi build installer NSIS Windows x64.
+
+BAGIAN A — DEPLOY SERVER ONLINE
+1. Deploy folder proyek utama ke layanan hosting Node/Docker yang mendukung PostgreSQL (contoh: Render). Gunakan Dockerfile/render.yaml yang disertakan.
+2. Siapkan database PostgreSQL dan atur environment server: DATABASE_URL, SESSION_SECRET (acak panjang), SETUP_KEY (rahasia acak), NODE_ENV=production, PGSSL=require bila penyedia mengharuskan SSL. Jangan masukkan rahasia tersebut ke aplikasi desktop atau repo publik.
+3. Setelah deploy berhasil, catat URL HTTPS aplikasi, misalnya https://nama-aplikasi.onrender.com.
+4. Buat admin pertama menggunakan endpoint /api/setup dan header x-setup-key sesuai README_V8_5.txt asli. Gunakan kata sandi minimal 12 karakter. Jangan kirim kata sandi atau SETUP_KEY ke chat.
+5. Uji URL aplikasi melalui browser dan pastikan layar login muncul. Periksa /api/health untuk memastikan koneksi database sehat.
+
+BAGIAN B — MEMBUAT INSTALLER EXE DI WINDOWS
+1. Pasang Node.js LTS (versi 20 atau lebih baru) dari https://nodejs.org/.
+2. Ekstrak ZIP ini ke folder biasa, misalnya C:\SantriAccounting.
+3. Buka folder Accounting_Logistik_Santri_Desktop_V8_Azkal_Graffiti\desktop-electron.
+4. Klik address bar File Explorer, ketik cmd, lalu Enter.
+5. Jalankan: npm install
+6. Jalankan: npm run dist:win
+7. Jika build sukses, installer akan berada di desktop-electron\dist\Santri-Accounting-Logistic-V8.5-Setup-8.5.0.exe.
+8. Instal dan jalankan. Pada penggunaan pertama, masukkan URL HTTPS server online. URL disimpan di komputer tersebut; kredensial PostgreSQL tidak disimpan di desktop.
+
+CATATAN KEAMANAN & OPERASIONAL
+- Build .exe disarankan di Windows. Paket ini tidak mengandung file .exe karena environment saat ini tidak menjalankan proses build Windows dan belum memasang dependensi Electron.
+- Setiap komputer membutuhkan internet dan server online yang aktif.
+- Aplikasi cloud asal menyimpan state aplikasi sebagai satu dokumen JSON bersama; README_V8_5.txt menyebut risiko perubahan yang saling menimpa saat banyak pengguna menyimpan bersamaan. Uji dengan salinan data dahulu dan lakukan backup rutin sebelum digunakan untuk pembukuan resmi.
+- Role pengguna belum membatasi seluruh tindakan transaksi secara granular; jangan menganggapnya sebagai sistem otorisasi penuh.
+- Gunakan HTTPS, kata sandi kuat, backup database, dan jangan membagikan DATABASE_URL/SETUP_KEY/SESSION_SECRET.
+
+Paket server asli tetap disertakan. Untuk deploy, gunakan package.json, server.js, Dockerfile, render.yaml dan README_V8_5.txt pada folder proyek utama.

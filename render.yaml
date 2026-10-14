@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: santri-accounting-cloud
+    runtime: docker
+    plan: starter
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SETUP_KEY
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: PGSSL
+        value: require

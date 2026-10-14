@@ -1,0 +1,20 @@
+{
+  "name": "accounting-logistik-santri-cloud",
+  "version": "8.5.0",
+  "private": true,
+  "description": "Santri Accounting Logistic V8.5 cloud multi-user app",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-pg-simple": "^10.0.0",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "helmet": "^8.0.0",
+    "pg": "^8.13.1"
+  }
+}

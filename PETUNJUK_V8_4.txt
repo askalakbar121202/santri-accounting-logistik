@@ -1,0 +1,19 @@
+ACCOUNTING LOGISTIK SANTRI V8.4 - AZKAL GRAFFITI
+
+CARA MEMBUKA
+1. Ekstrak ZIP ke folder yang mudah ditemukan.
+2. Buka folder Accounting_Logistik_Santri_Desktop_V8_Azkal_Graffiti.
+3. Klik dua kali index.html dan pilih Google Chrome.
+
+FITUR V8.4
+- Mempertahankan fitur dari V8.3: dashboard, input transaksi, pembayaran, laporan transaksi, deteksi transaksi ganda, rekonsiliasi kas, riwayat perubahan, master data, backup/restore, dan analisis biaya armada.
+- Kasbon dan uang muka: catat uang muka driver, total nota, dan saldo sisa/kekurangan.
+- Tutup kas harian: hitung saldo awal + kas masuk - pengeluaran dibayar, bandingkan dengan kas fisik, dan simpan riwayat.
+- Laporan otomatis: filter tanggal, jenis transaksi, dan status; ekspor CSV yang dapat dibuka di Excel; cetak atau simpan sebagai PDF.
+- Profil operator lokal dan peran sebagai label kerja.
+
+PENTING TENTANG DATABASE
+Versi ini tetap merupakan aplikasi HTML lokal. Data disimpan di penyimpanan browser pada komputer yang digunakan. Profil operator tidak menyediakan autentikasi keamanan sungguhan. Multi-user dengan database terpusat lintas komputer memerlukan backend/server, autentikasi, dan database yang di-host; fitur itu tidak dapat aktif hanya dengan membuka index.html langsung di Chrome. Lakukan backup JSON sebelum pembaruan dan jangan menghapus data browser.
+
+CATATAN EKSPOR
+Ekspor CSV menggunakan pemisah titik koma agar mudah dibuka di Excel dengan pengaturan regional Indonesia. File CSV bukan file XLSX asli.
