@@ -208,4 +208,16 @@ function removeLocalUser(n){if(n===state.activeLocalUser)return alert('Ganti ope
 function exportAllReportCSV(){exportAutoReportCSV()}
 // CSV compatible with spreadsheet apps; true .xlsx generation requires a spreadsheet library.
 
-window.addEventListener('DOMContentLoaded',()=>cloudBoot());</script></body></html>
+window.addEventListener('DOMContentLoaded',()=>cloudBoot());
+async function logoutCloud(){
+  if(!confirm('Yakin ingin keluar dari Santri Accounting?'))return;
+  try{
+    const res=await fetch('/api/logout',{method:'POST'});
+    if(!res.ok)throw new Error('Logout gagal');
+    window.CLOUD_AUTH=false;
+    window.location.reload();
+  }catch(e){
+    alert('Logout gagal. Periksa koneksi internet lalu coba lagi.');
+  }
+}
+</script></body></html>
