@@ -23,7 +23,9 @@ await pool.query(`CREATE TABLE IF NOT EXISTS password_reset_tokens (
   expires_at TIMESTAMPTZ NOT NULL,
   used_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-)`);}
+)`);
+await pool.query(`ALTER TABLE app_users ADD COLUMN IF NOT EXISTS email TEXT`);
+}
 const auth=(req,res,next)=>req.session.user?next():res.status(401).json({error:'Silakan login terlebih dahulu.'});
 const admin=(req,res,next)=>req.session.user?.role==='admin'?next():res.status(403).json({error:'Hanya admin yang dapat melakukan tindakan ini.'});
 app.get('/api/health',async(req,res)=>{try{await pool.query('SELECT 1');res.json({ok:true,service:'Santri Accounting Cloud'})}catch(e){res.status(503).json({ok:false})}});
