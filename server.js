@@ -15,7 +15,14 @@ app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '20mb' }));
 app.use(session({ store: new PgSession({ pool, tableName: 'user_sessions', createTableIfMissing: true }), secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false, cookie: { httpOnly: true, secure: prod, sameSite: 'lax', maxAge: 8 * 60 * 60 * 1000 } }));
-async function init(){ await pool.query(`CREATE TABLE IF NOT EXISTS app_users(id BIGSERIAL PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'staff', active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT now())`); await pool.query(`CREATE TABLE IF NOT EXISTS app_state(id INTEGER PRIMARY KEY CHECK(id=1), state JSONB NOT NULL, pending_tx_batch JSONB NOT NULL DEFAULT '[]'::jsonb, revision BIGINT NOT NULL DEFAULT 1, updated_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_by TEXT)`); await pool.query(`INSERT INTO app_state(id,state) VALUES(1,'{"transactions":[],"masters":{},"audit":[]}'::jsonb) ON CONFLICT(id) DO NOTHING`); }
+async function init(){ await pool.query(`CREATE TABLE IF NOT EXISTS app_users(id BIGSERIAL PRIMARY KEY, username TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'staff', active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT now())`); await pool.query(`CREATE TABLE IF NOT EXISTS app_state(id INTEGER PRIMARY KEY CHECK(id=1), state JSONB NOT NULL, pending_tx_batch JSONB NOT NULL DEFAULT '[]'::jsonb, revision BIGINT NOT NULL DEFAULT 1, updated_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_by TEXT)`); await pool.query(`INSERT INTO app_state(id,state) VALUES(1,'{"transactions":[],"masters":{},"audit":[]}'::jsonb) ON CONFLICT(id) DO NOTHING`);await pool.query(`CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+)`); }
 const auth=(req,res,next)=>req.session.user?next():res.status(401).json({error:'Silakan login terlebih dahulu.'});
 const admin=(req,res,next)=>req.session.user?.role==='admin'?next():res.status(403).json({error:'Hanya admin yang dapat melakukan tindakan ini.'});
 app.get('/api/health',async(req,res)=>{try{await pool.query('SELECT 1');res.json({ok:true,service:'Santri Accounting Cloud'})}catch(e){res.status(503).json({ok:false})}});
