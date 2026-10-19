@@ -42,7 +42,17 @@ input[type=checkbox],input[type=radio]{accent-color:#087f5b}::selection{backgrou
 </style><link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2"></head><body><div id="cloudGate"><div class="gatecard"><div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#087f5b">Santri Accounting</div><h2 style="margin:5px 0">Logistic Management System</h2><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
-</div><button type="submit">Masuk Ke Aplikasi</button></form><div id="cloudLoginMsg" class="gatemsg"></div><p style="font-size:11px;color:#71808b">Pastikan Koneksi Internet Terhubung. Jika Mengalami Kendala Hubungi Wong Pusat.</p></div></div><div class="layout" id="appLayout" style="display:none">
+</div>
+<button type="submit">Masuk Ke Aplikasi</button>
+</form>
+
+<div style="display:flex;justify-content:center;gap:18px;margin-top:14px;flex-wrap:wrap;font-size:13px">
+  <a href="#" id="forgotPasswordLink">Lupa Password?</a>
+  <a href="#" id="registerAccountLink">Daftar Akun</a>
+</div>
+
+<div id="cloudLoginMsg" class="gatemsg"></div>
+<p style="font-size:11px;color:#71808b">Pastikan Koneksi Internet Terhubung. Jika Mengalami Kendala Hubungi Wong Pusat.</p></div></div><div class="layout" id="appLayout" style="display:none">
 <aside class="sidebar"><div class="brand"><div class="logo" aria-label="Azkal">Azkal</div><div><strong>Accounting Logistik</strong><small>Santri • Logistic Accounting</small></div></div><nav class="nav" id="nav">
 <div class="section">Ringkasan</div><button class="active" data-page="dashboard">▦ Dashboard Utama</button><button data-page="bbm">⛽ Dashboard BBM Armada</button><button data-page="fleet-analysis">📊 Analisis Biaya Armada</button>
 <div class="section">Operasional</div><button data-page="input">＋ Input Transaksi</button><button data-page="payments">✓ Pembayaran</button><button data-page="reports">▤ Laporan Transaksi</button><button data-page="duplicates">⚠ Deteksi Transaksi Ganda</button><button data-page="reconcile">≋ Rekonsiliasi Kas</button><button data-page="history">◷ Riwayat Perubahan</button>
