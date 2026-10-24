@@ -111,8 +111,57 @@ function table(head,rows){if(!rows.length)return '<div class="empty">Belum ada d
 function renderTxForm(){let type=document.getElementById('txType').value;let drivers=state.masters.drivers.map(d=>`<option>${esc(d.name)}</option>`).join('');let helpers=state.masters.helpers.map(d=>`<option>${esc(d)}</option>`).join('');let plates=state.masters.drivers.map(d=>`<option value="${esc(d.plate)}">${esc(d.plate)}　·　${esc(d.name)}</option>`).join('');let common=`<div class="field"><label>Tanggal Input</label><input name="date" type="date" value="${today()}" required></div><div class="field"><label>Driver</label><select name="driver"><option value="">Pilih driver</option>${drivers}</select></div><div class="field"><label>Helper (opsional)</label><select name="helper"><option value="">Tanpa helper</option>${helpers}</select></div><div class="field"><label>Plat Armada</label><select name="plate"><option value="">Pilih plat · nama driver ditampilkan samar</option>${plates}</select><small class="muted">Nama driver ada di sebelah nomor plat.</small></div>`;let extra='';if(type==='ongkir'){extra=`<div class="field"><label>Tujuan Kiriman</label><input type="search" id="routeSearch" placeholder="Cari nama tujuan atau kota..." autocomplete="off" oninput="filterRouteOptions()"><select name="route" id="routePick" required onchange="routeChanged()"><option value="">Pilih tujuan kiriman</option>${state.masters.routes.map(r=>`<option value="${r.id}">${esc(r.name)} — ${esc(r.city)} (${money(r.fuel)})</option>`).join('')}</select><small class="muted">Ketik nama tujuan atau kota untuk menyaring pilihan.</small></div><div class="field"><label>Nominal BBM / Alokasi</label><input name="fuel" id="fuelPick" type="number" min="0" required></div><div class="field"><label>Nomor Kiriman / SJ</label><input name="shipment" placeholder="Nomor surat jalan"></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else if(type==='etoll'){extra=`<div class="field"><label>Tanggal Tol</label><input name="tollDate" type="date" value="${today()}" required></div><div class="field"><label>Asal Tol</label><select name="from" id="tollFrom" onchange="tollChanged()" required>${[...new Set(state.masters.tolls.map(t=>t.from))].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div><div class="field"><label>Tujuan Tol</label><select name="to" id="tollTo" onchange="tollPriceChanged()" required></select></div><div class="field"><label>Golongan</label><select name="class" id="tollClass" onchange="tollPriceChanged()"><option value="1">Golongan 1</option><option value="2">Golongan 2</option></select></div><div class="field"><label>Tarif</label><input name="tariff" id="tariff" type="number" min="0" readonly></div><div class="field"><label>Nominal Realisasi</label><input name="amount" id="realization" type="number" min="0" required></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else{extra=`<div class="field"><label>Tanggal Nota</label><input name="notaDate" type="date" value="${today()}" required></div><div class="field"><label>Nominal Pembayaran</label><input name="amount" type="number" min="0" required></div><div class="field"><label>Keterangan (wajib)</label><textarea name="note" required placeholder="Isi keterangan nota pembelian"></textarea></div>`}document.getElementById('txFields').innerHTML=common+extra;if(type==='ongkir')routeChanged();if(type==='etoll')tollChanged()}
 function filterRouteOptions(){let input=document.getElementById('routeSearch'),select=document.getElementById('routePick');if(!input||!select)return;let q=input.value.trim().toLocaleLowerCase('id-ID'),selected=select.value;let routes=state.masters.routes.filter(r=>`${r.name} ${r.city}`.toLocaleLowerCase('id-ID').includes(q));select.innerHTML='<option value="">'+(q?'Pilih tujuan dari hasil pencarian':'Pilih tujuan kiriman')+'</option>'+routes.map(r=>`<option value="${r.id}">${esc(r.name)} — ${esc(r.city)} (${money(r.fuel)})</option>`).join('');if(routes.some(r=>String(r.id)===String(selected)))select.value=selected;routeChanged()}
 function routeChanged(){let el=document.getElementById('routePick');if(!el)return;let r=state.masters.routes.find(x=>x.id===Number(el.value));let f=document.getElementById('fuelPick');if(f&&r)f.value=r.fuel}
-function tollChanged(){let from=document.getElementById('tollFrom');let to=document.getElementById('tollTo');if(!from||!to)return;let previous=to.value;let rows=state.masters.tolls.filter(t=>t.from===from.value);to.innerHTML=rows.map(t=>`<option value="${esc(t.to)}">${esc(t.to)}</option>`).join('');if(rows.some(t=>t.to===previous))to.value=previous;tollPriceChanged()}
-function tollPriceChanged(){let from=document.getElementById('tollFrom');let to=document.getElementById('tollTo');let cls=document.getElementById('tollClass');let tariff=document.getElementById('tariff');let realization=document.getElementById('realization');if(!from||!to||!cls||!tariff||!realization)return;let r=state.masters.tolls.find(t=>t.from===from.value&&t.to===to.value);if(r){let c=cls.value;tariff.value=Number(r['g'+c+'tarif']||0);realization.value=Number(r['g'+c+'real']||0)}else{tariff.value='';realization.value=''}}
+
+function tollChanged(){
+  const from = document.getElementById('tollFrom');
+  const to = document.getElementById('tollTo');
+  if (!from || !to) return;
+
+  const normalize = value => String(value ?? '').trim().toLocaleLowerCase('id-ID');
+  const previous = to.value;
+
+  const rows = (state.masters.tolls || []).filter(
+    t => normalize(t.from) === normalize(from.value)
+  );
+
+  to.innerHTML = '<option value="">Pilih tujuan tol</option>' +
+    rows.map(t =>
+      `<option value="${esc(String(t.to ?? '').trim())}">${esc(String(t.to ?? '').trim())}</option>`
+    ).join('');
+
+  if (rows.some(t => normalize(t.to) === normalize(previous))) {
+    const match = rows.find(t => normalize(t.to) === normalize(previous));
+    to.value = String(match.to).trim();
+  } else if (rows.length) {
+    to.value = String(rows[0].to ?? '').trim();
+  }
+
+  tollPriceChanged();
+}
+
+function tollPriceChanged(){
+  const from = document.getElementById('tollFrom');
+  const to = document.getElementById('tollTo');
+  const cls = document.getElementById('tollClass');
+  const tariff = document.getElementById('tariff');
+  const realization = document.getElementById('realization');
+  if (!from || !to || !cls || !tariff || !realization) return;
+
+  const normalize = value => String(value ?? '').trim().toLocaleLowerCase('id-ID');
+  const r = (state.masters.tolls || []).find(
+    t => normalize(t.from) === normalize(from.value) &&
+         normalize(t.to) === normalize(to.value)
+  );
+
+  if (r) {
+    const c = cls.value;
+    tariff.value = Number(r['g' + c + 'tarif'] || 0);
+    realization.value = Number(r['g' + c + 'real'] || 0);
+  } else {
+    tariff.value = '';
+    realization.value = '';
+  }
+}
 function saveTx(e){e.preventDefault();let form=e.target,type=document.getElementById('txType').value,fd=new FormData(form),o=Object.fromEntries(fd.entries());if(type==='nota'&&!o.note.trim()){alert('Keterangan nota wajib diisi.');return}let tx={id:'TRX-'+Date.now().toString().slice(-8)+'-'+String(pendingTxBatch.length+1).padStart(2,'0'),created:Date.now(),type,date:o.date||today(),driver:o.driver||'',helper:o.helper||'',plate:o.plate||'',note:o.note||'',status:'pending',amount:0,fuel:0};if(type==='ongkir'){let r=state.masters.routes.find(x=>x.id===Number(o.route));tx.route=r?.name||'';tx.city=r?.city||'';tx.routeId=Number(o.route);tx.fuel=Number(o.fuel||0);tx.amount=tx.fuel;tx.shipment=o.shipment||'';tx.nota1=0;tx.nota2=0;tx.nota3=0;tx.noSol=0;tx.gabung=0;tx.status='draft'}else if(type==='etoll'){tx.from=o.from;tx.to=o.to;tx.tollDate=o.tollDate||o.date||today();tx.tollClass=o.class;tx.tariff=Number(o.tariff||0);tx.amount=Number(o.amount||0)}else{tx.notaDate=o.notaDate||o.date||today();tx.amount=Number(o.amount||0)}let matches=findDuplicateMatches([...state.transactions,...pendingTxBatch,tx]).filter(m=>m.a.id===tx.id||m.b.id===tx.id);if(matches.length){let m=matches[0],other=m.a.id===tx.id?m.b:m.a;let msg='PERINGATAN TRANSAKSI MIRIP ('+m.level+'): '+other.id+' — '+typeName(other.type)+', '+(other.type==='etoll'?(other.tollDate||other.date):other.type==='nota'?(other.notaDate||other.date):other.date)+', '+money(other.amount||other.fuel)+'.\n\nPeriksa apakah transaksi ini ganda. Tidak ada data yang dihapus. Tetap masukkan ke rincian sementara?';if(!confirm(msg))return}pendingTxBatch.push(tx);persistPendingBatch();form.reset();renderTxForm();showSavedTxDetail();}
 function bbmStatus(t){let spent=Number(t.nota1||0)+Number(t.nota2||0)+Number(t.nota3||0)+Number(t.noSol||0)-Number(t.gabung||0);if(spent===0)return 'Belum Terbeli';if(spent<t.fuel)return 'Sebagian';if(spent===t.fuel)return 'Terbeli';return 'Lebih'}
 function renderDepoWarnings(){
