@@ -116,13 +116,65 @@ function mapTransaction(tx, syncedAt = new Date().toISOString()) {
   return null;
 }
 
+function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
+  if (!tx || !tx.id) return [];
+  const rows = [];
+  if (tx.type === 'ongkir') {
+    const receiptTotal = ['nota1','nota2','nota3','noSol']
+      .reduce((sum, key) => sum + Number(tx[key] || 0), 0) - Number(tx.gabung || 0);
+    rows.push({
+      sheet: 'BBM-Solar',
+      row: {
+        'ID Transaksi': asText(tx.id),
+        'Tanggal Input': dateFromEpoch(tx.created),
+        'Tanggal Nota': asText(tx.date),
+        'Driver': asText(tx.driver),
+        'Helper': asText(tx.helper),
+        'Plat Nomor': asText(tx.plate),
+        'Nama SPBU/Vendor': '',
+        'Liter': '',
+        'Nominal Nota': receiptTotal || '',
+        'Realisasi': '',
+        'Selisih': '',
+        'No. Solar': tx.noSol ?? '',
+        'Status Pembayaran': asText(tx.status),
+        'Keterangan': asText(tx.note),
+        'Tanggal Sinkronisasi': syncedAt
+      }
+    });
+  }
+  if (tx.status === 'paid') {
+    rows.push({
+      sheet: 'Pembayaran',
+      row: {
+        'ID Pembayaran': 'PAY-' + asText(tx.id),
+        'ID Transaksi': asText(tx.id),
+        'Tanggal Pembayaran': asText(tx.paidAt || tx.date),
+        'Jenis Transaksi': asText(tx.type),
+        'Driver': asText(tx.driver),
+        'Plat Nomor': asText(tx.plate),
+        'No. Kiriman/Nota': asText(tx.shipment || tx.invoiceNo || tx.note),
+        'Nominal Dibayar': tx.amount ?? tx.fuel ?? '',
+        'Metode Pembayaran': '',
+        'Status Data': asText(tx.status),
+        'Keterangan': asText(tx.note),
+        'Tanggal Sinkronisasi': syncedAt,
+        'Tanggal Perubahan': asText(tx.paidAt || tx.date)
+      }
+    });
+  }
+  return rows;
+}
+
 function buildBatches(transactions, syncedAt = new Date().toISOString()) {
   const bySheet = new Map();
   for (const tx of transactions || []) {
     const mapped = mapTransaction(tx, syncedAt);
-    if (!mapped) continue;
-    if (!bySheet.has(mapped.sheet)) bySheet.set(mapped.sheet, []);
-    bySheet.get(mapped.sheet).push(mapped.row);
+    const allMapped = [...(mapped ? [mapped] : []), ...mapAdditionalRows(tx, syncedAt)];
+    for (const item of allMapped) {
+      if (!bySheet.has(item.sheet)) bySheet.set(item.sheet, []);
+      bySheet.get(item.sheet).push(item.row);
+    }
   }
   return [...bySheet.entries()].map(([sheet, rows]) => ({ sheet, rows }));
 }
@@ -143,4 +195,4 @@ async function sendBatches({ url, token, batches, fetchImpl = globalThis.fetch }
   return payload;
 }
 
-module.exports = { SHEET_HEADERS, ALLOWED_SHEETS, changedRecords, mapTransaction, buildBatches, sendBatches };
+module.exports = { SHEET_HEADERS, ALLOWED_SHEETS, changedRecords, mapTransaction, mapAdditionalRows, buildBatches, sendBatches };
