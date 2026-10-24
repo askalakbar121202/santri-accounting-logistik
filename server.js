@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const helmet = require('helmet');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const { changedRecords, buildBatches, sendBatches } = require('./sheets-sync');
 
 const mailer = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -313,6 +314,38 @@ app.post('/api/logout',auth,(req,res)=>req.session.destroy(()=>res.clearCookie('
 app.get('/api/me',auth,(req,res)=>res.json(req.session.user));
 app.get('/api/state',auth,async(req,res)=>{try{const q=await pool.query('SELECT state,pending_tx_batch,revision,updated_at,updated_by FROM app_state WHERE id=1');res.json({...q.rows[0],revision:Number(q.rows[0].revision)})}catch(e){console.error(e);res.status(500).json({error:'Gagal membaca database.'})}});
 app.put('/api/state',auth,async(req,res)=>{try{const {state,pendingTxBatch=[]}=req.body||{};if(!state||!Array.isArray(state.transactions)||!state.masters||typeof state.masters!=='object'||!Array.isArray(pendingTxBatch))return res.status(400).json({error:'Format data tidak valid.'});const q=await pool.query('UPDATE app_state SET state=$1::jsonb,pending_tx_batch=$2::jsonb,revision=revision+1,updated_at=now(),updated_by=$3 WHERE id=1 RETURNING revision,updated_at',[JSON.stringify(state),JSON.stringify(pendingTxBatch),req.session.user.username]);res.json({ok:true,revision:Number(q.rows[0].revision),updatedAt:q.rows[0].updated_at})}catch(e){console.error(e);res.status(500).json({error:'Gagal menyimpan ke database.'})}});
+app.post('/api/sheets/sync',auth,admin,async(req,res)=>{
+  try {
+    const ids = req.body?.ids;
+    if (!Array.isArray(ids) || ids.length < 1 || ids.length > 200 ||
+        ids.some(id => typeof id !== 'string' || !id.trim() || id.length > 150)) {
+      return res.status(400).json({error:'Kirim daftar ID transaksi yang dipilih (1–200 ID).'});
+    }
+    const q = await pool.query('SELECT state FROM app_state WHERE id=1');
+    const transactions = Array.isArray(q.rows[0]?.state?.transactions) ? q.rows[0].state.transactions : [];
+    const wanted = new Set(ids.map(id => id.trim()));
+    const selected = transactions.filter(tx => tx && wanted.has(String(tx.id)));
+    if (selected.length !== wanted.size) {
+      return res.status(404).json({error:'Satu atau lebih ID transaksi tidak ditemukan.'});
+    }
+    const batches = buildBatches(selected);
+    if (!batches.length) {
+      return res.status(400).json({error:'Jenis transaksi yang dipilih belum memiliki pemetaan Google Sheets.'});
+    }
+    const result = await sendBatches({
+      url: process.env.SHEETS_WEB_APP_URL,
+      token: process.env.SHEETS_BRIDGE_TOKEN,
+      batches
+    });
+    if (result.skipped) {
+      return res.status(503).json({error:'Sinkronisasi belum dikonfigurasi. Tidak ada data yang dikirim.'});
+    }
+    return res.json({ok:true,results:result.results || [],message:'Transaksi yang dipilih berhasil dikirim ke Google Sheets.'});
+  } catch (e) {
+    console.error('Sinkronisasi Google Sheets gagal:', e.message);
+    return res.status(502).json({error:'Sinkronisasi gagal. Data aplikasi tetap tersimpan; silakan periksa konfigurasi dan coba lagi.'});
+  }
+}});
 app.get('/api/users',auth,admin,async(req,res)=>{const q=await pool.query('SELECT id,username,role,active,created_at FROM app_users ORDER BY id');res.json(q.rows)});
 app.post('/api/users',auth,admin,async(req,res)=>{try{const {username,password,role='staff'}=req.body||{};if(!/^[a-zA-Z0-9_.-]{3,32}$/.test(username||'')||typeof password!=='string'||password.length<12||!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Username/role tidak valid; password minimal 12 karakter.'});const hash=await bcrypt.hash(password,12);await pool.query('INSERT INTO app_users(username,password_hash,role) VALUES($1,$2,$3)',[username,hash,role]);res.status(201).json({ok:true})}catch(e){res.status(e.code==='23505'?409:500).json({error:e.code==='23505'?'Username sudah dipakai.':'Gagal menambah pengguna.'})}});
 app.patch('/api/users/:id',auth,admin,async(req,res)=>{try{const {active,role,password}=req.body||{};if(role&&!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Role tidak valid.'});if(Number(req.params.id)===Number(req.session.user.id)&&active===false)return res.status(400).json({error:'Admin aktif tidak dapat menonaktifkan akunnya sendiri.'});if(password){if(password.length<12)return res.status(400).json({error:'Password minimal 12 karakter.'});await pool.query('UPDATE app_users SET password_hash=$1 WHERE id=$2',[await bcrypt.hash(password,12),req.params.id])}if(role||active!==undefined)await pool.query('UPDATE app_users SET role=COALESCE($1,role),active=COALESCE($2,active) WHERE id=$3',[role||null,active===undefined?null:!!active,req.params.id]);res.json({ok:true})}catch(e){res.status(500).json({error:'Gagal memperbarui pengguna.'})}});
