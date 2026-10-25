@@ -23,7 +23,7 @@ test('maps E-Toll with tariff and realization, without calculating difference', 
   assert.equal(mapped.row['Selisih'], '');
 });
 
-test('maps ongkir to Ongkir and BBM-Solar; paid transaction also maps to Pembayaran', () => {
+test('maps ongkir to Ongkir and BBM Solar; paid transaction also maps to Pembayaran', () => {
   const batches = buildBatches([{
     id: 'TRX-1', type: 'ongkir', date: '2026-10-24', created: 1792828800000,
     fuel: 150000, amount: 150000, nota1: 50000, nota2: 30000, nota3: 0,
