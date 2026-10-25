@@ -41,7 +41,7 @@ test('ignores unknown transaction types instead of guessing a sheet', () => {
 });
 
 
-test('never includes rejected transactions in any Google Sheets batch', () => {
+test('never includes pending, draft, or rejected transactions in any Google Sheets batch', () => {
   const batches = buildBatches([
     { id: 'OK-1', type: 'etoll', status: 'pending', tariff: 50000, amount: 48000 },
     { id: 'NO-1', type: 'etoll', status: 'rejected', tariff: 50000, amount: 48000 },
@@ -49,8 +49,8 @@ test('never includes rejected transactions in any Google Sheets batch', () => {
     { id: 'OK-2', type: 'etoll', status: 'draft', tariff: 40000, amount: 40000 }
   ]);
   const ids = batches.flatMap(batch => batch.rows.map(row => row['ID Transaksi'])).filter(Boolean);
-  assert.ok(ids.includes('OK-1'));
-  assert.ok(ids.includes('OK-2'));
+  assert.ok(!ids.includes('OK-1'));
+  assert.ok(!ids.includes('OK-2'));
   assert.ok(!ids.includes('NO-1'));
   assert.ok(!ids.includes('NO-2'));
 });
