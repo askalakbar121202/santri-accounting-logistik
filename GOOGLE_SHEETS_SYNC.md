@@ -15,13 +15,15 @@ If these are missing, the endpoint returns a configuration error and sends no da
 
 ## Mapping notes and limitations
 - E-Toll maps `tariff` to `Nominal Nota` and `amount` to `Realisasi`; `Selisih` is left blank, not calculated.
-- Ongkir maps to `Ongkir`; its existing BBM allocation fields (`nota1`, `nota2`, `nota3`, `noSol`, `gabung`) are summarized in `BBM-Solar` under `Nominal Nota`, and `No. Solar` maps from `noSol`. Liter/vendor/realisasi remain blank because the current transaction model does not supply those values reliably.
+- Ongkir maps to `Ongkir`; its existing BBM allocation fields (`nota1`, `nota2`, `nota3`, `noSol`, `gabung`) are summarized in `BBM Solar` under `Nominal Nota`, and `No. Solar` maps from `noSol`. Liter/vendor/realisasi remain blank because the current transaction model does not supply those values reliably.
 - A transaction with status `paid` also maps to one stable `PAY-<transaction ID>` row in `Pembayaran`. The current app stores payment status/date on the transaction; it does not provide a separate payment ID or payment method, so method remains blank and this is not suitable for representing multiple partial payments.
 - Nota maps known fields where available; missing vendor, invoice number, or note type are left blank rather than inferred.
+- The helper uses the actual spreadsheet tab name `BBM Solar` (with a space). The Apps Script `ALLOWED_SHEETS` list must also be changed from `BBM-Solar` to `BBM Solar` before use; otherwise BBM batches will be rejected or fail to find the tab.
+- Rejected / Ditolak transactions are filtered out before batches are built. Pending, Draft, and paid transactions are retained when selected from saved `state.transactions`.
 - Upserts depend on the Apps Script bridge's first-column ID matching `ID Transaksi` or `ID Pembayaran`. The Apps Script endpoint is not called unless the admin explicitly invokes the new endpoint and configuration exists.
 
 ## Still required before enabling automatic sync
-1. Review the mappings against the actual spreadsheet and business meanings, especially BBM-Solar and Pembayaran.
+1. Review the mappings against the actual spreadsheet and business meanings, especially BBM Solar and Pembayaran.
 2. Add durable retry/outbox tracking so a transient bridge failure cannot lose a sync attempt.
 3. Decide when approved/rejected/deleted transactions should be represented.
 4. Add a UI to select IDs and show per-tab result/status, or define an automatic policy.
