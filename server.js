@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const helmet = require('helmet');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const { buildBatches, sendBatches } = require('./sheets-sync');
+const { changedRecords, buildBatches, sendBatches } = require('./sheets-sync');
 
 const mailer = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -313,7 +313,52 @@ app.post('/api/reset-password', async (req, res) => {
 app.post('/api/logout',auth,(req,res)=>req.session.destroy(()=>res.clearCookie('connect.sid').json({ok:true})));
 app.get('/api/me',auth,(req,res)=>res.json(req.session.user));
 app.get('/api/state',auth,async(req,res)=>{try{const q=await pool.query('SELECT state,pending_tx_batch,revision,updated_at,updated_by FROM app_state WHERE id=1');res.json({...q.rows[0],revision:Number(q.rows[0].revision)})}catch(e){console.error(e);res.status(500).json({error:'Gagal membaca database.'})}});
-app.put('/api/state',auth,async(req,res)=>{try{const {state,pendingTxBatch=[]}=req.body||{};if(!state||!Array.isArray(state.transactions)||!state.masters||typeof state.masters!=='object'||!Array.isArray(pendingTxBatch))return res.status(400).json({error:'Format data tidak valid.'});const q=await pool.query('UPDATE app_state SET state=$1::jsonb,pending_tx_batch=$2::jsonb,revision=revision+1,updated_at=now(),updated_by=$3 WHERE id=1 RETURNING revision,updated_at',[JSON.stringify(state),JSON.stringify(pendingTxBatch),req.session.user.username]);res.json({ok:true,revision:Number(q.rows[0].revision),updatedAt:q.rows[0].updated_at})}catch(e){console.error(e);res.status(500).json({error:'Gagal menyimpan ke database.'})}});
+app.put('/api/state',auth,async(req,res)=>{
+  try {
+    const {state,pendingTxBatch=[]}=req.body||{};
+    if(!state||!Array.isArray(state.transactions)||!state.masters||typeof state.masters!=='object'||!Array.isArray(pendingTxBatch)) {
+      return res.status(400).json({error:'Format data tidak valid.'});
+    }
+
+    // Read the last committed state, then persist the new state before contacting Sheets.
+    const previous = await pool.query('SELECT state FROM app_state WHERE id=1');
+    const previousState = previous.rows[0]?.state || {transactions:[]};
+    const q = await pool.query(
+      'UPDATE app_state SET state=$1::jsonb,pending_tx_batch=$2::jsonb,revision=revision+1,updated_at=now(),updated_by=$3 WHERE id=1 RETURNING revision,updated_at',
+      [JSON.stringify(state),JSON.stringify(pendingTxBatch),req.session.user.username]
+    );
+
+    // Only changed records from saved reports are eligible. The temporary pendingTxBatch is never passed.
+    const changed = changedRecords(previousState, state);
+    const batches = buildBatches(changed);
+    let sheetsSync = {status:'not-needed'};
+    if (batches.length) {
+      try {
+        const result = await sendBatches({
+          url: process.env.SHEETS_WEB_APP_URL,
+          token: process.env.SHEETS_BRIDGE_TOKEN,
+          batches
+        });
+        sheetsSync = result.skipped
+          ? {status:'not-configured', message:'Transaksi tersimpan; Google Sheets belum dikonfigurasi.'}
+          : {status:'sent', results:result.results || []};
+      } catch (syncError) {
+        // A Sheets failure must not undo or report failure for the already committed transaction.
+        console.error('Google Sheets sync failed after database save:', syncError.message);
+        sheetsSync = {status:'failed', message:'Transaksi tersimpan di aplikasi, tetapi Google Sheets belum berhasil diperbarui.'};
+      }
+    }
+    return res.json({
+      ok:true,
+      revision:Number(q.rows[0].revision),
+      updatedAt:q.rows[0].updated_at,
+      sheetsSync
+    });
+  } catch(e) {
+    console.error(e);
+    return res.status(500).json({error:'Gagal menyimpan ke database.'});
+  }
+});
 app.post('/api/sheets/sync',auth,admin,async(req,res)=>{
   try {
     const ids = req.body?.ids;
