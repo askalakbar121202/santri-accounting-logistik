@@ -25,6 +25,6 @@ If these are missing, the endpoint returns a configuration error and sends no da
 ## Still required before enabling automatic sync
 1. Review the mappings against the actual spreadsheet and business meanings, especially BBM Solar and Pembayaran.
 2. Add durable retry/outbox tracking so a transient bridge failure cannot lose a sync attempt.
-3. Decide when approved/rejected/deleted transactions should be represented.
+3. Define how deleted or later-rejected transactions should be represented in existing sheet rows; the bridge does not delete existing rows.
 4. Add a UI to select IDs and show per-tab result/status, or define an automatic policy.
 5. Run tests and review this branch; do not merge or deploy without explicit approval.
