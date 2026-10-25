@@ -166,9 +166,10 @@ function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
   return rows;
 }
 
-function isRejected(tx) {
+function isExcludedFromSheets(tx) {
   const status = String(tx?.status || '').trim().toLowerCase();
-  return status === 'rejected' || status === 'ditolak';
+  // Pending/draft and rejected records are never sent to the reporting spreadsheet.
+  return ['pending', 'draft', 'menunggu', 'menunggu persetujuan', 'rejected', 'ditolak'].includes(status);
 }
 
 function buildBatches(transactions, syncedAt = new Date().toISOString()) {
@@ -177,7 +178,7 @@ function buildBatches(transactions, syncedAt = new Date().toISOString()) {
     // Only transactions already committed to state.transactions are passed here.
     // Pending temporary batches are stored separately and never passed to this mapper.
     // Rejected transactions must never be sent to the Sheets bridge.
-    if (!tx || isRejected(tx)) continue;
+    if (!tx || isExcludedFromSheets(tx)) continue;
     const mapped = mapTransaction(tx, syncedAt);
     const allMapped = [...(mapped ? [mapped] : []), ...mapAdditionalRows(tx, syncedAt)];
     for (const item of allMapped) {
@@ -228,4 +229,4 @@ async function sendBatches({
   throw lastError;
 }
 
-module.exports = { SHEET_HEADERS, ALLOWED_SHEETS, changedRecords, mapTransaction, mapAdditionalRows, isRejected, buildBatches, sendBatches };
+module.exports = { SHEET_HEADERS, ALLOWED_SHEETS, changedRecords, mapTransaction, mapAdditionalRows, isExcludedFromSheets, buildBatches, sendBatches };
