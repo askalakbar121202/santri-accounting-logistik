@@ -188,20 +188,44 @@ function buildBatches(transactions, syncedAt = new Date().toISOString()) {
   return [...bySheet.entries()].map(([sheet, rows]) => ({ sheet, rows }));
 }
 
-async function sendBatches({ url, token, batches, fetchImpl = globalThis.fetch }) {
+async function sendBatches({
+  url, token, batches, fetchImpl = globalThis.fetch,
+  maxAttempts = 3, retryDelayMs = 250, sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+}) {
   if (!url || !token) return { ok: false, skipped: true, reason: 'Konfigurasi sinkronisasi belum tersedia.' };
   if (typeof fetchImpl !== 'function') throw new Error('Fetch tidak tersedia pada runtime ini.');
   if (!Array.isArray(batches) || batches.length === 0) return { ok: true, skipped: true, results: [] };
 
-  const response = await fetchImpl(url, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ token, action: 'sync', batches })
-  });
-  if (!response.ok) throw new Error('Bridge Google Sheets merespons HTTP ' + response.status);
-  const payload = await response.json();
-  if (!payload || payload.ok !== true) throw new Error('Bridge Google Sheets menolak sinkronisasi.');
-  return payload;
+  let lastError;
+  const attempts = Math.max(1, Math.min(3, Number(maxAttempts) || 1));
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const response = await fetchImpl(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ token, action: 'sync', batches })
+      });
+      if (!response.ok) {
+        const error = new Error('Bridge Google Sheets merespons HTTP ' + response.status);
+        // Retry transient server/rate-limit responses, but do not retry ordinary client errors.
+        error.retryable = response.status === 429 || response.status >= 500;
+        throw error;
+      }
+      const payload = await response.json();
+      if (!payload || payload.ok !== true) {
+        const error = new Error('Bridge Google Sheets menolak sinkronisasi.');
+        error.retryable = false;
+        throw error;
+      }
+      return payload;
+    } catch (error) {
+      lastError = error;
+      const retryable = error.retryable !== false;
+      if (!retryable || attempt === attempts) break;
+      await sleep(retryDelayMs * attempt);
+    }
+  }
+  throw lastError;
 }
 
 module.exports = { SHEET_HEADERS, ALLOWED_SHEETS, changedRecords, mapTransaction, mapAdditionalRows, isRejected, buildBatches, sendBatches };
