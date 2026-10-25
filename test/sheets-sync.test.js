@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const { SHEET_HEADERS, changedRecords, buildBatches, mapTransaction } = require('../sheets-sync');
 
 test('defines exactly the five requested tabs and headers', () => {
-  assert.deepEqual(Object.keys(SHEET_HEADERS), ['Ongkir', 'E-Toll', 'BBM-Solar', 'Nota', 'Pembayaran']);
+  assert.deepEqual(Object.keys(SHEET_HEADERS), ['Ongkir', 'E-Toll', 'BBM Solar', 'Nota', 'Pembayaran']);
   for (const headers of Object.values(SHEET_HEADERS)) assert.ok(headers.length > 10);
 });
 
@@ -31,8 +31,8 @@ test('maps ongkir to Ongkir and BBM-Solar; paid transaction also maps to Pembaya
     shipment: 'SJ-1', driver: 'Driver A', plate: 'L 1234 XX'
   }], '2026-10-24T00:00:00.000Z');
   const names = batches.map(b => b.sheet);
-  assert.deepEqual(names, ['Ongkir', 'BBM-Solar', 'Pembayaran']);
-  assert.equal(batches.find(b => b.sheet === 'BBM-Solar').rows[0]['Nominal Nota'], 100000);
+  assert.deepEqual(names, ['Ongkir', 'BBM Solar', 'Pembayaran']);
+  assert.equal(batches.find(b => b.sheet === 'BBM Solar').rows[0]['Nominal Nota'], 100000);
   assert.equal(batches.find(b => b.sheet === 'Pembayaran').rows[0]['ID Pembayaran'], 'PAY-TRX-1');
 });
 
