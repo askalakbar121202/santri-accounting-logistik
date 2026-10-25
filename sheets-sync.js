@@ -166,9 +166,18 @@ function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
   return rows;
 }
 
+function isRejected(tx) {
+  const status = String(tx?.status || '').trim().toLowerCase();
+  return status === 'rejected' || status === 'ditolak';
+}
+
 function buildBatches(transactions, syncedAt = new Date().toISOString()) {
   const bySheet = new Map();
   for (const tx of transactions || []) {
+    // Only transactions already committed to state.transactions are passed here.
+    // Pending temporary batches are stored separately and never passed to this mapper.
+    // Rejected transactions must never be sent to the Sheets bridge.
+    if (!tx || isRejected(tx)) continue;
     const mapped = mapTransaction(tx, syncedAt);
     const allMapped = [...(mapped ? [mapped] : []), ...mapAdditionalRows(tx, syncedAt)];
     for (const item of allMapped) {
@@ -195,4 +204,4 @@ async function sendBatches({ url, token, batches, fetchImpl = globalThis.fetch }
   return payload;
 }
 
-module.exports = { SHEET_HEADERS, ALLOWED_SHEETS, changedRecords, mapTransaction, mapAdditionalRows, buildBatches, sendBatches };
+module.exports = { SHEET_HEADERS, ALLOWED_SHEETS, changedRecords, mapTransaction, mapAdditionalRows, isRejected, buildBatches, sendBatches };
