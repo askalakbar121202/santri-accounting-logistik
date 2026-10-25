@@ -3,7 +3,7 @@
 const SHEET_HEADERS = Object.freeze({
   Ongkir: ['ID Transaksi','Tanggal Input','Tanggal Transaksi','Driver','Helper','Plat Nomor','No. Kiriman','Tujuan','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   'E-Toll': ['ID Transaksi','Tanggal Input','Tanggal Tol','Driver','Helper','Plat Nomor','No. Kiriman','Rute/Tujuan Tol','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
-  'BBM-Solar': ['ID Transaksi','Tanggal Input','Tanggal Nota','Driver','Helper','Plat Nomor','Nama SPBU/Vendor','Liter','Nominal Nota','Realisasi','Selisih','No. Solar','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
+  'BBM Solar': ['ID Transaksi','Tanggal Input','Tanggal Nota','Driver','Helper','Plat Nomor','Nama SPBU/Vendor','Liter','Nominal Nota','Realisasi','Selisih','No. Solar','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   Nota: ['ID Transaksi','Tanggal Input','Tanggal Nota','Jenis Nota','Driver','Helper','Plat Nomor','Vendor/Toko','Nomor Nota','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   Pembayaran: ['ID Pembayaran','ID Transaksi','Tanggal Pembayaran','Jenis Transaksi','Driver','Plat Nomor','No. Kiriman/Nota','Nominal Dibayar','Metode Pembayaran','Status Data','Keterangan','Tanggal Sinkronisasi','Tanggal Perubahan']
 });
@@ -123,7 +123,7 @@ function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
     const receiptTotal = ['nota1','nota2','nota3','noSol']
       .reduce((sum, key) => sum + Number(tx[key] || 0), 0) - Number(tx.gabung || 0);
     rows.push({
-      sheet: 'BBM-Solar',
+      sheet: 'BBM Solar',
       row: {
         'ID Transaksi': asText(tx.id),
         'Tanggal Input': dateFromEpoch(tx.created),
