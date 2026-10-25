@@ -54,3 +54,51 @@ test('never includes rejected transactions in any Google Sheets batch', () => {
   assert.ok(!ids.includes('NO-1'));
   assert.ok(!ids.includes('NO-2'));
 });
+
+test('retries transient Google Sheets failures and succeeds without real network calls', async () => {
+  const { sendBatches } = require('../sheets-sync');
+  let calls = 0;
+  const result = await sendBatches({
+    url: 'https://example.invalid/exec',
+    token: 'test-token',
+    batches: [{ sheet: 'E-Toll', rows: [{ 'ID Transaksi': 'TEST-1' }] }],
+    maxAttempts: 3,
+    retryDelayMs: 0,
+    sleep: async () => {},
+    fetchImpl: async () => {
+      calls += 1;
+      if (calls === 1) return { ok: false, status: 503 };
+      return { ok: true, json: async () => ({ ok: true, results: [{ sheet: 'E-Toll', count: 1 }] }) };
+    }
+  });
+  assert.equal(calls, 2);
+  assert.equal(result.ok, true);
+});
+
+test('does not retry a permanent client error', async () => {
+  const { sendBatches } = require('../sheets-sync');
+  let calls = 0;
+  await assert.rejects(() => sendBatches({
+    url: 'https://example.invalid/exec',
+    token: 'test-token',
+    batches: [{ sheet: 'E-Toll', rows: [] }],
+    maxAttempts: 3,
+    retryDelayMs: 0,
+    sleep: async () => {},
+    fetchImpl: async () => { calls += 1; return { ok: false, status: 400 }; }
+  }), /HTTP 400/);
+  assert.equal(calls, 1);
+});
+
+test('does not call Google Sheets when configuration is missing', async () => {
+  const { sendBatches } = require('../sheets-sync');
+  let calls = 0;
+  const result = await sendBatches({
+    url: '',
+    token: '',
+    batches: [{ sheet: 'E-Toll', rows: [{ 'ID Transaksi': 'TEST-2' }] }],
+    fetchImpl: async () => { calls += 1; }
+  });
+  assert.equal(result.skipped, true);
+  assert.equal(calls, 0);
+});
