@@ -1,7 +1,7 @@
 'use strict';
 
 const SHEET_HEADERS = Object.freeze({
-  Ongkir: ['ID Transaksi','Tanggal Input','Tanggal Transaksi','Driver','Helper','Plat Nomor','No. Kiriman','Tujuan','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
+  Ongkir: ['Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status'],
   'E-Toll': ['ID Transaksi','Tanggal Input','Tanggal Tol','Driver','Helper','Plat Nomor','No. Kiriman','Rute/Tujuan Tol','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   'BBM Solar': ['ID Transaksi','Tanggal Input','Tanggal Nota','Driver','Helper','Plat Nomor','Nama SPBU/Vendor','Liter','Nominal Nota','Realisasi','Selisih','No. Solar','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   Nota: ['ID Transaksi','Tanggal Input','Tanggal Nota','Jenis Nota','Driver','Helper','Plat Nomor','Vendor/Toko','Nomor Nota','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
@@ -69,23 +69,33 @@ function mapTransaction(tx, syncedAt = new Date().toISOString()) {
   }
 
   if (tx.type === 'ongkir') {
+    const fuel = tx.fuel === null || tx.fuel === undefined || tx.fuel === '' ? null : Number(tx.fuel);
+    const spent = ['nota1', 'nota2', 'nota3', 'noSol']
+      .reduce((sum, key) => sum + Number(tx[key] || 0), 0) - Number(tx.gabung || 0);
+    const remaining = fuel === null || !Number.isFinite(fuel) ? '' : fuel - spent;
+    let bbmStatus = '';
+    if (fuel !== null && Number.isFinite(fuel)) {
+      if (spent === 0) bbmStatus = 'Belum Terbeli';
+      else if (spent < fuel) bbmStatus = 'Sebagian';
+      else if (spent === fuel) bbmStatus = 'Terbeli';
+      else bbmStatus = 'Lebih';
+    }
     return {
       sheet: 'Ongkir',
       row: {
-        'ID Transaksi': common.id,
-        'Tanggal Input': common.created,
-        'Tanggal Transaksi': common.date,
+        'Tanggal': common.date,
         'Driver': common.driver,
         'Helper': common.helper,
-        'Plat Nomor': common.plate,
-        'No. Kiriman': asText(tx.shipment),
-        'Tujuan': asText(tx.route || tx.city),
-        'Nominal Nota': '',
-        'Realisasi': tx.fuel ?? tx.amount ?? '',
-        'Selisih': '',
-        'Status Pembayaran': common.status,
-        'Keterangan': common.note,
-        'Tanggal Sinkronisasi': common.syncedAt
+        'Plat': common.plate,
+        'Kiriman': asText(tx.shipment),
+        'Nominal BBM': tx.fuel ?? '',
+        'Nota 1': tx.nota1 ?? '',
+        'Nota 2': tx.nota2 ?? '',
+        'Nota 3': tx.nota3 ?? '',
+        'No Sol': tx.noSol ?? '',
+        'Nominal Gabung': tx.gabung ?? '',
+        'Sisa BBM': remaining,
+        'Status': bbmStatus
       }
     };
   }
@@ -119,30 +129,6 @@ function mapTransaction(tx, syncedAt = new Date().toISOString()) {
 function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
   if (!tx || !tx.id) return [];
   const rows = [];
-  if (tx.type === 'ongkir') {
-    const receiptTotal = ['nota1','nota2','nota3','noSol']
-      .reduce((sum, key) => sum + Number(tx[key] || 0), 0) - Number(tx.gabung || 0);
-    rows.push({
-      sheet: 'BBM Solar',
-      row: {
-        'ID Transaksi': asText(tx.id),
-        'Tanggal Input': dateFromEpoch(tx.created),
-        'Tanggal Nota': asText(tx.date),
-        'Driver': asText(tx.driver),
-        'Helper': asText(tx.helper),
-        'Plat Nomor': asText(tx.plate),
-        'Nama SPBU/Vendor': '',
-        'Liter': '',
-        'Nominal Nota': receiptTotal || '',
-        'Realisasi': '',
-        'Selisih': '',
-        'No. Solar': tx.noSol ?? '',
-        'Status Pembayaran': asText(tx.status),
-        'Keterangan': asText(tx.note),
-        'Tanggal Sinkronisasi': syncedAt
-      }
-    });
-  }
   if (tx.status === 'paid') {
     rows.push({
       sheet: 'Pembayaran',
@@ -168,7 +154,10 @@ function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
 
 function isExcludedFromSheets(tx) {
   const status = String(tx?.status || '').trim().toLowerCase();
-  // Pending/draft and rejected records are never sent to the reporting spreadsheet.
+  // Saved Ongkir records use "draft" as their workflow marker in V8.5; their BBM
+  // purchase status is derived separately from fuel/receipt amounts in the Ongkir row.
+  // Other draft/pending records and all rejected records remain excluded.
+  if (status === 'draft' && tx?.type === 'ongkir') return false;
   return ['pending', 'draft', 'menunggu', 'menunggu persetujuan', 'rejected', 'ditolak'].includes(status);
 }
 
