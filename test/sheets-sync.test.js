@@ -34,6 +34,7 @@ test('maps Ongkir and BBM details into the requested 13-column Ongkir row; paid 
   assert.deepEqual(names, ['Ongkir', 'Pembayaran']);
   const ongkir = batches.find(b => b.sheet === 'Ongkir');
   assert.deepEqual(Object.keys(ongkir.rows[0]), SHEET_HEADERS.Ongkir);
+  assert.equal(ongkir.rows[0]['ID Transaksi'], 'TRX-1');
   assert.equal(ongkir.rows[0]['Tanggal'], '2026-10-24');
   assert.equal(ongkir.rows[0]['Nominal BBM'], 150000);
   assert.equal(ongkir.rows[0]['Nota 1'], 50000);
@@ -52,6 +53,7 @@ test('allows saved Ongkir records marked draft while excluding other draft recor
     { id: 'ETOLL-DRAFT', type: 'etoll', status: 'draft', tariff: 50000, amount: 48000 }
   ]);
   assert.deepEqual(batches.map(batch => batch.sheet), ['Ongkir']);
+  assert.equal(batches[0].rows[0]['ID Transaksi'], 'ONG-DRAFT');
   assert.equal(batches[0].rows[0]['Status'], 'Sebagian');
 });
 
@@ -120,4 +122,13 @@ test('does not call Google Sheets when configuration is missing', async () => {
   });
   assert.equal(result.skipped, true);
   assert.equal(calls, 0);
+});
+
+
+test('keeps Ongkir transaction ID as the first column for stable bridge upserts', () => {
+  assert.equal(SHEET_HEADERS.Ongkir[0], 'ID Transaksi');
+  const mapped = mapTransaction({ id: 'ONG-KEY-1', type: 'ongkir', date: '2026-10-27', fuel: 100000 });
+  assert.equal(mapped.row['ID Transaksi'], 'ONG-KEY-1');
+  assert.equal(Object.keys(mapped.row)[0], 'ID Transaksi');
+  assert.equal(Object.keys(mapped.row).length, 14); // technical ID + 13 requested visible fields
 });
