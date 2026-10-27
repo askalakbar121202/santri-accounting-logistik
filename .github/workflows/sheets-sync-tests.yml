@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fitur-sinkronisasi-google-sheets
+      - fix/ongkir-bbm-sheets-layout-2026-10-27
     paths:
       - 'sheets-sync.js'
       - 'test/**'
