@@ -157,9 +157,7 @@ function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
 
 function isExcludedFromSheets(tx) {
   const status = String(tx?.status || '').trim().toLowerCase();
-  // Draft is temporary and must not sync. Ongkir becomes "ready" only when
-  // the user closes the saved transaction; its BBM purchase status is mapped
-  // separately in the Ongkir sheet row.
+  // Pending/draft and rejected records are never sent to the reporting spreadsheet.
   return ['pending', 'draft', 'menunggu', 'menunggu persetujuan', 'rejected', 'ditolak'].includes(status);
 }
 
