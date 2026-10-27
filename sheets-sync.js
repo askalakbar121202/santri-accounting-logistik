@@ -157,10 +157,9 @@ function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
 
 function isExcludedFromSheets(tx) {
   const status = String(tx?.status || '').trim().toLowerCase();
-  // Saved Ongkir records use "draft" as their workflow marker in V8.5; their BBM
-  // purchase status is derived separately from fuel/receipt amounts in the Ongkir row.
-  // Other draft/pending records and all rejected records remain excluded.
-  if (status === 'draft' && tx?.type === 'ongkir') return false;
+  // Draft is temporary and must not sync. Ongkir becomes "ready" only when
+  // the user closes the saved transaction; its BBM purchase status is mapped
+  // separately in the Ongkir sheet row.
   return ['pending', 'draft', 'menunggu', 'menunggu persetujuan', 'rejected', 'ditolak'].includes(status);
 }
 
