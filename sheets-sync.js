@@ -157,18 +157,24 @@ function mapAdditionalRows(tx, syncedAt = new Date().toISOString()) {
 
 function isExcludedFromSheets(tx) {
   const status = String(tx?.status || '').trim().toLowerCase();
-  // Pending/draft and rejected records are never sent to the reporting spreadsheet.
-  return ['pending', 'draft', 'menunggu', 'menunggu persetujuan', 'rejected', 'ditolak'].includes(status);
+  // The source of truth is a saved transaction selected from the reports.
+  // Exclude only explicitly rejected records; Pending/Draft labels alone do not
+  // decide whether an already-saved E-Toll or Nota appears in its report tab.
+  return ['rejected', 'ditolak'].includes(status);
 }
 
 function buildBatches(transactions, syncedAt = new Date().toISOString()) {
   const bySheet = new Map();
   for (const tx of transactions || []) {
-    // Only transactions already committed to state.transactions are passed here.
-    // Pending temporary batches are stored separately and never passed to this mapper.
-    // Rejected transactions must never be sent to the Sheets bridge.
+    // The caller supplies saved/report records; temporary input batches are separate.
+    // Explicitly rejected records are never sent.
     if (!tx || isExcludedFromSheets(tx)) continue;
-    const mapped = mapTransaction(tx, syncedAt);
+
+    // Ongkir has a stricter business rule: only Ready records belong in the Ongkir
+    // report tab. A paid record can still map to Pembayaran independently.
+    const mapped = tx.type === 'ongkir'
+      ? (String(tx.status || '').trim().toLowerCase() === 'ready' ? mapTransaction(tx, syncedAt) : null)
+      : mapTransaction(tx, syncedAt);
     const allMapped = [...(mapped ? [mapped] : []), ...mapAdditionalRows(tx, syncedAt)];
     for (const item of allMapped) {
       if (!bySheet.has(item.sheet)) bySheet.set(item.sheet, []);
