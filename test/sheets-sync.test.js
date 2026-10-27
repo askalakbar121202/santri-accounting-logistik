@@ -23,17 +23,41 @@ test('maps E-Toll with tariff and realization, without calculating difference', 
   assert.equal(mapped.row['Selisih'], '');
 });
 
-test('maps ongkir to Ongkir and BBM Solar; paid transaction also maps to Pembayaran', () => {
+test('maps Ongkir and BBM details into the requested 13-column Ongkir row; paid transaction also maps to Pembayaran', () => {
   const batches = buildBatches([{
     id: 'TRX-1', type: 'ongkir', date: '2026-10-24', created: 1792828800000,
     fuel: 150000, amount: 150000, nota1: 50000, nota2: 30000, nota3: 0,
     noSol: 20000, gabung: 0, status: 'paid', paidAt: '2026-10-24',
-    shipment: 'SJ-1', driver: 'Driver A', plate: 'L 1234 XX'
+    shipment: 'SJ-1', driver: 'Driver A', helper: 'Helper A', plate: 'L 1234 XX'
   }], '2026-10-24T00:00:00.000Z');
   const names = batches.map(b => b.sheet);
-  assert.deepEqual(names, ['Ongkir', 'BBM Solar', 'Pembayaran']);
-  assert.equal(batches.find(b => b.sheet === 'BBM Solar').rows[0]['Nominal Nota'], 100000);
+  assert.deepEqual(names, ['Ongkir', 'Pembayaran']);
+  const ongkir = batches.find(b => b.sheet === 'Ongkir');
+  assert.deepEqual(Object.keys(ongkir.rows[0]), SHEET_HEADERS.Ongkir);
+  assert.equal(ongkir.rows[0]['ID Transaksi'], 'TRX-1');
+  assert.equal(ongkir.rows[0]['Tanggal'], '2026-10-24');
+  assert.equal(ongkir.rows[0]['Nominal BBM'], 150000);
+  assert.equal(ongkir.rows[0]['Nota 1'], 50000);
+  assert.equal(ongkir.rows[0]['Nota 2'], 30000);
+  assert.equal(ongkir.rows[0]['Nota 3'], 0);
+  assert.equal(ongkir.rows[0]['No Sol'], 20000);
+  assert.equal(ongkir.rows[0]['Nominal Gabung'], 0);
+  assert.equal(ongkir.rows[0]['Sisa BBM'], 50000);
+  assert.equal(ongkir.rows[0]['Status'], 'Sebagian');
   assert.equal(batches.find(b => b.sheet === 'Pembayaran').rows[0]['ID Pembayaran'], 'PAY-TRX-1');
+});
+
+test('syncs Ongkir only after it is Ready; temporary Draft remains excluded', () => {
+  const batches = buildBatches([
+    { id: 'ONG-DRAFT', type: 'ongkir', status: 'draft', date: '2026-10-27', fuel: 100000, nota1: 25000 },
+    { id: 'ONG-READY', type: 'ongkir', status: 'ready', date: '2026-10-27', fuel: 100000, nota1: 25000 },
+    { id: 'ETOLL-DRAFT', type: 'etoll', status: 'draft', tariff: 50000, amount: 48000 },
+    { id: 'NOTA-DRAFT', type: 'nota', status: 'draft', amount: 10000 }
+  ]);
+  assert.deepEqual(batches.map(batch => batch.sheet), ['Ongkir']);
+  assert.equal(batches[0].rows.length, 1);
+  assert.equal(batches[0].rows[0]['ID Transaksi'], 'ONG-READY');
+  assert.equal(batches[0].rows[0]['Status'], 'Sebagian');
 });
 
 test('ignores unknown transaction types instead of guessing a sheet', () => {
@@ -101,4 +125,13 @@ test('does not call Google Sheets when configuration is missing', async () => {
   });
   assert.equal(result.skipped, true);
   assert.equal(calls, 0);
+});
+
+
+test('keeps the stable technical ID first and the 13 business fields after it for Ongkir upserts', () => {
+  assert.equal(SHEET_HEADERS.Ongkir[0], 'ID Transaksi');
+  const mapped = mapTransaction({ id: 'ONG-KEY-1', type: 'ongkir', date: '2026-10-27', fuel: 100000 });
+  assert.equal(mapped.row['ID Transaksi'], 'ONG-KEY-1');
+  assert.equal(Object.keys(mapped.row)[0], 'ID Transaksi');
+  assert.equal(Object.keys(mapped.row).length, 14); // technical ID + 13 requested visible fields
 });
