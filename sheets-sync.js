@@ -1,7 +1,7 @@
 'use strict';
 
 const SHEET_HEADERS = Object.freeze({
-  Ongkir: ['Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status'],
+  Ongkir: ['ID Transaksi','Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status'],
   'E-Toll': ['ID Transaksi','Tanggal Input','Tanggal Tol','Driver','Helper','Plat Nomor','No. Kiriman','Rute/Tujuan Tol','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   'BBM Solar': ['ID Transaksi','Tanggal Input','Tanggal Nota','Driver','Helper','Plat Nomor','Nama SPBU/Vendor','Liter','Nominal Nota','Realisasi','Selisih','No. Solar','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   Nota: ['ID Transaksi','Tanggal Input','Tanggal Nota','Jenis Nota','Driver','Helper','Plat Nomor','Vendor/Toko','Nomor Nota','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
@@ -83,6 +83,9 @@ function mapTransaction(tx, syncedAt = new Date().toISOString()) {
     return {
       sheet: 'Ongkir',
       row: {
+        // The bridge uses the first column as the stable upsert key. Keep this technical ID first;
+        // the 13 user-facing Ongkir/BBM columns follow it. Hide column A in Sheets if desired.
+        'ID Transaksi': common.id,
         'Tanggal': common.date,
         'Driver': common.driver,
         'Helper': common.helper,
