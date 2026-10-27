@@ -65,7 +65,7 @@ test('requires exact Ready status for Ongkir rows but includes saved E-Toll and 
     { id: 'NOTA-DRAFT', type: 'nota', status: 'draft', amount: 10000 },
     { id: 'ETOLL-REJECTED', type: 'etoll', status: 'rejected', tariff: 50000, amount: 48000 }
   ]);
-  assert.deepEqual(batches.map(batch => batch.sheet), ['Ongkir', 'E-Toll', 'Nota']);
+  assert.deepEqual(batches.map(batch => batch.sheet), ['Pembayaran', 'Ongkir', 'E-Toll', 'Nota']);
   assert.deepEqual(batches.find(b => b.sheet === 'Ongkir').rows.map(r => r['ID Transaksi']), ['ONG-READY']);
   assert.deepEqual(batches.find(b => b.sheet === 'E-Toll').rows.map(r => r['ID Transaksi']), ['ETOLL-PENDING']);
   assert.deepEqual(batches.find(b => b.sheet === 'Nota').rows.map(r => r['ID Transaksi']), ['NOTA-DRAFT']);
