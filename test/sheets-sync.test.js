@@ -23,16 +23,24 @@ test('maps E-Toll with tariff and realization, without calculating difference', 
   assert.equal(mapped.row['Selisih'], '');
 });
 
-test('maps Ongkir and BBM details into the requested 13-column Ongkir row; paid transaction also maps to Pembayaran', () => {
-  const batches = buildBatches([{
-    id: 'TRX-1', type: 'ongkir', date: '2026-10-24', created: 1792828800000,
+test('maps a Ready Ongkir row with BBM details; a paid status creates only its payment row', () => {
+  const paidBatches = buildBatches([{
+    id: 'TRX-PAID', type: 'ongkir', date: '2026-10-24', created: 1792828800000,
     fuel: 150000, amount: 150000, nota1: 50000, nota2: 30000, nota3: 0,
     noSol: 20000, gabung: 0, status: 'paid', paidAt: '2026-10-24',
     shipment: 'SJ-1', driver: 'Driver A', helper: 'Helper A', plate: 'L 1234 XX'
   }], '2026-10-24T00:00:00.000Z');
-  const names = batches.map(b => b.sheet);
-  assert.deepEqual(names, ['Ongkir', 'Pembayaran']);
-  const ongkir = batches.find(b => b.sheet === 'Ongkir');
+  assert.deepEqual(paidBatches.map(b => b.sheet), ['Pembayaran']);
+  assert.equal(paidBatches[0].rows[0]['ID Pembayaran'], 'PAY-TRX-PAID');
+
+  const batches = buildBatches([{
+    id: 'TRX-1', type: 'ongkir', date: '2026-10-24', created: 1792828800000,
+    fuel: 150000, amount: 150000, nota1: 50000, nota2: 30000, nota3: 0,
+    noSol: 20000, gabung: 0, status: 'ready',
+    shipment: 'SJ-1', driver: 'Driver A', helper: 'Helper A', plate: 'L 1234 XX'
+  }], '2026-10-24T00:00:00.000Z');
+  assert.deepEqual(batches.map(b => b.sheet), ['Ongkir']);
+  const ongkir = batches[0];
   assert.deepEqual(Object.keys(ongkir.rows[0]), SHEET_HEADERS.Ongkir);
   assert.equal(ongkir.rows[0]['ID Transaksi'], 'TRX-1');
   assert.equal(ongkir.rows[0]['Tanggal'], '2026-10-24');
@@ -44,20 +52,23 @@ test('maps Ongkir and BBM details into the requested 13-column Ongkir row; paid 
   assert.equal(ongkir.rows[0]['Nominal Gabung'], 0);
   assert.equal(ongkir.rows[0]['Sisa BBM'], 50000);
   assert.equal(ongkir.rows[0]['Status'], 'Sebagian');
-  assert.equal(batches.find(b => b.sheet === 'Pembayaran').rows[0]['ID Pembayaran'], 'PAY-TRX-1');
 });
 
-test('syncs Ongkir only after it is Ready; temporary Draft remains excluded', () => {
+test('requires exact Ready status for Ongkir rows but includes saved E-Toll and Nota rows regardless of Pending/Draft labels', () => {
   const batches = buildBatches([
     { id: 'ONG-DRAFT', type: 'ongkir', status: 'draft', date: '2026-10-27', fuel: 100000, nota1: 25000 },
+    { id: 'ONG-PAID', type: 'ongkir', status: 'paid', date: '2026-10-27', fuel: 100000, nota1: 25000 },
+    { id: 'ONG-EMPTY', type: 'ongkir', date: '2026-10-27', fuel: 100000, nota1: 25000 },
+    { id: 'ONG-INVALID', type: 'ongkir', status: 'complete', date: '2026-10-27', fuel: 100000, nota1: 25000 },
     { id: 'ONG-READY', type: 'ongkir', status: 'ready', date: '2026-10-27', fuel: 100000, nota1: 25000 },
-    { id: 'ETOLL-DRAFT', type: 'etoll', status: 'draft', tariff: 50000, amount: 48000 },
-    { id: 'NOTA-DRAFT', type: 'nota', status: 'draft', amount: 10000 }
+    { id: 'ETOLL-PENDING', type: 'etoll', status: 'pending', tariff: 50000, amount: 48000 },
+    { id: 'NOTA-DRAFT', type: 'nota', status: 'draft', amount: 10000 },
+    { id: 'ETOLL-REJECTED', type: 'etoll', status: 'rejected', tariff: 50000, amount: 48000 }
   ]);
-  assert.deepEqual(batches.map(batch => batch.sheet), ['Ongkir']);
-  assert.equal(batches[0].rows.length, 1);
-  assert.equal(batches[0].rows[0]['ID Transaksi'], 'ONG-READY');
-  assert.equal(batches[0].rows[0]['Status'], 'Sebagian');
+  assert.deepEqual(batches.map(batch => batch.sheet), ['Ongkir', 'E-Toll', 'Nota']);
+  assert.deepEqual(batches.find(b => b.sheet === 'Ongkir').rows.map(r => r['ID Transaksi']), ['ONG-READY']);
+  assert.deepEqual(batches.find(b => b.sheet === 'E-Toll').rows.map(r => r['ID Transaksi']), ['ETOLL-PENDING']);
+  assert.deepEqual(batches.find(b => b.sheet === 'Nota').rows.map(r => r['ID Transaksi']), ['NOTA-DRAFT']);
 });
 
 test('ignores unknown transaction types instead of guessing a sheet', () => {
@@ -65,16 +76,16 @@ test('ignores unknown transaction types instead of guessing a sheet', () => {
 });
 
 
-test('never includes pending, draft, or rejected transactions in any Google Sheets batch', () => {
+test('excludes rejected records, while saved Pending/Draft E-Toll and Nota remain report-eligible', () => {
   const batches = buildBatches([
     { id: 'OK-1', type: 'etoll', status: 'pending', tariff: 50000, amount: 48000 },
     { id: 'NO-1', type: 'etoll', status: 'rejected', tariff: 50000, amount: 48000 },
-    { id: 'NO-2', type: 'etoll', status: 'Ditolak', tariff: 50000, amount: 48000 },
+    { id: 'NO-2', type: 'nota', status: 'Ditolak', amount: 10000 },
     { id: 'OK-2', type: 'etoll', status: 'draft', tariff: 40000, amount: 40000 }
   ]);
   const ids = batches.flatMap(batch => batch.rows.map(row => row['ID Transaksi'])).filter(Boolean);
-  assert.ok(!ids.includes('OK-1'));
-  assert.ok(!ids.includes('OK-2'));
+  assert.ok(ids.includes('OK-1'));
+  assert.ok(ids.includes('OK-2'));
   assert.ok(!ids.includes('NO-1'));
   assert.ok(!ids.includes('NO-2'));
 });
