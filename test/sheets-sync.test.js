@@ -125,7 +125,7 @@ test('does not call Google Sheets when configuration is missing', async () => {
 });
 
 
-test('keeps Ongkir transaction ID as the first column for stable bridge upserts', () => {
+test('keeps the stable technical ID first and the 13 business fields after it for Ongkir upserts', () => {
   assert.equal(SHEET_HEADERS.Ongkir[0], 'ID Transaksi');
   const mapped = mapTransaction({ id: 'ONG-KEY-1', type: 'ongkir', date: '2026-10-27', fuel: 100000 });
   assert.equal(mapped.row['ID Transaksi'], 'ONG-KEY-1');
