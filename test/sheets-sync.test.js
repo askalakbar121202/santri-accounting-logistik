@@ -47,13 +47,16 @@ test('maps Ongkir and BBM details into the requested 13-column Ongkir row; paid 
   assert.equal(batches.find(b => b.sheet === 'Pembayaran').rows[0]['ID Pembayaran'], 'PAY-TRX-1');
 });
 
-test('allows saved Ongkir records marked draft while excluding other draft records', () => {
+test('syncs Ongkir only after it is Ready; temporary Draft remains excluded', () => {
   const batches = buildBatches([
     { id: 'ONG-DRAFT', type: 'ongkir', status: 'draft', date: '2026-10-27', fuel: 100000, nota1: 25000 },
-    { id: 'ETOLL-DRAFT', type: 'etoll', status: 'draft', tariff: 50000, amount: 48000 }
+    { id: 'ONG-READY', type: 'ongkir', status: 'ready', date: '2026-10-27', fuel: 100000, nota1: 25000 },
+    { id: 'ETOLL-DRAFT', type: 'etoll', status: 'draft', tariff: 50000, amount: 48000 },
+    { id: 'NOTA-DRAFT', type: 'nota', status: 'draft', amount: 10000 }
   ]);
   assert.deepEqual(batches.map(batch => batch.sheet), ['Ongkir']);
-  assert.equal(batches[0].rows[0]['ID Transaksi'], 'ONG-DRAFT');
+  assert.equal(batches[0].rows.length, 1);
+  assert.equal(batches[0].rows[0]['ID Transaksi'], 'ONG-READY');
   assert.equal(batches[0].rows[0]['Status'], 'Sebagian');
 });
 
