@@ -1,7 +1,7 @@
 'use strict';
 
 const SHEET_HEADERS = Object.freeze({
-  Ongkir: ['ID Transaksi','Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status'],
+  Ongkir: ['ID Transaksi','Tanggal Input','Tanggal Transaksi','Driver','Helper','Plat Nomor','No. Kiriman','Tujuan','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   'E-Toll': ['ID Transaksi','Tanggal Input','Tanggal Tol','Driver','Helper','Plat Nomor','No. Kiriman','Rute/Tujuan Tol','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   'BBM Solar': ['ID Transaksi','Tanggal Input','Tanggal Nota','Driver','Helper','Plat Nomor','Nama SPBU/Vendor','Liter','Nominal Nota','Realisasi','Selisih','No. Solar','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   Nota: ['ID Transaksi','Tanggal Input','Tanggal Nota','Jenis Nota','Driver','Helper','Plat Nomor','Vendor/Toko','Nomor Nota','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
@@ -69,36 +69,24 @@ function mapTransaction(tx, syncedAt = new Date().toISOString()) {
   }
 
   if (tx.type === 'ongkir') {
-    const fuel = tx.fuel === null || tx.fuel === undefined || tx.fuel === '' ? null : Number(tx.fuel);
-    const spent = ['nota1', 'nota2', 'nota3', 'noSol']
-      .reduce((sum, key) => sum + Number(tx[key] || 0), 0) - Number(tx.gabung || 0);
-    const remaining = fuel === null || !Number.isFinite(fuel) ? '' : fuel - spent;
-    let bbmStatus = '';
-    if (fuel !== null && Number.isFinite(fuel)) {
-      if (spent === 0) bbmStatus = 'Belum Terbeli';
-      else if (spent < fuel) bbmStatus = 'Sebagian';
-      else if (spent === fuel) bbmStatus = 'Terbeli';
-      else bbmStatus = 'Lebih';
-    }
     return {
       sheet: 'Ongkir',
       row: {
-        // The bridge uses the first column as the stable upsert key. Keep this technical ID first;
-        // the 13 user-facing Ongkir/BBM columns follow it. Hide column A in Sheets if desired.
+        // Pertahankan header laporan Ongkir yang sudah dipakai; ID Transaksi tetap kolom pertama untuk upsert.
         'ID Transaksi': common.id,
-        'Tanggal': common.date,
+        'Tanggal Input': common.created,
+        'Tanggal Transaksi': common.date,
         'Driver': common.driver,
         'Helper': common.helper,
-        'Plat': common.plate,
-        'Kiriman': asText(tx.shipment),
-        'Nominal BBM': tx.fuel ?? '',
-        'Nota 1': tx.nota1 ?? '',
-        'Nota 2': tx.nota2 ?? '',
-        'Nota 3': tx.nota3 ?? '',
-        'No Sol': tx.noSol ?? '',
-        'Nominal Gabung': tx.gabung ?? '',
-        'Sisa BBM': remaining,
-        'Status': bbmStatus
+        'Plat Nomor': common.plate,
+        'No. Kiriman': asText(tx.shipment),
+        'Tujuan': asText(tx.route || tx.city),
+        'Nominal Nota': '',
+        'Realisasi': tx.fuel ?? tx.amount ?? '',
+        'Selisih': '',
+        'Status Pembayaran': common.status,
+        'Keterangan': common.note,
+        'Tanggal Sinkronisasi': common.syncedAt
       }
     };
   }
