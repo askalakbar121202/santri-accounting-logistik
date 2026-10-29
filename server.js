@@ -391,6 +391,7 @@ app.post('/api/reset-password', async (req, res) => {
 
 app.post('/api/logout',auth,(req,res)=>req.session.destroy(()=>res.clearCookie('connect.sid').json({ok:true})));
 app.get('/api/me',auth,(req,res)=>res.json(req.session.user));
+app.get('/api/operators',auth,async(req,res)=>{try{const q=await pool.query("SELECT id,username,role FROM app_users WHERE active=TRUE ORDER BY username");res.json(q.rows.map(u=>({...u,isCurrentUser:Number(u.id)===Number(req.session.user.id)})))}catch(e){console.error('Gagal memuat operator cloud:',e.message);res.status(500).json({error:'Daftar operator cloud gagal dimuat.'})}});
 app.get('/api/state',auth,async(req,res)=>{try{const q=await pool.query('SELECT state,pending_tx_batch,revision,updated_at,updated_by FROM app_state WHERE id=1');res.json({...q.rows[0],revision:Number(q.rows[0].revision)})}catch(e){console.error(e);res.status(500).json({error:'Gagal membaca database.'})}});
 app.put('/api/state',auth,async(req,res)=>{
   try {
