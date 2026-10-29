@@ -450,13 +450,26 @@ async function renderCloudUsers(){
   const response=await fetch('/api/users'),users=await response.json().catch(()=>[]);
   if(!response.ok){if(response.status===403){msgEl.textContent='Daftar dan persetujuan akun hanya dapat dikelola oleh admin cloud.';tableEl.textContent='';return}if(response.status===401){msgEl.textContent='Sesi login berakhir. Silakan masuk kembali.';tableEl.textContent='';return}throw new Error('Tidak dapat memuat akun cloud.')}
   if(!Array.isArray(users)||!users.length){tableEl.innerHTML='<p class="muted">Belum ada akun.</p>';msgEl.textContent='Daftar akun berhasil diperiksa.';return}
-  tableEl.innerHTML='<table><thead><tr><th>Nama Pengguna</th><th>Email</th><th>Peran</th><th>Tanggal Dibuat</th><th>Edit</th></tr></thead><tbody>'+users.map(user=>{
+  tableEl.innerHTML='<table><thead><tr><th>Nama Pengguna</th><th>Email</th><th>Peran</th><th>Status</th><th>Tanggal Dibuat</th><th>Aksi</th></tr></thead><tbody>'+users.map(user=>{
    const id=Number(user.id),username=esc(user.username||''),email=esc(user.email||'—'),role=esc(user.role||'staff');
    const created=user.created_at?new Date(user.created_at).toLocaleDateString('id-ID'):'—';
-   return '<tr><td>'+username+(user.isCurrentUser?'<div class="muted">Akun Anda</div>':'')+'</td><td>'+email+'<div><button type="button" class="secondary" onclick="editCloudUserEmail('+id+')">'+(user.email?'Ubah email':'Atur email')+'</button></div></td><td>'+role+'</td><td>'+created+'</td><td><button type="button" class="secondary" onclick="editCloudAccountActions('+id+',\''+String(user.role||'staff')+'\','+(user.active?'true':'false')+','+(user.email?'true':'false')+','+(user.isCurrentUser?'true':'false')+')">Edit</button></td></tr>';
+   const status=user.active?'<span class="pill">Aktif</span>':'<span class="pill">Menunggu persetujuan</span>';
+   const acceptButton=!user.active?'<button type="button" onclick="approveCloudUser('+id+')">Terima Akun</button> ':'';
+   return '<tr><td>'+username+(user.isCurrentUser?'<div class="muted">Akun Anda</div>':'')+'</td><td>'+email+'<div><button type="button" class="secondary" onclick="editCloudUserEmail('+id+')">'+(user.email?'Ubah email':'Atur email')+'</button></div></td><td>'+role+'</td><td>'+status+'</td><td>'+created+'</td><td>'+acceptButton+'<button type="button" class="secondary" onclick="editCloudAccountActions('+id+',\''+String(user.role||'staff')+'\','+(user.active?'true':'false')+','+(user.email?'true':'false')+','+(user.isCurrentUser?'true':'false')+')">Edit</button></td></tr>';
   }).join('')+'</tbody></table>';
-  msgEl.textContent='Jumlah akun: '+users.length+'. Edit di tabel ini berisi tindakan akun dan pengajuan admin.';
+  msgEl.textContent='Jumlah akun: '+users.length+'. Terima Akun mengaktifkan pendaftaran yang menunggu persetujuan; Edit tetap untuk tindakan akun lainnya.';
  }catch(error){msgEl.textContent=error.message||'Gagal memuat akun cloud.'}
+}
+async function approveCloudUser(id){
+ if(!confirm('Terima pendaftaran akun ini? Akun akan diaktifkan dan dapat login.'))return;
+ try{
+  const response=await fetch('/api/users/'+Number(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:true})});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(result.error||'Persetujuan akun gagal.');
+  alert('Akun berhasil diterima dan diaktifkan.');
+  await renderCloudUsers();
+  await renderLocalUsers();
+ }catch(error){alert(error.message||'Tidak dapat menyetujui akun.')}
 }
 async function editCloudAccountActions(id,role,isActive,hasEmail,isCurrentUser){
  const old=document.getElementById('editCloudAccountActionsDialog');if(old)old.remove();
