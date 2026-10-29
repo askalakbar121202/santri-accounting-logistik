@@ -452,7 +452,7 @@ async function editCloudUserEmail(id){
   const user=users.find(item=>Number(item.id)===Number(id));if(!user)throw new Error('Akun tidak ditemukan.');
   const email=prompt('Masukkan email aktif untuk akun '+user.username+':',user.email||'');if(email===null)return;
   const cleanEmail=email.trim().toLowerCase();
-  if(!cleanEmail||cleanEmail.length>254||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleanEmail)){alert('Format email tidak valid.');return}
+  if(!cleanEmail||cleanEmail.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)){alert('Format email tidak valid.');return}
   const saved=await fetch('/api/users/'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:cleanEmail})});
   const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Email gagal disimpan.');
   await renderCloudUsers();alert('Email akun berhasil diperbarui. Fitur Lupa Password dapat menggunakan email ini.');
