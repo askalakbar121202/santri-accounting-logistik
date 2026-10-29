@@ -343,7 +343,7 @@ async function renderLocalUsers(){
    const current=users.find(u=>u.isCurrentUser);
    if(current){state.activeLocalUser=current.username;state.admin=current.username;persist();}
   }
-  tableEl.innerHTML=table(['Nama Pengguna Cloud','Peran','Status','Operator','Edit'],users.map(u=>[esc(u.username),esc(u.role),u.username===state.activeLocalUser?'Aktif':'—',u.username===state.activeLocalUser?'<span class="pill">Operator aktif</span>':`<button class="secondary" onclick="activateLocalUser('${esc(u.username)}')">Gunakan sebagai operator</button>`,window.CLOUD_ROLE==='admin'?'<button type="button" class="secondary" onclick="editCloudUser('+Number(u.id)+',\''+String(u.role||'staff')+'\','+(u.active?'true':'false')+')">Edit</button>':'—']));
+  tableEl.innerHTML=table(['Nama Pengguna Cloud','Peran','Status','Operator','Edit'],users.map(u=>[esc(u.username),esc(u.role),u.username===state.activeLocalUser?'Aktif':'—',u.username===state.activeLocalUser?'<span class="pill">Operator aktif</span>':`<button class="secondary" onclick="activateLocalUser('${esc(u.username)}')">Gunakan sebagai operator</button>`,window.CLOUD_ROLE==='admin'?'<button type="button" class="secondary" onclick="editCloudUser('+Number(u.id)+',\''+String(u.role||'staff')+'\',true)">Edit</button>':'—']));
  }catch(error){tableEl.textContent=error.message||'Gagal memuat akun cloud.'}
 }
 function activateLocalUser(n){state.activeLocalUser=n;state.admin=n;persist();renderLocalUsers()}
