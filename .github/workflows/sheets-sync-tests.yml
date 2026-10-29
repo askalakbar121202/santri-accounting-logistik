@@ -3,7 +3,11 @@ name: Sheets Sync Tests
 on:
   push:
     branches:
+      - main
       - fitur-sinkronisasi-google-sheets
+      - fix/ongkir-bbm-sheets-layout-2026-10-27
+      - fix/ongkir-sheets-single-row-2026-10-27
+      - fix/ongkir-actual-sheet-headers-2026-10-29
     paths:
       - 'sheets-sync.js'
       - 'test/**'
@@ -12,6 +16,7 @@ on:
   pull_request:
     branches:
       - main
+      - fix/ongkir-sheets-single-row-2026-10-27
     paths:
       - 'sheets-sync.js'
       - 'test/**'
