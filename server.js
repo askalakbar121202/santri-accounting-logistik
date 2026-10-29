@@ -69,6 +69,21 @@ async function init() {
   `);
 
   await pool.query(`
+    CREATE TABLE IF NOT EXISTS admin_transfer_requests (
+      id BIGSERIAL PRIMARY KEY,
+      old_user_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+      new_user_id BIGINT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
+      old_token_hash TEXT NOT NULL UNIQUE,
+      new_token_hash TEXT NOT NULL UNIQUE,
+      old_verified BOOLEAN NOT NULL DEFAULT FALSE,
+      new_verified BOOLEAN NOT NULL DEFAULT FALSE,
+      expires_at TIMESTAMPTZ NOT NULL,
+      completed_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
+
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS password_reset_tokens (
       id BIGSERIAL PRIMARY KEY,
       user_id BIGINT NOT NULL
@@ -139,6 +154,70 @@ app.post('/api/register', async (req, res) => {
       error: 'Pendaftaran gagal. Silakan coba lagi.'
     });
   }
+});
+
+app.post('/api/admin-transfer',auth,admin,async(req,res)=>{
+  const client=await pool.connect();
+  try{
+    const newUserId=Number(req.body?.newUserId);
+    if(!Number.isSafeInteger(newUserId)||newUserId<=0||newUserId===Number(req.session.user.id))return res.status(400).json({error:'Pilih akun cloud lain yang valid.'});
+    await client.query('BEGIN');
+    const oldResult=await client.query('SELECT id,username,email,role,active FROM app_users WHERE id=$1 FOR UPDATE',[req.session.user.id]);
+    const newResult=await client.query('SELECT id,username,email,role,active FROM app_users WHERE id=$1 FOR UPDATE',[newUserId]);
+    const oldUser=oldResult.rows[0],newUser=newResult.rows[0];
+    if(!oldUser||oldUser.role!=='admin'||!oldUser.active){await client.query('ROLLBACK');return res.status(403).json({error:'Akun admin saat ini tidak valid.'});}
+    if(!newUser||!newUser.active){await client.query('ROLLBACK');return res.status(400).json({error:'Akun penerima harus sudah disetujui dan aktif.'});}
+    if(!oldUser.email||!newUser.email||oldUser.email===newUser.email){await client.query('ROLLBACK');return res.status(400).json({error:'Email admin lama dan akun penerima harus diatur, valid, dan berbeda.'});}
+    await client.query("UPDATE admin_transfer_requests SET expires_at=now(), completed_at=COALESCE(completed_at,now()) WHERE completed_at IS NULL AND expires_at>now() AND old_user_id=$1",[oldUser.id]);
+    const oldToken=crypto.randomBytes(32).toString('hex'),newToken=crypto.randomBytes(32).toString('hex');
+    const hashToken=value=>crypto.createHash('sha256').update(value).digest('hex');
+    await client.query(`INSERT INTO admin_transfer_requests(old_user_id,new_user_id,old_token_hash,new_token_hash,expires_at)
+      VALUES($1,$2,$3,$4,now()+INTERVAL '30 minutes')`,[oldUser.id,newUser.id,hashToken(oldToken),hashToken(newToken)]);
+    await client.query('COMMIT');
+    const baseUrl=(process.env.APP_BASE_URL||'https://santri-accounting-logistik.vercel.app').replace(/\/+$/,'');
+    try{
+      await mailer.sendMail({from:process.env.SMTP_USER,to:oldUser.email,subject:'Verifikasi Pergantian Admin Santri Accounting',text:`Halo ${oldUser.username},\n\nAda permintaan pemindahan hak admin utama ke akun ${newUser.username} (${newUser.email}). Untuk menyetujui, buka tautan ini dalam 30 menit:\n${baseUrl}/?adminTransferToken=${encodeURIComponent(oldToken)}&verify=old\n\nJika bukan Anda yang meminta, abaikan email ini dan segera periksa akun Anda.`});
+      await mailer.sendMail({from:process.env.SMTP_USER,to:newUser.email,subject:'Konfirmasi Menjadi Admin Utama Santri Accounting',text:`Halo ${newUser.username},\n\nAnda diminta menerima hak admin utama dari akun ${oldUser.username}. Untuk mengonfirmasi, buka tautan ini dalam 30 menit:\n${baseUrl}/?adminTransferToken=${encodeURIComponent(newToken)}&verify=new\n\nPergantian hanya selesai setelah kedua email diverifikasi.`});
+    }catch(mailError){
+      await pool.query('UPDATE admin_transfer_requests SET expires_at=now(),completed_at=COALESCE(completed_at,now()) WHERE old_token_hash=$1 OR new_token_hash=$2',[hashToken(oldToken),hashToken(newToken)]);
+      console.error('Email verifikasi pergantian admin gagal:',mailError.message);
+      return res.status(502).json({error:'Permintaan tersimpan tetapi email verifikasi gagal dikirim. Tidak ada pergantian admin; periksa konfigurasi SMTP sebelum mencoba lagi.'});
+    }
+    res.json({ok:true,message:'Tautan verifikasi dikirim ke email admin lama dan akun penerima. Kedua tautan harus dibuka dalam 30 menit.'});
+  }catch(e){await client.query('ROLLBACK').catch(()=>{});console.error('Permintaan pergantian admin gagal:',e.message);res.status(500).json({error:'Tidak dapat memulai pergantian admin.'});}
+  finally{client.release();}
+});
+app.post('/api/admin-transfer/verify',async(req,res)=>{
+  const token=String(req.body?.token||'').trim(),step=String(req.body?.step||'');
+  if(!/^[a-f0-9]{64}$/i.test(token)||!['old','new'].includes(step))return res.status(400).json({error:'Tautan verifikasi tidak valid.'});
+  const tokenHash=crypto.createHash('sha256').update(token).digest('hex');
+  const client=await pool.connect();
+  try{
+    await client.query('BEGIN');
+    const column=step==='old'?'old_token_hash':'new_token_hash';
+    const verifiedColumn=step==='old'?'old_verified':'new_verified';
+    const found=await client.query(`SELECT id,old_user_id,new_user_id,old_verified,new_verified FROM admin_transfer_requests WHERE ${column}=$1 AND completed_at IS NULL AND expires_at>now() FOR UPDATE`,[tokenHash]);
+    if(!found.rows.length){await client.query('ROLLBACK');return res.status(400).json({error:'Tautan tidak valid, sudah digunakan, atau kedaluwarsa.'});}
+    const transfer=found.rows[0];
+    if(transfer[verifiedColumn]){await client.query('ROLLBACK');return res.status(400).json({error:'Tautan verifikasi ini sudah digunakan.'});}
+    await client.query(`UPDATE admin_transfer_requests SET ${verifiedColumn}=TRUE WHERE id=$1`,[transfer.id]);
+    const oldVerified=step==='old'||transfer.old_verified,newVerified=step==='new'||transfer.new_verified;
+    if(oldVerified&&newVerified){
+      const users=await client.query('SELECT id,role,active FROM app_users WHERE id = ANY($1::bigint[]) ORDER BY id FOR UPDATE',[[transfer.old_user_id,transfer.new_user_id]]);
+      const oldUser=users.rows.find(u=>Number(u.id)===Number(transfer.old_user_id));
+      const newUser=users.rows.find(u=>Number(u.id)===Number(transfer.new_user_id));
+      if(!oldUser||!newUser||!oldUser.active||oldUser.role!=='admin'||!newUser.active){await client.query('ROLLBACK');return res.status(409).json({error:'Akun berubah atau tidak aktif. Tidak ada pergantian admin; mulai ulang proses.'});}
+      await client.query("UPDATE app_users SET role='accounting' WHERE id=$1",[transfer.old_user_id]);
+      await client.query("UPDATE app_users SET role='admin' WHERE id=$1",[transfer.new_user_id]);
+      await client.query('UPDATE admin_transfer_requests SET completed_at=now() WHERE id=$1',[transfer.id]);
+      await client.query("DELETE FROM user_sessions WHERE sess->'user'->>'id'=$1",[String(transfer.old_user_id)]);
+      await client.query('COMMIT');
+      return res.json({ok:true,completed:true,message:'Pergantian admin selesai. Admin lama menjadi Accounting dan sesi lamanya dicabut. Akun penerima harus login kembali.'});
+    }
+    await client.query('COMMIT');
+    return res.json({ok:true,completed:false,message:'Email berhasil diverifikasi. Pergantian belum selesai sampai email satunya juga diverifikasi.'});
+  }catch(e){await client.query('ROLLBACK').catch(()=>{});console.error('Verifikasi pergantian admin gagal:',e.message);res.status(500).json({error:'Verifikasi gagal. Silakan hubungi admin aplikasi.'});}
+  finally{client.release();}
 });
 
 app.post('/api/forgot-password', async (req, res) => {
@@ -391,11 +470,18 @@ app.post('/api/sheets/sync',auth,admin,async(req,res)=>{
     return res.status(502).json({error:'Sinkronisasi gagal. Data aplikasi tetap tersimpan; silakan periksa konfigurasi dan coba lagi.'});
   }
 });
-app.get('/api/users',auth,admin,async(req,res)=>{const q=await pool.query('SELECT id,username,email,role,active,created_at FROM app_users ORDER BY id');res.json(q.rows)});
+app.get('/api/users',auth,admin,async(req,res)=>{const q=await pool.query('SELECT id,username,email,role,active,created_at FROM app_users ORDER BY id');res.json(q.rows.map(u=>({...u,isCurrentUser:Number(u.id)===Number(req.session.user.id)})))});
 app.post('/api/users',auth,admin,async(req,res)=>{try{const {username,password,role='staff'}=req.body||{};if(!/^[a-zA-Z0-9_.-]{3,32}$/.test(username||'')||typeof password!=='string'||password.length<12||!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Username/role tidak valid; password minimal 12 karakter.'});const hash=await bcrypt.hash(password,12);await pool.query('INSERT INTO app_users(username,password_hash,role) VALUES($1,$2,$3)',[username,hash,role]);res.status(201).json({ok:true})}catch(e){res.status(e.code==='23505'?409:500).json({error:e.code==='23505'?'Username sudah dipakai.':'Gagal menambah pengguna.'})}});
 app.patch('/api/users/:id',auth,admin,async(req,res)=>{
   try{
     const {active,role,password,email}=req.body||{};
+    if(role&&role!=='admin'){
+      const target=await pool.query('SELECT role,active FROM app_users WHERE id=$1',[req.params.id]);
+      if(target.rows[0]?.role==='admin'&&target.rows[0]?.active){
+        const count=await pool.query("SELECT count(*)::int AS n FROM app_users WHERE role='admin' AND active=TRUE");
+        if(count.rows[0].n<=1)return res.status(409).json({error:'Admin aktif terakhir tidak dapat diturunkan perannya.'});
+      }
+    }
     if(role&&!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Role tidak valid.'});
     if(Number(req.params.id)===Number(req.session.user.id)&&active===false)return res.status(400).json({error:'Admin aktif tidak dapat menonaktifkan akunnya sendiri.'});
     if(email!==undefined){
@@ -414,6 +500,24 @@ app.patch('/api/users/:id',auth,admin,async(req,res)=>{
     res.status(500).json({error:'Gagal memperbarui pengguna.'});
   }
 });
+app.delete('/api/users/:id',auth,admin,async(req,res)=>{
+  const client=await pool.connect();
+  try{
+    const targetId=Number(req.params.id);
+    if(!Number.isSafeInteger(targetId)||targetId<=0)return res.status(400).json({error:'ID akun tidak valid.'});
+    if(targetId===Number(req.session.user.id))return res.status(400).json({error:'Akun yang sedang digunakan tidak dapat dihapus.'});
+    await client.query('BEGIN');
+    const target=await client.query('SELECT id,username,role,active FROM app_users WHERE id=$1 FOR UPDATE',[targetId]);
+    if(!target.rows.length){await client.query('ROLLBACK');return res.status(404).json({error:'Akun tidak ditemukan.'});}
+    if(target.rows[0].role==='admin'){await client.query('ROLLBACK');return res.status(409).json({error:'Akun berperan admin tidak dapat dihapus. Pindahkan atau ubah perannya terlebih dahulu.'});}
+    await client.query("DELETE FROM user_sessions WHERE sess->'user'->>'id'=$1",[String(targetId)]);
+    await client.query('DELETE FROM app_users WHERE id=$1',[targetId]);
+    await client.query('COMMIT');
+    res.json({ok:true,message:'Akun cloud berhasil dihapus. Data transaksi dan laporan tidak dihapus.'});
+  }catch(e){await client.query('ROLLBACK').catch(()=>{});console.error('Hapus akun cloud gagal:',e.message);res.status(500).json({error:'Akun cloud gagal dihapus.'});}
+  finally{client.release();}
+});
+
 app.use(express.static(__dirname));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 init().catch(e => console.error('Database initialization failed', e));
