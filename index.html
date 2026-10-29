@@ -343,7 +343,7 @@ async function renderLocalUsers(){
    const current=users.find(u=>u.isCurrentUser);
    if(current){state.activeLocalUser=current.username;state.admin=current.username;persist();}
   }
-  tableEl.innerHTML=table(['Nama Pengguna Cloud','Peran','Status','Aksi'],users.map(u=>[esc(u.username),esc(u.role),u.username===state.activeLocalUser?'Aktif':'—',u.username===state.activeLocalUser?'<span class="pill">Operator aktif</span>':`<button class="secondary" onclick="activateLocalUser('${esc(u.username)}')">Gunakan sebagai operator</button>`]));
+  tableEl.innerHTML=table(['Nama Pengguna Cloud','Peran','Status','Operator','Edit'],users.map(u=>[esc(u.username),esc(u.role),u.username===state.activeLocalUser?'Aktif':'—',u.username===state.activeLocalUser?'<span class="pill">Operator aktif</span>':`<button class="secondary" onclick="activateLocalUser('${esc(u.username)}')">Gunakan sebagai operator</button>`,window.CLOUD_ROLE==='admin'?'<button type="button" class="secondary" onclick="editCloudUser('+Number(u.id)+',\''+String(u.role||'staff')+'\','+(u.active?'true':'false')+')">Edit</button>':'—']));
  }catch(error){tableEl.textContent=error.message||'Gagal memuat akun cloud.'}
 }
 function activateLocalUser(n){state.activeLocalUser=n;state.admin=n;persist();renderLocalUsers()}
@@ -453,10 +453,26 @@ async function renderCloudUsers(){
   tableEl.innerHTML='<table><thead><tr><th>Nama Pengguna</th><th>Email</th><th>Peran</th><th>Tanggal Dibuat</th><th>Edit</th></tr></thead><tbody>'+users.map(user=>{
    const id=Number(user.id),username=esc(user.username||''),email=esc(user.email||'—'),role=esc(user.role||'staff');
    const created=user.created_at?new Date(user.created_at).toLocaleDateString('id-ID'):'—';
-   return '<tr><td>'+username+(user.isCurrentUser?'<div class="muted">Akun Anda</div>':'')+'</td><td>'+email+'<div><button type="button" class="secondary" onclick="editCloudUserEmail('+id+')">'+(user.email?'Ubah email':'Atur email')+'</button></div></td><td>'+role+'</td><td>'+created+'</td><td><button type="button" class="secondary" onclick="editCloudUser('+id+',\''+String(user.role||'staff')+'\','+(user.active?'true':'false')+')">Edit</button></td></tr>';
+   return '<tr><td>'+username+(user.isCurrentUser?'<div class="muted">Akun Anda</div>':'')+'</td><td>'+email+'<div><button type="button" class="secondary" onclick="editCloudUserEmail('+id+')">'+(user.email?'Ubah email':'Atur email')+'</button></div></td><td>'+role+'</td><td>'+created+'</td><td><button type="button" class="secondary" onclick="editCloudAccountActions('+id+',\''+String(user.role||'staff')+'\','+(user.active?'true':'false')+','+(user.email?'true':'false')+','+(user.isCurrentUser?'true':'false')+')">Edit</button></td></tr>';
   }).join('')+'</tbody></table>';
-  msgEl.textContent='Jumlah akun: '+users.length+'. Gunakan Edit untuk mengubah peran dan status akun. Pergantian admin utama tetap memerlukan verifikasi email admin lama dan penerima.';
+  msgEl.textContent='Jumlah akun: '+users.length+'. Edit di tabel ini berisi tindakan akun dan pengajuan admin.';
  }catch(error){msgEl.textContent=error.message||'Gagal memuat akun cloud.'}
+}
+async function editCloudAccountActions(id,role,isActive,hasEmail,isCurrentUser){
+ const old=document.getElementById('editCloudAccountActionsDialog');if(old)old.remove();
+ const dialog=document.createElement('dialog');dialog.id='editCloudAccountActionsDialog';
+ dialog.style.cssText='border:1px solid #dbe5dd;border-radius:14px;padding:22px;max-width:390px;width:calc(100% - 36px);box-shadow:0 20px 70px #0003;color:var(--ink,#1e2a24)';
+ const canDelete=role!=='admin'&&!isCurrentUser;
+ const canRequestAdmin=role!=='admin'&&!isCurrentUser&&isActive&&hasEmail;
+ dialog.innerHTML='<h3 style="margin:0 0 8px">Edit Tindakan Akun</h3><p class="muted" style="font-size:13px;margin:0 0 16px">Pilih tindakan yang ingin dilakukan pada akun cloud ini.</p><div id="cloudAccountActionButtons" style="display:flex;flex-direction:column;gap:9px"></div><div style="display:flex;justify-content:flex-end;margin-top:16px"><button type="button" class="secondary" id="closeCloudAccountActions">Tutup</button></div>';
+ document.body.appendChild(dialog);
+ const actions=dialog.querySelector('#cloudAccountActionButtons');
+ if(canDelete){const b=document.createElement('button');b.type='button';b.className='danger';b.textContent='Hapus Akun';b.addEventListener('click',async()=>{dialog.close();await deleteCloudUser(id)});actions.appendChild(b)}
+ if(canRequestAdmin){const b=document.createElement('button');b.type='button';b.className='secondary';b.textContent='Pengajuan Admin';b.addEventListener('click',async()=>{dialog.close();await requestPrimaryAdminTransfer(id)});actions.appendChild(b)}
+ if(!canDelete&&!canRequestAdmin){const p=document.createElement('p');p.className='muted';p.textContent=isCurrentUser?'Akun yang sedang digunakan tidak dapat dihapus atau diajukan sebagai penerima admin.':role==='admin'?'Akun berperan Admin tidak dapat dihapus atau diajukan sebagai penerima admin.':'Pengajuan Admin memerlukan akun aktif dengan email. Akun ini tidak dapat dihapus.';actions.appendChild(p)}
+ dialog.querySelector('#closeCloudAccountActions').addEventListener('click',()=>dialog.close());
+ dialog.addEventListener('close',()=>dialog.remove(),{once:true});
+ dialog.showModal();
 }
 function renderCloudIdentity(username,role){
  const el=document.getElementById('cloudIdentity');if(!el)return;
