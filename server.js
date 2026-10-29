@@ -393,7 +393,27 @@ app.post('/api/sheets/sync',auth,admin,async(req,res)=>{
 });
 app.get('/api/users',auth,admin,async(req,res)=>{const q=await pool.query('SELECT id,username,email,role,active,created_at FROM app_users ORDER BY id');res.json(q.rows)});
 app.post('/api/users',auth,admin,async(req,res)=>{try{const {username,password,role='staff'}=req.body||{};if(!/^[a-zA-Z0-9_.-]{3,32}$/.test(username||'')||typeof password!=='string'||password.length<12||!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Username/role tidak valid; password minimal 12 karakter.'});const hash=await bcrypt.hash(password,12);await pool.query('INSERT INTO app_users(username,password_hash,role) VALUES($1,$2,$3)',[username,hash,role]);res.status(201).json({ok:true})}catch(e){res.status(e.code==='23505'?409:500).json({error:e.code==='23505'?'Username sudah dipakai.':'Gagal menambah pengguna.'})}});
-app.patch('/api/users/:id',auth,admin,async(req,res)=>{try{const {active,role,password}=req.body||{};if(role&&!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Role tidak valid.'});if(Number(req.params.id)===Number(req.session.user.id)&&active===false)return res.status(400).json({error:'Admin aktif tidak dapat menonaktifkan akunnya sendiri.'});if(password){if(password.length<12)return res.status(400).json({error:'Password minimal 12 karakter.'});await pool.query('UPDATE app_users SET password_hash=$1 WHERE id=$2',[await bcrypt.hash(password,12),req.params.id])}if(role||active!==undefined)await pool.query('UPDATE app_users SET role=COALESCE($1,role),active=COALESCE($2,active) WHERE id=$3',[role||null,active===undefined?null:!!active,req.params.id]);res.json({ok:true})}catch(e){res.status(500).json({error:'Gagal memperbarui pengguna.'})}});
+app.patch('/api/users/:id',auth,admin,async(req,res)=>{
+  try{
+    const {active,role,password,email}=req.body||{};
+    if(role&&!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Role tidak valid.'});
+    if(Number(req.params.id)===Number(req.session.user.id)&&active===false)return res.status(400).json({error:'Admin aktif tidak dapat menonaktifkan akunnya sendiri.'});
+    if(email!==undefined){
+      const cleanEmail=String(email||'').trim().toLowerCase();
+      if(cleanEmail.length>254||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleanEmail))return res.status(400).json({error:'Format email tidak valid.'});
+      await pool.query('UPDATE app_users SET email=$1 WHERE id=$2',[cleanEmail,req.params.id]);
+    }
+    if(password!==undefined){
+      if(typeof password!=='string'||password.length<12)return res.status(400).json({error:'Password minimal 12 karakter.'});
+      await pool.query('UPDATE app_users SET password_hash=$1 WHERE id=$2',[await bcrypt.hash(password,12),req.params.id]);
+    }
+    if(role||active!==undefined)await pool.query('UPDATE app_users SET role=COALESCE($1,role),active=COALESCE($2,active) WHERE id=$3',[role||null,active===undefined?null:!!active,req.params.id]);
+    res.json({ok:true});
+  }catch(e){
+    if(e.code==='23505')return res.status(409).json({error:'Email tersebut sudah digunakan akun lain.'});
+    res.status(500).json({error:'Gagal memperbarui pengguna.'});
+  }
+});
 app.use(express.static(__dirname));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 init().catch(e => console.error('Database initialization failed', e));
