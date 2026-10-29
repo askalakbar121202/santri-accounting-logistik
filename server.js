@@ -471,7 +471,7 @@ app.post('/api/sheets/sync',auth,admin,async(req,res)=>{
     return res.status(502).json({error:'Sinkronisasi gagal. Data aplikasi tetap tersimpan; silakan periksa konfigurasi dan coba lagi.'});
   }
 });
-app.get('/api/users',auth,admin,async(req,res)=>{const q=await pool.query('SELECT id,username,email,role,active,created_at FROM app_users ORDER BY id');res.json(q.rows.map(u=>({...u,isCurrentUser:Number(u.id)===Number(req.session.user.id)})))});
+app.get('/api/users',auth,async(req,res)=>{const isAdmin=req.session.user.role==='admin';const q=await pool.query(isAdmin?'SELECT id,username,email,role,active,created_at FROM app_users ORDER BY id':'SELECT id,username,role,active,created_at FROM app_users ORDER BY id');res.json(q.rows.map(u=>({...u,isCurrentUser:Number(u.id)===Number(req.session.user.id)})))});
 app.post('/api/users',auth,admin,async(req,res)=>{try{const {username,password,role='staff'}=req.body||{};if(!/^[a-zA-Z0-9_.-]{3,32}$/.test(username||'')||typeof password!=='string'||password.length<12||!['admin','accounting','staff'].includes(role))return res.status(400).json({error:'Username/role tidak valid; password minimal 12 karakter.'});const hash=await bcrypt.hash(password,12);await pool.query('INSERT INTO app_users(username,password_hash,role) VALUES($1,$2,$3)',[username,hash,role]);res.status(201).json({ok:true})}catch(e){res.status(e.code==='23505'?409:500).json({error:e.code==='23505'?'Username sudah dipakai.':'Gagal menambah pengguna.'})}});
 app.patch('/api/users/:id',auth,admin,async(req,res)=>{
   try{
