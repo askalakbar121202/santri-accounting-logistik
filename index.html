@@ -333,9 +333,9 @@ function exportAutoReportCSV(){let rows=autoRows();downloadCSV('laporan_otomatis
 function printAutoReport(){renderAutoReport();window.print()}
 function addLocalUser(e){e.preventDefault();let name=document.getElementById('luName').value.trim(),role=document.getElementById('luRole').value;if((state.localUsers||[]).some(x=>x.name.toLowerCase()===name.toLowerCase()))return alert('Nama operator sudah ada.');state.localUsers.push({name,role});persist();e.target.reset();renderLocalUsers()}
 function switchLocalUser(){let names=(state.localUsers||[]).map(x=>x.name);if(!names.length)return;let choice=prompt('Pilih operator aktif dengan mengetik nama:\n'+names.join('\n'),state.activeLocalUser||names[0]);if(choice&&names.includes(choice)){state.activeLocalUser=choice;state.admin=choice;persist();alert('Label operator aktif: '+choice);renderLocalUsers()}}
-function renderLocalUsers(){document.getElementById('luTable').innerHTML=table(['Nama','Peran','Status','Aksi'],(state.localUsers||[]).map((x,i)=>[esc(x.name),esc(x.role),x.name===state.activeLocalUser?'Aktif':'- ',x.name===state.activeLocalUser?'<span class="pill">Operator aktif</span>':`<button class="secondary" onclick="activateLocalUser('${esc(x.name)}')">Aktifkan</button> ${i>0?`<button class="danger" onclick="removeLocalUser('${esc(x.name)}')">Hapus</button>`:''}`]));}
+function renderLocalUsers(){document.getElementById('luTable').innerHTML=table(['Nama','Peran','Status','Aksi'],(state.localUsers||[]).map(x=>[esc(x.name),esc(x.role),x.name===state.activeLocalUser?'Aktif':'-',x.name===state.activeLocalUser?'<span class="pill">Operator aktif</span>':`<button class="secondary" onclick="activateLocalUser('${esc(x.name)}')">Aktifkan</button> <button class="danger" onclick="removeLocalUser('${esc(x.name)}')">Hapus profil</button>`]));}
 function activateLocalUser(n){state.activeLocalUser=n;state.admin=n;persist();renderLocalUsers()}
-function removeLocalUser(n){if(n===state.activeLocalUser)return alert('Ganti operator aktif terlebih dahulu.');if(confirm('Hapus profil lokal '+n+'?')){state.localUsers=state.localUsers.filter(x=>x.name!==n);persist();renderLocalUsers()}}
+function removeLocalUser(n){if(n===state.activeLocalUser)return alert('Profil yang sedang aktif tidak dapat dihapus. Aktifkan operator lain terlebih dahulu.');if(!state.localUsers.some(x=>x.name===n))return;if(confirm('Hapus profil operator lokal '+n+'? Data transaksi, laporan, dan akun cloud tidak akan terhapus.')){state.localUsers=state.localUsers.filter(x=>x.name!==n);persist();renderLocalUsers()}}
 function exportAllReportCSV(){exportAutoReportCSV()}
 // CSV compatible with spreadsheet apps; true .xlsx generation requires a spreadsheet library.
 
@@ -421,6 +421,16 @@ const registerAccountLink=document.getElementById('registerAccountLink');
 if(registerAccountLink)registerAccountLink.addEventListener('click',e=>{e.preventDefault();showAuthDialog('register')});
 const resetUrl=new URL(window.location.href),resetTokenFromUrl=resetUrl.searchParams.get('resetToken');
 if(resetTokenFromUrl){resetUrl.searchParams.delete('resetToken');window.history.replaceState({},document.title,resetUrl.pathname+resetUrl.search+resetUrl.hash);showAuthDialog('reset',resetTokenFromUrl)}
+const transferUrl=new URL(window.location.href),transferToken=transferUrl.searchParams.get('adminTransferToken'),transferStep=transferUrl.searchParams.get('verify');
+if(transferToken){
+ transferUrl.searchParams.delete('adminTransferToken');transferUrl.searchParams.delete('verify');window.history.replaceState({},document.title,transferUrl.pathname+transferUrl.search+transferUrl.hash);
+ const loginMsg=document.getElementById('cloudLoginMsg');if(loginMsg)loginMsg.textContent='Memverifikasi tautan pergantian admin…';
+ fetch('/api/admin-transfer/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:transferToken,step:transferStep})})
+  .then(async response=>{const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Verifikasi gagal.');return result})
+  .then(result=>{if(loginMsg)loginMsg.textContent=result.message||'Email terverifikasi.';if(result.completed&&loginMsg)loginMsg.textContent+=' Silakan login kembali untuk memperbarui hak akses.';})
+  .catch(error=>{if(loginMsg)loginMsg.textContent=error.message||'Verifikasi gagal.';});
+}
+
 async function renderCloudUsers(){
  const tableEl=document.getElementById('cloudUsersTable'),msgEl=document.getElementById('cloudUsersMsg');if(!tableEl||!msgEl)return;
  msgEl.textContent='Memuat daftar akun cloud…';tableEl.textContent='';
@@ -431,11 +441,13 @@ async function renderCloudUsers(){
   tableEl.innerHTML='<table><thead><tr><th>Nama Pengguna</th><th>Email</th><th>Peran</th><th>Status</th><th>Tanggal Dibuat</th><th>Aksi</th></tr></thead><tbody>'+users.map(user=>{
    const id=Number(user.id),username=esc(user.username||''),email=esc(user.email||'—'),role=esc(user.role||'staff');
    const status=user.active?'<span class="pill">Aktif</span>':'<span class="pill" style="background:#fff0d8;color:#8a4b08">Menunggu persetujuan</span>';
-   const action=user.active?'<button type="button" class="danger" onclick="setCloudUserActive('+id+',false)">Nonaktifkan</button>':'<button type="button" onclick="setCloudUserActive('+id+',true)">Setujui</button>';
+   let action=user.active?'<button type="button" class="danger" onclick="setCloudUserActive('+id+',false)">Nonaktifkan</button>':'<button type="button" onclick="setCloudUserActive('+id+',true)">Setujui</button>';
+   if(user.active&&!user.isCurrentUser&&user.email)action+=' <button type="button" class="secondary" onclick="requestPrimaryAdminTransfer('+id+')">Ajukan jadi admin utama</button>';
+   if(!user.isCurrentUser&&user.role!=='admin')action+=' <button type="button" class="danger" onclick="deleteCloudUser('+id+')">Hapus akun</button>';
    const created=user.created_at?new Date(user.created_at).toLocaleDateString('id-ID'):'—';
-   return '<tr><td>'+username+'</td><td>'+email+'<div><button type="button" class="secondary" onclick="editCloudUserEmail('+id+')">'+(user.email?'Ubah email':'Atur email')+'</button></div></td><td>'+role+'</td><td>'+status+'</td><td>'+created+'</td><td>'+action+'</td></tr>';
+   return '<tr><td>'+username+(user.isCurrentUser?'<div class="muted">Akun Anda</div>':'')+'</td><td>'+email+'<div><button type="button" class="secondary" onclick="editCloudUserEmail('+id+')">'+(user.email?'Ubah email':'Atur email')+'</button></div></td><td>'+role+'</td><td>'+status+'</td><td>'+created+'</td><td>'+action+'</td></tr>';
   }).join('')+'</tbody></table>';
-  msgEl.textContent='Jumlah akun: '+users.length+'. Periksa alamat email dan nama pengguna sebelum menyetujui.';
+  msgEl.textContent='Jumlah akun: '+users.length+'. Pergantian admin utama memerlukan verifikasi email admin lama dan penerima. Akun admin tidak dapat langsung dihapus.';
  }catch(error){msgEl.textContent=error.message||'Gagal memuat akun cloud.'}
 }
 async function setCloudUserActive(id,active){
@@ -444,6 +456,32 @@ async function setCloudUserActive(id,active){
  catch(error){alert(error.message||'Tidak dapat mengubah status akun.')}
 }
 
+
+async function requestPrimaryAdminTransfer(id){
+ try{
+  const response=await fetch('/api/users'),users=await response.json().catch(()=>[]);
+  if(!response.ok||!Array.isArray(users))throw new Error('Daftar akun tidak dapat dibaca.');
+  const user=users.find(item=>Number(item.id)===Number(id));if(!user)throw new Error('Akun penerima tidak ditemukan.');
+  if(!user.active||!user.email)throw new Error('Akun penerima harus aktif dan memiliki email.');
+  if(!confirm('Ajukan pemindahan hak admin utama ke '+user.username+' ('+user.email+')? Tautan verifikasi akan dikirim ke email admin lama dan email penerima. Kedua tautan berlaku 30 menit.'))return;
+  const msg=document.getElementById('cloudUsersMsg');msg.textContent='Mengirim dua email verifikasi…';
+  const sent=await fetch('/api/admin-transfer',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({newUserId:id})});
+  const result=await sent.json().catch(()=>({}));if(!sent.ok)throw new Error(result.error||'Tidak dapat mengirim verifikasi.');
+  msg.textContent=result.message||'Email verifikasi dikirim.';
+ }catch(error){alert(error.message||'Permintaan pergantian admin gagal.');}
+}
+async function deleteCloudUser(id){
+ try{
+  const response=await fetch('/api/users'),users=await response.json().catch(()=>[]);
+  if(!response.ok||!Array.isArray(users))throw new Error('Daftar akun tidak dapat dibaca.');
+  const user=users.find(item=>Number(item.id)===Number(id));if(!user)throw new Error('Akun tidak ditemukan.');
+  if(user.role==='admin'||user.isCurrentUser)throw new Error('Akun admin atau akun yang sedang digunakan tidak dapat dihapus.');
+  if(!confirm('HAPUS akun cloud '+user.username+'? Akun tidak dapat login lagi. Data transaksi dan laporan akuntansi TIDAK dihapus. Tindakan ini tidak dapat dibatalkan.'))return;
+  const responseDelete=await fetch('/api/users/'+encodeURIComponent(id),{method:'DELETE'});
+  const result=await responseDelete.json().catch(()=>({}));if(!responseDelete.ok)throw new Error(result.error||'Hapus akun gagal.');
+  alert(result.message||'Akun cloud berhasil dihapus.');await renderCloudUsers();
+ }catch(error){alert(error.message||'Tidak dapat menghapus akun cloud.');}
+}
 
 async function editCloudUserEmail(id){
  try{
