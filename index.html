@@ -169,6 +169,8 @@ function renderDepoWarnings(){
  const now=new Date();now.setHours(0,0,0,0);
  const rows=state.transactions.filter(t=>{
   if(t.type!=='ongkir'||!t.date)return false;
+  // Sembunyikan peringatan jika status BBM sudah Terbeli.
+  if(bbmStatus(t)==='Terbeli')return false;
   const route=String(t.route||t.shipment||'').toLowerCase().replace(/\s+/g,' ').trim();
   if(!/^depo pasuruan\s+[123]\s*rit\b/.test(route))return false;
   const d=new Date(String(t.date).slice(0,10)+'T00:00:00');if(Number.isNaN(d.getTime()))return false;
