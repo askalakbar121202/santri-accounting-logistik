@@ -400,7 +400,7 @@ app.patch('/api/users/:id',auth,admin,async(req,res)=>{
     if(Number(req.params.id)===Number(req.session.user.id)&&active===false)return res.status(400).json({error:'Admin aktif tidak dapat menonaktifkan akunnya sendiri.'});
     if(email!==undefined){
       const cleanEmail=String(email||'').trim().toLowerCase();
-      if(cleanEmail.length>254||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleanEmail))return res.status(400).json({error:'Format email tidak valid.'});
+      if(cleanEmail.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail))return res.status(400).json({error:'Format email tidak valid.'});
       await pool.query('UPDATE app_users SET email=$1 WHERE id=$2',[cleanEmail,req.params.id]);
     }
     if(password!==undefined){
