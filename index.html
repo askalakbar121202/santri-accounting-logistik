@@ -433,7 +433,7 @@ async function renderCloudUsers(){
    const status=user.active?'<span class="pill">Aktif</span>':'<span class="pill" style="background:#fff0d8;color:#8a4b08">Menunggu persetujuan</span>';
    const action=user.active?'<button type="button" class="danger" onclick="setCloudUserActive('+id+',false)">Nonaktifkan</button>':'<button type="button" onclick="setCloudUserActive('+id+',true)">Setujui</button>';
    const created=user.created_at?new Date(user.created_at).toLocaleDateString('id-ID'):'—';
-   return '<tr><td>'+username+'</td><td>'+email+'</td><td>'+role+'</td><td>'+status+'</td><td>'+created+'</td><td>'+action+'</td></tr>';
+   return '<tr><td>'+username+'</td><td>'+email+'<div><button type="button" class="secondary" onclick="editCloudUserEmail('+id+')">'+(user.email?'Ubah email':'Atur email')+'</button></div></td><td>'+role+'</td><td>'+status+'</td><td>'+created+'</td><td>'+action+'</td></tr>';
   }).join('')+'</tbody></table>';
   msgEl.textContent='Jumlah akun: '+users.length+'. Periksa alamat email dan nama pengguna sebelum menyetujui.';
  }catch(error){msgEl.textContent=error.message||'Gagal memuat akun cloud.'}
@@ -442,6 +442,21 @@ async function setCloudUserActive(id,active){
  if(!confirm('Yakin '+(active?'menyetujui':'menonaktifkan')+' akun ini?'))return;
  try{const response=await fetch('/api/users/'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({active})}),result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Perubahan status akun gagal.');await renderCloudUsers()}
  catch(error){alert(error.message||'Tidak dapat mengubah status akun.')}
+}
+
+
+async function editCloudUserEmail(id){
+ try{
+  const response=await fetch('/api/users'),users=await response.json().catch(()=>[]);
+  if(!response.ok||!Array.isArray(users))throw new Error('Daftar akun tidak dapat dibaca. Pastikan Anda login sebagai admin cloud.');
+  const user=users.find(item=>Number(item.id)===Number(id));if(!user)throw new Error('Akun tidak ditemukan.');
+  const email=prompt('Masukkan email aktif untuk akun '+user.username+':',user.email||'');if(email===null)return;
+  const cleanEmail=email.trim().toLowerCase();
+  if(!cleanEmail||cleanEmail.length>254||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(cleanEmail)){alert('Format email tidak valid.');return}
+  const saved=await fetch('/api/users/'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:cleanEmail})});
+  const result=await saved.json().catch(()=>({}));if(!saved.ok)throw new Error(result.error||'Email gagal disimpan.');
+  await renderCloudUsers();alert('Email akun berhasil diperbarui. Fitur Lupa Password dapat menggunakan email ini.');
+ }catch(error){alert(error.message||'Tidak dapat memperbarui email akun.')}
 }
 
 </script></body></html>
