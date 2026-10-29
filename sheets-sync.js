@@ -1,7 +1,7 @@
 'use strict';
 
 const SHEET_HEADERS = Object.freeze({
-  Ongkir: ['ID Transaksi','Tanggal Input','Tanggal Transaksi','Driver','Helper','Plat Nomor','No. Kiriman','Tujuan','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
+  Ongkir: ['ID Transaksi','Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status'],
   'E-Toll': ['ID Transaksi','Tanggal Input','Tanggal Tol','Driver','Helper','Plat Nomor','No. Kiriman','Rute/Tujuan Tol','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   'BBM Solar': ['ID Transaksi','Tanggal Input','Tanggal Nota','Driver','Helper','Plat Nomor','Nama SPBU/Vendor','Liter','Nominal Nota','Realisasi','Selisih','No. Solar','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
   Nota: ['ID Transaksi','Tanggal Input','Tanggal Nota','Jenis Nota','Driver','Helper','Plat Nomor','Vendor/Toko','Nomor Nota','Nominal Nota','Realisasi','Selisih','Status Pembayaran','Keterangan','Tanggal Sinkronisasi'],
@@ -69,24 +69,42 @@ function mapTransaction(tx, syncedAt = new Date().toISOString()) {
   }
 
   if (tx.type === 'ongkir') {
+    const bbmKeys = ['fuel', 'nota1', 'nota2', 'nota3', 'noSol', 'gabung'];
+    const hasBbmData = bbmKeys.some(key => tx[key] !== null && tx[key] !== undefined && tx[key] !== '');
+    const fuel = tx.fuel ?? tx.amount ?? '';
+    const nota1 = tx.nota1 ?? '';
+    const nota2 = tx.nota2 ?? '';
+    const nota3 = tx.nota3 ?? '';
+    const noSol = tx.noSol ?? '';
+    const gabung = tx.gabung ?? '';
+    const spent = ['nota1', 'nota2', 'nota3', 'noSol']
+      .reduce((sum, key) => sum + Number(tx[key] || 0), 0) - Number(tx.gabung || 0);
+    const remaining = hasBbmData && fuel !== '' ? Number(fuel) - spent : '';
+    const bbmStatus = !hasBbmData
+      ? common.status
+      : spent === 0 ? 'Belum Terbeli'
+      : spent < Number(fuel || 0) ? 'Sebagian'
+      : spent === Number(fuel || 0) ? 'Terbeli'
+      : 'Lebih';
+
     return {
       sheet: 'Ongkir',
       row: {
-        // Pertahankan header laporan Ongkir yang sudah dipakai; ID Transaksi tetap kolom pertama untuk upsert.
+        // Header mengikuti tab Ongkir yang sudah ada; ID Transaksi tetap kolom pertama untuk upsert.
         'ID Transaksi': common.id,
-        'Tanggal Input': common.created,
-        'Tanggal Transaksi': common.date,
+        'Tanggal': common.date,
         'Driver': common.driver,
         'Helper': common.helper,
-        'Plat Nomor': common.plate,
-        'No. Kiriman': asText(tx.shipment),
-        'Tujuan': asText(tx.route || tx.city),
-        'Nominal Nota': '',
-        'Realisasi': tx.fuel ?? tx.amount ?? '',
-        'Selisih': '',
-        'Status Pembayaran': common.status,
-        'Keterangan': common.note,
-        'Tanggal Sinkronisasi': common.syncedAt
+        'Plat': common.plate,
+        'Kiriman': asText(tx.shipment),
+        'Nominal BBM': fuel,
+        'Nota 1': nota1,
+        'Nota 2': nota2,
+        'Nota 3': nota3,
+        'No Sol': noSol,
+        'Nominal Gabung': gabung,
+        'Sisa BBM': remaining,
+        'Status': bbmStatus
       }
     };
   }

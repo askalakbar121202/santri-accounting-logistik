@@ -23,7 +23,7 @@ test('maps E-Toll with tariff and realization, without calculating difference', 
   assert.equal(mapped.row['Selisih'], '');
 });
 
-test('maps Ready Ongkir to one row using the existing report headers; no extra BBM Solar row', () => {
+test('maps Ready Ongkir to the actual 14-column sheet headers and preserves BBM allocation fields', () => {
   const paidBatches = buildBatches([{
     id: 'TRX-PAID', type: 'ongkir', date: '2026-10-24', created: 1792828800000,
     fuel: 150000, amount: 150000, status: 'paid', paidAt: '2026-10-24',
@@ -36,18 +36,25 @@ test('maps Ready Ongkir to one row using the existing report headers; no extra B
     id: 'TRX-1', type: 'ongkir', date: '2026-10-24', created: 1792828800000,
     fuel: 150000, amount: 150000, status: 'ready',
     shipment: 'SJ-1', driver: 'Driver A', helper: 'Helper A', plate: 'L 1234 XX',
-    route: 'Pasuruan'
+    route: 'Pasuruan', nota1: 50000, nota2: 30000, nota3: 10000, noSol: 20000, gabung: 5000
   }], '2026-10-24T00:00:00.000Z');
   assert.deepEqual(batches.map(b => b.sheet), ['Ongkir']);
-  const ongkir = batches[0];
-  assert.deepEqual(Object.keys(ongkir.rows[0]), SHEET_HEADERS.Ongkir);
-  assert.equal(ongkir.rows[0]['ID Transaksi'], 'TRX-1');
-  assert.equal(ongkir.rows[0]['Tanggal Transaksi'], '2026-10-24');
-  assert.equal(ongkir.rows[0]['Realisasi'], 150000);
-  assert.equal(ongkir.rows[0]['No. Kiriman'], 'SJ-1');
-  assert.equal(ongkir.rows[0]['Tujuan'], 'Pasuruan');
-  assert.equal(ongkir.rows[0]['Status Pembayaran'], 'ready');
-  assert.equal(ongkir.rows[0]['Keterangan'], '');
+  const ongkir = batches[0].rows[0];
+  assert.deepEqual(Object.keys(ongkir), SHEET_HEADERS.Ongkir);
+  assert.equal(ongkir['ID Transaksi'], 'TRX-1');
+  assert.equal(ongkir['Tanggal'], '2026-10-24');
+  assert.equal(ongkir['Driver'], 'Driver A');
+  assert.equal(ongkir['Helper'], 'Helper A');
+  assert.equal(ongkir['Plat'], 'L 1234 XX');
+  assert.equal(ongkir['Kiriman'], 'SJ-1');
+  assert.equal(ongkir['Nominal BBM'], 150000);
+  assert.equal(ongkir['Nota 1'], 50000);
+  assert.equal(ongkir['Nota 2'], 30000);
+  assert.equal(ongkir['Nota 3'], 10000);
+  assert.equal(ongkir['No Sol'], 20000);
+  assert.equal(ongkir['Nominal Gabung'], 5000);
+  assert.equal(ongkir['Sisa BBM'], 45000);
+  assert.equal(ongkir['Status'], 'Sebagian');
 });
 test('requires exact Ready status for Ongkir rows but includes saved E-Toll and Nota rows regardless of Pending/Draft labels', () => {
   const batches = buildBatches([
@@ -134,8 +141,11 @@ test('does not call Google Sheets when configuration is missing', async () => {
 });
 
 
-test('keeps the existing 14 Ongkir report headers and stable transaction ID first', () => {
-  assert.equal(SHEET_HEADERS.Ongkir[0], 'ID Transaksi');
+test('keeps the exact existing Ongkir headers and stable transaction ID first', () => {
+  assert.deepEqual(SHEET_HEADERS.Ongkir, [
+    'ID Transaksi','Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM',
+    'Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status'
+  ]);
   const mapped = mapTransaction({ id: 'ONG-KEY-1', type: 'ongkir', date: '2026-10-27', fuel: 100000 });
   assert.equal(mapped.row['ID Transaksi'], 'ONG-KEY-1');
   assert.equal(Object.keys(mapped.row)[0], 'ID Transaksi');
