@@ -96,7 +96,7 @@ function mapTransaction(tx, syncedAt = new Date().toISOString()) {
         'Driver': common.driver,
         'Helper': common.helper,
         'Plat': common.plate,
-        'Kiriman': asText(tx.shipment),
+        'Kiriman': asText(tx.route || tx.shipment),
         'Nominal BBM': fuel,
         'Nota 1': nota1,
         'Nota 2': nota2,
