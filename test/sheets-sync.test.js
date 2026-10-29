@@ -46,7 +46,9 @@ test('maps Ready Ongkir to the actual 14-column sheet headers and preserves BBM 
   assert.equal(ongkir['Driver'], 'Driver A');
   assert.equal(ongkir['Helper'], 'Helper A');
   assert.equal(ongkir['Plat'], 'L 1234 XX');
-  assert.equal(ongkir['Kiriman'], 'SJ-1');
+  assert.equal(ongkir['Kiriman'], 'Pasuruan'); // tujuan dari master rute diprioritaskan
+  const legacyShipment = mapTransaction({ id: 'TRX-LEGACY', type: 'ongkir', status: 'ready', shipment: 'SJ-LAMA' });
+  assert.equal(legacyShipment.row['Kiriman'], 'SJ-LAMA'); // fallback untuk data lama tanpa rute
   assert.equal(ongkir['Nominal BBM'], 150000);
   assert.equal(ongkir['Nota 1'], 50000);
   assert.equal(ongkir['Nota 2'], 30000);
