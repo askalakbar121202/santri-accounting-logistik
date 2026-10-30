@@ -123,6 +123,65 @@ body.theme-dark .action-dialog{background:var(--card);color:var(--ink);border-co
 
 /* Notifikasi aktivitas pojok kanan atas */
 #appToastRegion{position:fixed;top:18px;right:18px;z-index:100500;display:flex;flex-direction:column;gap:10px;width:min(360px,calc(100vw - 36px));pointer-events:none}.app-toast{display:flex;align-items:flex-start;gap:11px;padding:13px 15px;border-radius:12px;background:#fff;border:1px solid #dce6ed;box-shadow:0 12px 34px #102b3f24;color:#183447;font-size:13px;line-height:1.45;animation:appToastIn .22s ease-out}.app-toast::before{content:"";width:9px;height:9px;flex:0 0 9px;margin-top:4px;border-radius:50%;background:#15945f}.app-toast.warning::before{background:#d49a18}.app-toast.error::before{background:#c43d45}.app-toast strong{display:block;font-size:13px;margin-bottom:2px}@keyframes appToastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}@media(max-width:700px){#appToastRegion{top:10px;right:10px;width:calc(100vw - 20px)}}
+
+
+/* PREMIUM ACCOUNTING READABILITY REFRESH — visual-only, preserves existing controls */
+:root{--green:#087f8c;--green2:#0b9aa2;--yellow:#d6ad55;--bg:#f3f6fa;--ink:#172536;--muted:#536579;--card:#fff;--line:#d8e1eb;--font:15px}
+body{font-size:15px;color:#172536;background:#f3f6fa;line-height:1.5}
+.sidebar{background:linear-gradient(180deg,var(--sidebar-bg,#10243a) 0%,var(--sidebar-bg,#142d45) 100%);color:#f7f9fc}
+.nav .section{color:#c2d1df}.nav button{color:#e4edf5;font-size:14px;font-weight:550}
+.nav button:hover{background:#ffffff18;color:#fff}
+.nav button.active{background:linear-gradient(100deg,#087f8c,#0b9aa2);color:#fff;box-shadow:inset 3px 0 0 #d6ad55,0 5px 14px #06182740}
+.brand small{color:#e1c783}.topbar{color:#172536}.topbar strong{color:#142b40;font-size:15px}.topbar small{color:#536579;font-size:12px}
+.content{color:#172536}.pagehead h1{font-size:26px;color:#142b40;font-weight:800}.pagehead p{font-size:14px;color:#536579;line-height:1.55}
+.card{background:#fff;border-color:#d8e1eb}.panel-title{font-size:15px;color:#18334a}
+.metric-label{font-size:13px;color:#536579;font-weight:700}.metric{font-size:28px;color:#142b40}.metric-icon{background:#e5f4f4;color:#087f8c}
+.field label,.action-field{font-size:13px;color:#344b60;font-weight:700}
+.field input,.field select,.field textarea,.toolbar input,.toolbar select,.action-field input,.action-field textarea{font-size:14px;line-height:1.45;color:#172536}
+.field input::placeholder,.field textarea::placeholder,.toolbar input::placeholder{color:#718096;opacity:1}
+.toolbar{align-items:center}.toolbar input,.toolbar select{min-height:42px}
+button{font-size:14px;font-weight:700}button.secondary{background:#eaf0f5;color:#25445d;border-color:#d2dde7}button.yellow{background:#d6ad55;color:#1d2d3d}
+.tablewrap{border-color:#d4dee8}table{color:#172536}
+th,td{font-size:14px;padding:13px 14px;line-height:1.5}
+th{background:#eaf0f5;color:#263f55;font-size:12px;font-weight:800;letter-spacing:.45px}
+td{color:#26384a;font-weight:500}
+tbody tr:nth-child(even) td{background:#f8fafc}tbody tr:hover td{background:#edf6f7}
+.status{font-size:12px;font-weight:750;padding:5px 10px}
+.status.paid,.status.terbeli{background:#d9f2e7;color:#075d3a}
+.status.pending,.status.sebagian{background:#fff0c2;color:#704b00}
+.status.rejected,.status.lebih{background:#ffe1e2;color:#92252d}
+.muted,.footnote,.empty{color:#536579}.footnote{font-size:12px;line-height:1.55}.notice{font-size:13px;line-height:1.55}
+.pill{font-size:12px}.audit-item{font-size:13px;line-height:1.55}.barcol{font-size:12px}
+.tx-detail-item small{font-size:12px;color:#536579}.tx-detail-item strong{font-size:14px;color:#172f43}
+.action-dialog h2{font-size:21px;color:#172f43}.action-dialog .action-dialog-desc{font-size:13px}
+.action-dialog .action-summary small{font-size:12px;color:#536579}.action-dialog .action-summary strong{font-size:14px;color:#172f43}
+.action-dialog .action-hint,.action-dialog .action-error{font-size:13px;line-height:1.5}
+.app-toast{font-size:14px;line-height:1.5;color:#172f43}.app-toast strong{font-size:14px}
+.auth-modal h2{font-size:23px}.auth-modal p,.auth-modal label,.auth-modal .auth-message{font-size:14px;line-height:1.55}
+.auth-modal input{font-size:15px}.settings-color-label{font-size:13px}
+::selection{background:#c5e9e8;color:#102b3f}
+
+/* Preserve legibility when the optional dark theme is selected */
+body.theme-dark{--bg:#111c28;--ink:#edf3f8;--muted:#c0ccd8;--card:#1b2a39;--line:#3b4d5e;background:var(--bg);color:var(--ink)}
+body.theme-dark .topbar{background:#172635;color:#edf3f8;border-color:#3b4d5e}
+body.theme-dark .topbar strong,body.theme-dark .pagehead h1,body.theme-dark .panel-title,body.theme-dark .metric,body.theme-dark .tx-detail-item strong{color:#f1f5f9}
+body.theme-dark .topbar small,body.theme-dark .pagehead p,body.theme-dark .metric-label,body.theme-dark .muted,body.theme-dark .footnote,body.theme-dark .empty{color:#c0ccd8}
+body.theme-dark .card{background:#1b2a39;border-color:#3b4d5e}
+body.theme-dark .field label,body.theme-dark .action-field{color:#d9e3ec}
+body.theme-dark .field input,body.theme-dark .field select,body.theme-dark .field textarea,body.theme-dark .toolbar input,body.theme-dark .toolbar select,body.theme-dark .action-field input,body.theme-dark .action-field textarea{background:#101b27;color:#f1f5f9;border-color:#526579}
+body.theme-dark .field input::placeholder,body.theme-dark .field textarea::placeholder,body.theme-dark .toolbar input::placeholder{color:#aebdca}
+body.theme-dark .tablewrap,body.theme-dark table{background:#1b2a39;border-color:#3b4d5e}
+body.theme-dark th{background:#26394b;color:#f0f4f8;border-color:#3b4d5e}
+body.theme-dark td{background:#1b2a39;color:#e5edf4;border-color:#34485a}
+body.theme-dark tbody tr:nth-child(even) td{background:#202f3e}body.theme-dark tbody tr:hover td{background:#2b4352}
+body.theme-dark .tx-detail-item{background:#202f3e;border-color:#3b4d5e}
+body.theme-dark .tx-detail-item small,body.theme-dark .action-dialog .action-dialog-desc,body.theme-dark .action-dialog .action-summary small{color:#c0ccd8}
+body.theme-dark .action-dialog .action-summary strong{color:#edf3f8}
+body.theme-dark button.secondary{background:#2a4052;color:#edf3f8;border-color:#526579}
+body.theme-dark .settings-color-label{color:#edf3f8;border-color:#526579}
+body.theme-dark .notice{background:#40371f;border-color:#806b35;color:#ffe6a3}
+@media(max-width:700px){body{font-size:14px}.pagehead h1{font-size:22px}th,td{font-size:13px;padding:11px 12px}.field label,.action-field{font-size:13px}}
+
 </style><link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2"></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><svg class="splash-logo" viewBox="0 0 64 64" role="img" aria-label="Logo A-L"><path d="M8 49 25 13 43 49" fill="none" stroke="#c6a45c" stroke-width="5.2" stroke-linecap="square" stroke-linejoin="miter"/><path d="M16 34H35" fill="none" stroke="#c6a45c" stroke-width="4.2" stroke-linecap="square"/><path d="M43 13V51H58" fill="none" stroke="#f4ead5" stroke-width="5.2" stroke-linecap="square" stroke-linejoin="miter"/></svg><div class="splash-title">ACCOUNTING - LOGISTIC</div><div class="splash-by">by askalwidadakbar</div></div></div><div id="cloudGate"><div class="gatecard"><div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#087f5b">Santri Accounting</div><h2 style="margin:5px 0">Logistic Management System</h2><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
