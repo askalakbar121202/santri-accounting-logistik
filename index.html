@@ -499,15 +499,7 @@ async function renderCloudUsers(){
 async function approveCloudUser(id){
  openActionDialog('Setujui Akun Pengguna','Akun yang disetujui akan diaktifkan dan dapat login.','<p>Apakah Anda yakin ingin menyetujui pendaftaran akun ini?</p>','Setujui Akun',async()=>{const response=await fetch('/api/users/'+Number(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:true})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'Persetujuan akun gagal.');await renderCloudUsers();});
 }
- if(!confirm('Terima pendaftaran akun ini? Akun akan diaktifkan dan dapat login.'))return;
- try{
-  const response=await fetch('/api/users/'+Number(id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:true})});
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(result.error||'Persetujuan akun gagal.');
-  alert('Akun berhasil diterima dan diaktifkan.');
-  await renderCloudUsers();
- }catch(error){alert(error.message||'Tidak dapat menyetujui akun.')}
-}
+
 async function editCloudAccountActions(id,role,isActive,hasEmail,isCurrentUser){
  const old=document.getElementById('editCloudAccountActionsDialog');if(old)old.remove();
  const dialog=document.createElement('dialog');dialog.id='editCloudAccountActionsDialog';
