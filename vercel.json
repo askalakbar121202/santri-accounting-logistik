@@ -1,4 +1,3 @@
-
 {
   "version": 2,
   "builds": [
@@ -9,12 +8,28 @@
     {
       "src": "favicon.svg",
       "use": "@vercel/static"
+    },
+    {
+      "src": "al-monogram.png",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "accounting-logistic-logo.png",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/favicon.svg",
       "dest": "/favicon.svg"
+    },
+    {
+      "src": "/al-monogram.png",
+      "dest": "/al-monogram.png"
+    },
+    {
+      "src": "/accounting-logistic-logo.png",
+      "dest": "/accounting-logistic-logo.png"
     },
     {
       "src": "/(.*)",
