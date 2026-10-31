@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+<title id="title">Accounting - Logistic</title><desc id="desc">Monogram A-L menyatu, Accounting - Logistic, By askalwddakbr</desc>
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#929497"/><stop offset=".48" stop-color="#55575b"/><stop offset="1" stop-color="#34363a"/></linearGradient>
+</defs>
+<g fill="none" stroke="url(#metal)" stroke-width="76" stroke-linecap="butt" stroke-linejoin="miter">
+ <path d="M165 520 420 92 675 520"/>
+ <path d="M295 338h250"/>
+ <path d="M680 92v428h350"/>
+</g>
+<path d="M270 424C435 300 615 280 850 112" fill="none" stroke="url(#metal)" stroke-width="78" stroke-linecap="butt"/>
+<path d="M165 520 420 92 675 520" fill="none" stroke="#77797c" stroke-width="4"/>
+<g fill="#4b4d51" font-family="Arial,Helvetica,sans-serif" text-anchor="middle">
+ <text x="600" y="650" font-size="76" font-weight="700" letter-spacing="-2">Accounting - Logistic</text>
+ <text x="600" y="720" font-size="42" font-style="italic" letter-spacing="3" fill="#77797c">By askalwddakbr</text>
+</g>
+</svg>
