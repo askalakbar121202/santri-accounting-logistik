@@ -368,6 +368,34 @@ body.theme-dark .topbar strong,body.theme-dark .pagehead h1,body.theme-dark .pan
 #loginSplash .splash-logo{display:block;width:min(260px,72vw)!important;height:auto!important;max-height:none!important;object-fit:contain!important;margin:0!important;filter:none!important;mix-blend-mode:multiply!important;opacity:0;animation:splashLogo .8s .18s ease forwards}
 #loginSplash .splash-title,#loginSplash .splash-by{display:none!important}
 @media(max-width:700px){.brandmark{width:60px!important;flex-basis:60px!important}}
+
+/* Responsive transaction tables: no sideways page scrolling */
+.tablewrap{max-width:100%;overflow-x:hidden;overscroll-behavior-x:contain}
+table.responsive-table{width:100%;min-width:0;max-width:100%;table-layout:fixed;white-space:normal}
+.responsive-table th,.responsive-table td{white-space:normal;overflow-wrap:anywhere;word-break:normal;min-width:0}
+.responsive-table .is-action-col{width:138px;min-width:112px}
+.responsive-table td.is-action-col{position:sticky;right:0;z-index:1;background:#fff;box-shadow:-8px 0 12px #172b3a0b}
+.responsive-table th.is-action-col{position:sticky;right:0;z-index:3;background:#f4f7fa;box-shadow:-8px 0 12px #172b3a0b}
+.responsive-table td button{max-width:100%;white-space:normal;margin:2px}
+@media(max-width:700px){
+ .tablewrap{overflow:visible;border:0;box-shadow:none;background:transparent}
+ table.responsive-table{display:block;width:100%;min-width:0;table-layout:auto;border:0;background:transparent;white-space:normal}
+ .responsive-table thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+ .responsive-table tbody{display:grid;grid-template-columns:minmax(0,1fr);gap:11px;width:100%}
+ .responsive-table tr{display:grid;grid-template-columns:minmax(0,1fr);min-width:0;background:var(--card,#fff);border:1px solid var(--line,#e2e8f0);border-radius:13px;overflow:hidden;box-shadow:0 2px 8px #172b3a0a}
+ .responsive-table td{display:grid;grid-template-columns:minmax(96px,36%) minmax(0,1fr);align-items:start;gap:9px;padding:10px 12px;border-bottom:1px solid var(--line,#e2e8f0);font-size:13px;white-space:normal;overflow-wrap:anywhere;min-width:0;background:transparent}
+ .responsive-table td:before{content:attr(data-label);font-size:11px;line-height:1.4;font-weight:750;color:var(--muted,#718096)}
+ .responsive-table td:last-child{border-bottom:0}
+ .responsive-table .is-action-col{position:static;width:auto;min-width:0;box-shadow:none}
+ .responsive-table td.is-action-col{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+ .responsive-table td.is-action-col:before{flex:0 0 100%;content:attr(data-label)}
+ .responsive-table td button{flex:1 1 auto;min-width:92px;padding:9px 10px;font-size:12px}
+ #cloudUsersTable table{min-width:0}
+}
+body.theme-dark .responsive-table td.is-action-col{background:#1b2a39}
+body.theme-dark .responsive-table th.is-action-col{background:#26394b}
+@media(max-width:700px){body.theme-dark .responsive-table tr{background:#1b2a39;border-color:#3b4d5e}body.theme-dark .responsive-table td{background:transparent}}
+
 </style><link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2"></head><body><div id="cloudGate"><div class="gatecard"><div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#087f5b">Santri Accounting</div><h2 style="margin:5px 0">Logistic Management System</h2><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
@@ -447,6 +475,35 @@ function typeName(t){return ({ongkir:'Ongkir / BBM',etoll:'E-Toll',nota:'Nota Pe
  function txDetail(t){return txKiriman(t)||((t?.from||t?.to)?`${t.from||''} ${t.to||''}`.trim():'-')}
 function statusTag(s){let label=({paid:'Dibayar',pending:'Pending',draft:'Draft',rejected:'Ditolak'})[s]||s||'Pending';return `<span class="status ${s}">${label}</span>`}
 function table(head,rows){if(!rows.length)return '<div class="empty">Belum ada data.</div>';return `<table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c??'-'}</td>`).join('')}</tr>`).join('')}</tbody></table>`}
+/* Label kolom otomatis agar tabel berubah menjadi kartu pada layar HP. */
+function enhanceResponsiveTables(root=document){
+ const tables=[];
+ if(root.matches?.('table'))tables.push(root);
+ root.querySelectorAll?.('table').forEach(t=>tables.push(t));
+ tables.forEach(t=>{
+  if(t.dataset.responsiveReady==='1')return;
+  const headers=Array.from(t.querySelectorAll('thead th')).map(th=>th.textContent.trim());
+  if(!headers.length)return;
+  t.classList.add('responsive-table');
+  t.dataset.responsiveReady='1';
+  const actionIndex=headers.length-1;
+  const hasAction=/^(aksi|tindakan|edit|action)$/i.test(headers[actionIndex]||'');
+  if(hasAction)t.querySelectorAll('tr').forEach(row=>{const cell=row.children[actionIndex];if(cell)cell.classList.add('is-action-col')});
+  t.querySelectorAll('tbody tr').forEach(row=>{
+   Array.from(row.children).forEach((cell,index)=>{
+    if(headers[index])cell.setAttribute('data-label',headers[index]);
+   });
+  });
+ });
+}
+enhanceResponsiveTables();
+const responsiveTableObserver=new MutationObserver(records=>{
+ records.forEach(record=>record.addedNodes.forEach(node=>{
+  if(node.nodeType===1)enhanceResponsiveTables(node);
+ }));
+});
+responsiveTableObserver.observe(document.body,{childList:true,subtree:true});
+
 function renderTxForm(){let type=document.getElementById('txType').value;let drivers=state.masters.drivers.map(d=>`<option>${esc(d.name)}</option>`).join('');let helpers=state.masters.helpers.map(d=>`<option>${esc(d)}</option>`).join('');let plates=state.masters.drivers.map(d=>`<option value="${esc(d.plate)}">${esc(d.plate)}　·　${esc(d.name)}</option>`).join('');let common=`<div class="field"><label>Tanggal Input</label><input name="date" type="date" value="${today()}" required></div><div class="field"><label>Driver</label><select name="driver"><option value="">Pilih driver</option>${drivers}</select></div><div class="field"><label>Helper (opsional)</label><select name="helper"><option value="">Tanpa helper</option>${helpers}</select></div><div class="field"><label>Plat Armada</label><select name="plate"><option value="">Pilih plat · nama driver ditampilkan samar</option>${plates}</select><small class="muted">Nama driver ada di sebelah nomor plat.</small></div>`;let extra='';if(type==='solar'){let solarPlates=[...new Set(state.masters.drivers.map(d=>String(d.plate||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));extra=`<div class="field"><label>Tanggal Input</label><input name="date" type="date" value="${today()}" required></div><div class="field"><label>Nama Transaksi</label><input name="shipment" type="text" required maxlength="120" placeholder="Masukkan nama transaksi"></div><div class="field"><label>Kendaraan</label><select name="plate" required><option value="">Pilih plat nomor kendaraan</option>${solarPlates.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('')}</select></div><div class="field"><label>Driver</label><select name="driver" required><option value="">Pilih driver</option>${drivers}</select></div><div class="field"><label>Nominal BBM (Rp)</label><input name="fuel" type="number" min="0" step="1" required placeholder="Masukkan nominal BBM"></div>`}else if(type==='ongkir'){extra=`<div class="field"><label>Tujuan Kiriman</label><input type="search" id="routeSearch" placeholder="Cari nama tujuan atau kota..." autocomplete="off" oninput="filterRouteOptions()"><select name="route" id="routePick" required onchange="routeChanged()"><option value="">Pilih tujuan kiriman</option>${state.masters.routes.map(r=>`<option value="${r.id}">${esc(r.name)} — ${esc(r.city)} (${money(r.fuel)})</option>`).join('')}</select><small class="muted">Ketik nama tujuan atau kota untuk menyaring pilihan.</small></div><div class="field"><label>Nominal BBM / Alokasi</label><input name="fuel" id="fuelPick" type="number" min="0" required></div><div class="field"><label>Nomor Kiriman / SJ</label><input name="shipment" placeholder="Nomor surat jalan"></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else if(type==='etoll'){extra=`<div class="field"><label>Tanggal Tol</label><input name="tollDate" type="date" value="${today()}" required></div><div class="field"><label>Asal Tol</label><select name="from" id="tollFrom" onchange="tollChanged()" required>${[...new Set(state.masters.tolls.map(t=>t.from))].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div><div class="field"><label>Tujuan Tol</label><select name="to" id="tollTo" onchange="tollPriceChanged()" required></select></div><div class="field"><label>Golongan</label><select name="class" id="tollClass" onchange="tollPriceChanged()"><option value="1">Golongan 1</option><option value="2">Golongan 2</option></select></div><div class="field"><label>Tarif</label><input name="tariff" id="tariff" type="number" min="0" readonly></div><div class="field"><label>Nominal Realisasi</label><input name="amount" id="realization" type="number" min="0" required></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else{extra=`<div class="field"><label>Tanggal Nota</label><input name="notaDate" type="date" value="${today()}" required></div><div class="field"><label>Nominal Pembayaran</label><input name="amount" type="number" min="0" required></div><div class="field"><label>Keterangan (wajib)</label><textarea name="note" required placeholder="Isi keterangan nota pembelian"></textarea></div>`}document.getElementById('txFields').innerHTML=(type==='solar'?'':common)+extra;if(type==='ongkir')routeChanged();if(type==='etoll')tollChanged()}
 function filterRouteOptions(){let input=document.getElementById('routeSearch'),select=document.getElementById('routePick');if(!input||!select)return;let q=input.value.trim().toLocaleLowerCase('id-ID'),selected=select.value;let routes=state.masters.routes.filter(r=>`${r.name} ${r.city}`.toLocaleLowerCase('id-ID').includes(q));select.innerHTML='<option value="">'+(q?'Pilih tujuan dari hasil pencarian':'Pilih tujuan kiriman')+'</option>'+routes.map(r=>`<option value="${r.id}">${esc(r.name)} — ${esc(r.city)} (${money(r.fuel)})</option>`).join('');if(routes.some(r=>String(r.id)===String(selected)))select.value=selected;routeChanged()}
 function routeChanged(){let el=document.getElementById('routePick');if(!el)return;let r=state.masters.routes.find(x=>x.id===Number(el.value));let f=document.getElementById('fuelPick');if(f&&r)f.value=r.fuel}
