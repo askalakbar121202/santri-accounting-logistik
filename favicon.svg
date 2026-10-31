@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="11" fill="#F3F4F6"/>
-  <path d="M7 49 24 13 41 49M15 33h18" fill="none" stroke="#6B7280" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M41 13v36h16" fill="none" stroke="#6B7280" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Accounting Logistic AL">
+  <rect width="64" height="64" rx="12" fill="#101C32"/>
+  <path d="M9 49 25 14 41 49M17 32h20" fill="none" stroke="#C6A45C" stroke-width="5.2" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M38 14v35h17" fill="none" stroke="#C6A45C" stroke-width="5.2" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M8 55h48" fill="none" stroke="#FFFFFF" stroke-opacity=".28" stroke-width="1"/>
 </svg>
