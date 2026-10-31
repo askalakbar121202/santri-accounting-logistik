@@ -403,7 +403,27 @@ body.theme-dark .responsive-table th.is-action-col{background:#26394b}
 #loginSplash .splash-content{gap:0}
 #loginSplash .splash-logo{width:min(300px,78vw)!important;max-height:180px!important;height:auto!important;object-fit:contain!important;margin:0!important;mix-blend-mode:multiply!important;filter:none!important}
 @media(max-width:700px){#cloudGate .login-brand-logo{width:min(220px,82%)}.brandmark{width:60px!important;flex-basis:60px!important}}
-</style><link rel="icon" type="image/png" href="/al-monogram.png?v=4"></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><img class="splash-logo" src="/accounting-logistic-logo.png?v=3" alt="Accounting - Logistic, By askalwddakbr"></div></div><div id="cloudGate"><div class="gatecard"><img class="login-brand-logo" src="/accounting-logistic-logo.png?v=3" alt="Accounting - Logistic, By askalwddakbr"><div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#087f5b">Santri Accounting</div><h2 style="margin:5px 0">Logistic Management System</h2><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
+
+/* Finalisasi logo sidebar dan ikon tab: satu sumber aset, tanpa efek campuran */
+.sidebar .brandmark{
+  width:66px!important;height:58px!important;min-width:66px!important;
+  flex:0 0 66px!important;display:flex!important;align-items:center!important;
+  justify-content:center!important;overflow:hidden!important;
+  padding:3px!important;background:#fff!important;
+  border:1px solid #d1d5db!important;border-radius:9px!important;
+}
+.sidebar .brandmark img{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  width:100%!important;height:100%!important;max-width:100%!important;
+  max-height:100%!important;object-fit:contain!important;object-position:center!important;
+  mix-blend-mode:normal!important;filter:none!important;
+}
+.sidebar .brandmark svg{display:none!important}
+@media(max-width:700px){
+  .sidebar .brandmark{width:60px!important;min-width:60px!important;flex-basis:60px!important}
+}
+
+</style><link rel="icon" type="image/png" sizes="121x121" href="/al-monogram.png?v=5"><link rel="shortcut icon" type="image/png" href="/al-monogram.png?v=5"><link rel="apple-touch-icon" href="/al-monogram.png?v=5"></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><img class="splash-logo" src="/accounting-logistic-logo.png?v=3" alt="Accounting - Logistic, By askalwddakbr"></div></div><div id="cloudGate"><div class="gatecard"><img class="login-brand-logo" src="/accounting-logistic-logo.png?v=3" alt="Accounting - Logistic, By askalwddakbr"><div style="font-size:30px;font-weight:900;letter-spacing:-1px;color:#087f5b">Santri Accounting</div><h2 style="margin:5px 0">Logistic Management System</h2><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
 </div>
@@ -417,7 +437,7 @@ body.theme-dark .responsive-table th.is-action-col{background:#26394b}
 
 <div id="cloudLoginMsg" class="gatemsg"></div>
 <p style="font-size:11px;color:#71808b">Pastikan Koneksi Internet Terhubung. Jika Mengalami Kendala Hubungi Wong Pusat.</p></div></div><div class="layout" id="appLayout" style="display:none">
-<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()" aria-hidden="true"></div><aside class="sidebar"><button type="button" class="sidebar-inner-toggle" onclick="closeSidebar()" aria-label="Tutup menu">×</button><div class="brand"><div class="brandmark" aria-label="Logo A-L"><img src="/al-monogram.png?v=3" alt="Logo A-L"></div><div class="brand-copy"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div><nav class="nav" id="nav">
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()" aria-hidden="true"></div><aside class="sidebar"><button type="button" class="sidebar-inner-toggle" onclick="closeSidebar()" aria-label="Tutup menu">×</button><div class="brand"><div class="brandmark" aria-label="Logo A-L"><img src="/al-monogram.png?v=5" alt="Logo A-L" width="121" height="121" decoding="async"></div><div class="brand-copy"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div><nav class="nav" id="nav">
 <div class="section">Dashboard</div><button class="active" data-page="dashboard">▦ Dashboard Utama</button><button data-page="bbm">⛽ Dashboard BBM Armada</button><button data-page="fleet-analysis">📊 Analisis Biaya Armada</button>
 <div class="section">Transaksi</div><button data-page="input">＋ Input Transaksi</button><button data-page="payments">✓ Pembayaran</button><button data-page="auto-reports">📈 Laporan Otomatis</button><button data-page="reports">▤ Laporan Transaksi</button><button data-page="history">◷ Riwayat Perubahan</button>
 <div class="section">Laporan Kas</div><button data-page="kasbon">💵 Kasbon & Uang Muka</button><button data-page="closing">🔒 Tutup Kas Harian</button><button data-page="reconcile">≋ Rekonsiliasi Kas</button><button data-page="duplicates">⚠ Deteksi Transaksi Ganda</button>
