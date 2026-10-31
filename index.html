@@ -573,7 +573,7 @@ function enhanceResponsiveTables(root=document){
      menu.addEventListener('click',()=>{details.open=false;details.appendChild(menu);delete menu.dataset.home;menu.removeAttribute('style')},{capture:true,once:true});
      const closeOutside=event=>{if(!details.contains(event.target)&&!menu.contains(event.target)){details.open=false;document.removeEventListener('pointerdown',closeOutside,true)}};
      document.addEventListener('pointerdown',closeOutside,true);
-     details.addEventListener('toggle',()=>{if(!details.open)document.removeEventListener('pointerdown',closeOutside,true)},{once:true});
+     details.addEventListener('toggle',()=>{if(!details.open)document.removeEventListener('pointerdown',closeOutside,true)});
     }else if(menu.dataset.home){details.appendChild(menu);delete menu.dataset.home;menu.removeAttribute('style')}
    });
   });
