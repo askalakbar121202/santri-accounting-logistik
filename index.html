@@ -570,6 +570,10 @@ function enhanceResponsiveTables(root=document){
      const rect=summary.getBoundingClientRect();menu.dataset.home='1';document.body.appendChild(menu);
      menu.style.visibility='hidden';menu.style.left='8px';menu.style.top='8px';menu.style.visibility='visible';
      const mr=menu.getBoundingClientRect();menu.style.left=Math.max(8,rect.left-mr.width-7)+'px';menu.style.top=Math.max(8,Math.min(window.innerHeight-mr.height-8,rect.top+(rect.height-mr.height)/2))+'px';
+     menu.addEventListener('click',()=>{details.open=false;details.appendChild(menu);delete menu.dataset.home;menu.removeAttribute('style')},{capture:true,once:true});
+     const closeOutside=event=>{if(!details.contains(event.target)&&!menu.contains(event.target)){details.open=false;document.removeEventListener('pointerdown',closeOutside,true)}};
+     document.addEventListener('pointerdown',closeOutside,true);
+     details.addEventListener('toggle',()=>{if(!details.open)document.removeEventListener('pointerdown',closeOutside,true)},{once:true});
     }else if(menu.dataset.home){details.appendChild(menu);delete menu.dataset.home;menu.removeAttribute('style')}
    });
   });
