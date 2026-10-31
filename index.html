@@ -554,7 +554,7 @@ function enhanceResponsiveTables(root=document){
   t.dataset.responsiveReady='1';
   const actionIndex=headers.length-1;
   const hasAction=/^(aksi|tindakan|edit|action)$/i.test(headers[actionIndex]||'');
-  if(hasAction)t.querySelectorAll('tr').forEach(row=>{
+  if(hasAction&&!t.classList.contains('report-table'))t.querySelectorAll('tr').forEach(row=>{
    const cell=row.children[actionIndex];if(!cell)return;cell.classList.add('is-action-col');
    if(!row.parentElement.matches('tbody'))return;
    const buttons=Array.from(cell.querySelectorAll('button'));
