@@ -519,6 +519,53 @@ body.theme-dark .responsive-table th.is-action-col{background:#26394b}
   #appLayout .topbar>div:nth-of-type(2){padding-left:0}
   #appLayout .responsive-table td{grid-template-columns:minmax(78px,32%) minmax(0,1fr)}
 }
+</style><style>
+/* HP: tabel data kembali horizontal dan bisa digeser ke kanan/kiri */
+@media(max-width:700px){
+  #appLayout .tablewrap{
+    display:block!important;width:100%;max-width:100%;min-width:0;
+    overflow-x:auto!important;overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;scrollbar-width:thin;
+    border:1px solid var(--line,#dce4ea)!important;
+    border-radius:10px!important;background:var(--card,#fff)!important;
+  }
+  #appLayout table.responsive-table{
+    display:table!important;width:max-content!important;min-width:100%!important;
+    max-width:none!important;table-layout:auto!important;
+    border-collapse:separate!important;border-spacing:0!important;
+    white-space:nowrap!important;background:var(--card,#fff)!important;
+  }
+  #appLayout table.responsive-table thead{
+    position:static!important;width:auto!important;height:auto!important;
+    padding:0!important;margin:0!important;overflow:visible!important;
+    clip:auto!important;white-space:nowrap!important;
+  }
+  #appLayout table.responsive-table tbody{display:table-row-group!important;width:auto!important}
+  #appLayout table.responsive-table tr{
+    display:table-row!important;min-width:0!important;
+    border:0!important;border-radius:0!important;overflow:visible!important;
+    box-shadow:none!important;background:transparent!important;
+  }
+  #appLayout table.responsive-table th,
+  #appLayout table.responsive-table td{
+    display:table-cell!important;width:auto!important;min-width:105px!important;
+    max-width:none!important;padding:10px 12px!important;
+    white-space:nowrap!important;overflow:visible!important;
+    overflow-wrap:normal!important;word-break:normal!important;
+    font-size:12px!important;vertical-align:middle!important;
+    border-bottom:1px solid var(--line,#e2e8f0)!important;
+  }
+  #appLayout table.responsive-table th{position:sticky!important;top:0!important;z-index:3}
+  #appLayout table.responsive-table td:before{display:none!important;content:none!important}
+  #appLayout table.responsive-table .is-action-col,
+  #appLayout table.responsive-table td.is-action-col{
+    position:static!important;width:auto!important;min-width:130px!important;
+    box-shadow:none!important;background:inherit!important;
+  }
+  #appLayout table.responsive-table td.is-action-col{display:table-cell!important}
+  #appLayout table.responsive-table td button{display:inline-flex!important;flex:0 0 auto!important;min-width:max-content!important;white-space:nowrap!important}
+}
 </style></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
