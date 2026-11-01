@@ -462,7 +462,64 @@ body.theme-dark .responsive-table th.is-action-col{background:#26394b}
 .sidebar-wordmark strong{font-size:14px;font-weight:750;letter-spacing:-.2px;line-height:1.2;color:#fff;white-space:nowrap}
 .sidebar-wordmark small{font-size:10px;font-weight:600;letter-spacing:1.4px;color:#d5c18b}
 .brand{gap:12px}
-\n/* Aksi Laporan Transaksi dibuat ringkas agar kolom tidak melebar */\n.report-table th:last-child,.report-table td:last-child{width:112px;min-width:112px;text-align:center;padding-left:6px;padding-right:6px}\n.report-action-group{display:flex;align-items:center;justify-content:center;gap:4px}\n.report-action-btn{width:28px;height:28px;min-width:28px;padding:0;border:1px solid #d6dee6;border-radius:6px;background:#f3f6f8;color:#263746;font-size:16px;line-height:1;font-weight:700}\n.report-action-btn:hover{background:#e5edf3}\n.report-action-delete{color:#a1251b}\n</style></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
+\n/* Aksi Laporan Transaksi dibuat ringkas agar kolom tidak melebar */\n.report-table th:last-child,.report-table td:last-child{width:112px;min-width:112px;text-align:center;padding-left:6px;padding-right:6px}\n.report-action-group{display:flex;align-items:center;justify-content:center;gap:4px}\n.report-action-btn{width:28px;height:28px;min-width:28px;padding:0;border:1px solid #d6dee6;border-radius:6px;background:#f3f6f8;color:#263746;font-size:16px;line-height:1;font-weight:700}\n.report-action-btn:hover{background:#e5edf3}\n.report-action-delete{color:#a1251b}\n</style><style>
+/* Penyempurnaan khusus HP: desktop tidak berubah */
+@media(max-width:700px){
+  html,body{max-width:100%;overflow-x:hidden}
+  body{font-size:14px;-webkit-text-size-adjust:100%}
+  #appLayout .main{width:100%;min-width:0}
+  #appLayout .topbar{
+    min-height:64px;height:auto;padding:10px 12px;gap:9px;
+    display:flex;align-items:center;flex-wrap:wrap
+  }
+  #appLayout .topbar>div:nth-of-type(1){flex:1;min-width:0}
+  #appLayout .topbar>div:nth-of-type(1) strong{font-size:14px;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #appLayout .topbar>div:nth-of-type(2){
+    min-width:0!important;width:100%;flex-direction:row!important;
+    align-items:center!important;justify-content:space-between!important;
+    flex-wrap:wrap;gap:6px!important;text-align:left!important;
+    padding-left:50px
+  }
+  #cloudStatus{margin-left:0!important}
+  #appLayout .topbar>div:nth-of-type(2) button{margin:0!important;padding:7px 11px!important}
+  #appLayout .content{padding:12px;min-width:0}
+  #appLayout .pagehead{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-bottom:15px}
+  #appLayout .pagehead>div{min-width:0}
+  #appLayout .pagehead h1{font-size:20px;line-height:1.25;margin:0}
+  #appLayout .pagehead p{font-size:12px;line-height:1.5;margin-bottom:0}
+  #appLayout .pagehead>button{width:100%;min-height:42px}
+  #appLayout .card{padding:13px;border-radius:13px;min-width:0}
+  #appLayout .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #appLayout .grid .card{padding:12px}
+  #appLayout .metric{font-size:clamp(17px,5vw,23px);overflow-wrap:anywhere}
+  #appLayout .split{grid-template-columns:minmax(0,1fr);gap:11px}
+  #appLayout .toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  #appLayout .toolbar input,#appLayout .toolbar select{width:100%;max-width:none;min-width:0;min-height:42px}
+  #appLayout .formgrid{grid-template-columns:minmax(0,1fr);gap:11px}
+  #appLayout input,#appLayout select,#appLayout textarea{max-width:100%;min-height:42px;font-size:16px}
+  #appLayout textarea{min-height:86px}
+  #appLayout .actions{display:flex;flex-wrap:wrap;gap:8px}
+  #appLayout .actions button,#appLayout .card button{min-height:40px}
+  #appLayout .tablewrap{max-width:100%;min-width:0}
+  #appLayout .responsive-table tbody{gap:10px}
+  #appLayout .responsive-table tr{border-radius:12px}
+  #appLayout .responsive-table td{grid-template-columns:minmax(88px,34%) minmax(0,1fr);gap:7px;padding:10px;font-size:12px}
+  #appLayout .responsive-table td:before{font-size:10px}
+  #appLayout .responsive-table td.is-action-col button{min-height:38px;min-width:0;flex:1 1 28%;font-size:12px}
+  #appLayout .nav button{min-height:43px;border-radius:9px}
+  #appLayout .sidebar .brand{margin-bottom:18px}
+  #appLayout .sidebar .nav .section{padding:13px 9px 5px;font-size:10px;letter-spacing:1px}
+  #appLayout .sidebar-inner-toggle{min-width:34px}
+  .action-dialog{width:calc(100vw - 16px)!important;max-height:92dvh!important}
+  .action-dialog .action-dialog-body{max-height:calc(92dvh - 145px);overscroll-behavior:contain}
+}
+@media(max-width:380px){
+  #appLayout .content{padding:9px}
+  #appLayout .grid{grid-template-columns:minmax(0,1fr)}
+  #appLayout .topbar>div:nth-of-type(2){padding-left:0}
+  #appLayout .responsive-table td{grid-template-columns:minmax(78px,32%) minmax(0,1fr)}
+}
+</style></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
 </div>
