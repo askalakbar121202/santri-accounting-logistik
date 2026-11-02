@@ -757,6 +757,57 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
 }
 </style>
 
+
+<style>
+/* Small-screen fallback: covers phones whose browser reports a desktop-like viewport */
+@media(max-width:1000px){
+  #appLayout{display:flex;min-height:100vh}
+  #appLayout .main{width:100%;min-width:0}
+  #appLayout .sidebar{
+    position:fixed!important;top:0;bottom:0;left:0;z-index:10001;
+    width:min(280px,85vw)!important;height:100vh;height:100dvh;
+    overflow-y:auto;transform:translateX(-105%);
+    transition:transform .22s ease;padding:54px 14px 20px!important;
+    box-shadow:0 10px 35px #0003!important;
+  }
+  body.sidebar-open #appLayout .sidebar{transform:translateX(0)!important}
+  #appLayout .sidebar-backdrop{display:none;position:fixed;inset:0;z-index:10000;background:#20242b88}
+  body.sidebar-open #appLayout .sidebar-backdrop{display:block}
+  #appLayout .sidebar-inner-toggle{display:inline-flex!important;position:absolute;top:9px;right:10px}
+  #appLayout .sidebar-toggle{display:inline-flex!important}
+  #appLayout .content{min-width:0;max-width:100%;overflow-x:hidden;padding:14px 12px 28px}
+  #appLayout .tablewrap{
+    display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
+    overflow-x:auto!important;overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;scrollbar-width:thin;
+  }
+  #appLayout .tablewrap>table,
+  #appLayout table.responsive-table{
+    display:table!important;width:max-content!important;min-width:100%!important;
+    max-width:none!important;table-layout:auto!important;white-space:nowrap!important;
+    border-collapse:separate!important;border-spacing:0!important;
+  }
+  #appLayout .tablewrap thead{position:static!important;width:auto!important;height:auto!important;
+    margin:0!important;padding:0!important;overflow:visible!important;clip:auto!important}
+  #appLayout .tablewrap tbody{display:table-row-group!important;width:auto!important}
+  #appLayout .tablewrap tr{display:table-row!important;min-width:0!important;border:0!important;
+    border-radius:0!important;overflow:visible!important;box-shadow:none!important}
+  #appLayout .tablewrap th,#appLayout .tablewrap td{
+    display:table-cell!important;width:auto!important;min-width:112px!important;max-width:none!important;
+    padding:11px 12px!important;white-space:nowrap!important;overflow:visible!important;
+    overflow-wrap:normal!important;word-break:normal!important;font-size:13px!important;
+    vertical-align:middle!important;
+  }
+  #appLayout .tablewrap th{position:sticky!important;top:0;z-index:3}
+  #appLayout .tablewrap td:before{display:none!important;content:none!important}
+  #appLayout .tablewrap .is-action-col{position:static!important;min-width:130px!important;box-shadow:none!important}
+  #appLayout .tablewrap td button{display:inline-flex!important;min-width:max-content!important;white-space:nowrap!important}
+  #appLayout .toolbar{display:grid;grid-template-columns:minmax(0,1fr);width:100%}
+  #appLayout .toolbar input,#appLayout .toolbar select{width:100%;max-width:none;min-width:0}
+}
+</style>
+
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
