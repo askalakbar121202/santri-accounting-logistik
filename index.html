@@ -550,6 +550,49 @@ input[type=checkbox],input[type=radio],input[type=range]{accent-color:#f36b12}
  #appLayout .sidebar::after{position:fixed;left:0;right:auto;width:min(280px,85vw);bottom:0}
 }
 
+
+
+/* Hover/focus feedback: subtle orange accent across all application buttons */
+button,
+button.secondary,
+button.danger,
+button.yellow,
+.action-more-menu button,
+.nav button{
+ transition:background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,filter .16s ease,transform .16s ease;
+}
+button:hover,
+button:focus-visible{
+ background-color:#fff0e4;
+ border-color:#f4a66f;
+ color:#c65308;
+ box-shadow:0 3px 10px #f36b1224;
+ filter:none;
+}
+button:not(.secondary):not(.danger):not(.yellow):hover{
+ background:linear-gradient(110deg,#e85f08,#f97918)!important;
+ color:#fff!important;
+}
+button.secondary:hover,
+.action-more-menu button:hover{
+ background:#fff0e4!important;
+ border-color:#f3b17e!important;
+ color:#c65308!important;
+}
+button.danger:hover{background:#a92720!important;color:#fff!important}
+button.yellow:hover{background:#ffc04d!important;color:#38270e!important}
+.nav button:hover{
+ background:#fff0e4!important;
+ color:#c65308!important;
+ box-shadow:inset 3px 0 #f36b12!important;
+ transform:translateX(2px);
+}
+.nav button.active:hover{
+ background:linear-gradient(100deg,#e85f08,#f97918)!important;
+ color:#fff!important;
+}
+button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
+
 </style><style>
 /* Penyempurnaan khusus HP: desktop tidak berubah */
 @media(max-width:700px){
