@@ -827,6 +827,18 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
 }
 </style>
 
+<style>
+/* Compact sticky row-number column on phones */
+@media(max-width:1000px){
+ #appLayout .tablewrap th.row-index-head,
+ #appLayout .tablewrap td.row-index-cell{
+   min-width:32px!important;width:32px!important;max-width:32px!important;
+   padding:8px 3px!important;font-size:11px!important;line-height:1.2!important;
+   text-align:center!important;font-weight:700!important;
+ }
+}
+</style>
+
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
