@@ -462,7 +462,75 @@ body.theme-dark .responsive-table th.is-action-col{background:#26394b}
 .sidebar-wordmark strong{font-size:14px;font-weight:750;letter-spacing:-.2px;line-height:1.2;color:#fff;white-space:nowrap}
 .sidebar-wordmark small{font-size:10px;font-weight:600;letter-spacing:1.4px;color:#d5c18b}
 .brand{gap:12px}
-\n/* Aksi Laporan Transaksi dibuat ringkas agar kolom tidak melebar */\n.report-table th:last-child,.report-table td:last-child{width:112px;min-width:112px;text-align:center;padding-left:6px;padding-right:6px}\n.report-action-group{display:flex;align-items:center;justify-content:center;gap:4px}\n.report-action-btn{width:28px;height:28px;min-width:28px;padding:0;border:1px solid #d6dee6;border-radius:6px;background:#f3f6f8;color:#263746;font-size:16px;line-height:1;font-weight:700}\n.report-action-btn:hover{background:#e5edf3}\n.report-action-delete{color:#a1251b}\n</style><style>
+\n/* Aksi Laporan Transaksi dibuat ringkas agar kolom tidak melebar */\n.report-table th:last-child,.report-table td:last-child{width:112px;min-width:112px;text-align:center;padding-left:6px;padding-right:6px}\n.report-action-group{display:flex;align-items:center;justify-content:center;gap:4px}\n.report-action-btn{width:28px;height:28px;min-width:28px;padding:0;border:1px solid #d6dee6;border-radius:6px;background:#f3f6f8;color:#263746;font-size:16px;line-height:1;font-weight:700}\n.report-action-btn:hover{background:#e5edf3}\n.report-action-delete{color:#a1251b}\n
+
+/* V8.5 visual refresh — light grey, white, charcoal and orange */
+:root{
+ --green:#f36b12;--green2:#ff8a24;--yellow:#ffb24a;
+ --bg:#f3f4f6;--ink:#20242b;--muted:#737b86;--card:#ffffff;--line:#e5e7eb;
+}
+body{background:#f3f4f6;color:#20242b}
+#appLayout{background:#f3f4f6}
+.sidebar{
+ background:#fff!important;color:#20242b!important;width:250px;
+ border-right:1px solid #e7e8eb;box-shadow:3px 0 18px #20242b08;padding:20px 14px;
+}
+.brand{padding:4px 8px 18px;margin:0 4px 18px;border-bottom:1px solid #eceef1}
+.brand strong{color:#20242b!important;font-size:14px;letter-spacing:0}
+.brand small{color:#737b86!important;font-size:11px}
+.sidebar-wordmark strong,.sidebar-wordmark small{color:#20242b!important}
+.nav{gap:5px}
+.nav .section{color:#858b94!important;margin:17px 10px 5px}
+.nav button{color:#333941!important;border-radius:10px;padding:11px 12px;background:transparent!important;box-shadow:none!important}
+.nav button:hover{background:#fff3e9!important;color:#d95c08!important;transform:translateX(2px)}
+.nav button.active{background:linear-gradient(100deg,#f36b12,#ff861f)!important;color:#fff!important;box-shadow:0 5px 14px #f36b1230!important}
+.main{background:#f3f4f6}
+.topbar{height:72px;background:#fff;border-bottom:2px solid #f36b12;box-shadow:0 2px 12px #20242b08;padding:0 26px}
+.topbar strong{color:#20242b}
+.topbar small{color:#737b86}
+#cloudStatus{color:#737b86!important}
+.sidebar-toggle,.sidebar-inner-toggle{background:#f3f4f6;color:#303640;border:1px solid #e3e5e8}
+.content{padding:26px;max-width:1680px}
+.pagehead h1{color:#20242b;font-size:25px;letter-spacing:-.45px}
+.pagehead p{color:#737b86}
+.card{background:#fff;border:1px solid #e7e9ed;border-radius:16px;box-shadow:0 3px 14px #20242b08}
+.card:hover{border-color:#f4c39e;box-shadow:0 7px 22px #20242b0d}
+.metric-label{color:#626b76;font-weight:600}
+.metric{color:#20242b}
+.metric-icon{background:#fff0e4;color:#f36b12;border-radius:50%;min-width:42px;min-height:42px;display:inline-flex;align-items:center;justify-content:center}
+.panel-title{color:#252a32}
+.bar{background:linear-gradient(180deg,#ff9b43,#f36b12);border-radius:7px 7px 0 0}
+button{background:linear-gradient(110deg,#f36b12,#ff861f);color:#fff;box-shadow:0 2px 6px #f36b121c}
+button:hover{filter:brightness(1.04);box-shadow:0 4px 12px #f36b1230}
+button.secondary{background:#f3f4f6;color:#343a43;border:1px solid #e0e3e7;box-shadow:none}
+button.secondary:hover{background:#fff0e4;color:#d95c08;border-color:#f7c49e}
+button.danger{background:#c93636;color:#fff}
+button.yellow{background:#ffcf70;color:#38270e}
+.field label{color:#59616c}
+.field input,.field select,.field textarea,.toolbar input,.toolbar select{border-color:#dfe2e6;background:#fff;color:#20242b}
+.field input:focus,.field select:focus,.field textarea:focus,.toolbar input:focus,.toolbar select:focus{border-color:#f36b12;box-shadow:0 0 0 3px #f36b121b}
+.tablewrap{border-color:#e4e6e9;box-shadow:0 1px 4px #20242b06}
+th{background:#f6f7f8;color:#555e69}
+td{border-color:#eceef1}
+tbody tr:hover td{background:#fff8f2}
+.status.bbm-status--bought,.status.terbeli,.status.paid{background:#def7e8;color:#176b45}
+.status.bbm-status--partial,.status.sebagian,.status.pending{background:#fff2cf;color:#825900}
+.status.bbm-status--none,.status.belum,.status.rejected{background:#ffe5e2;color:#a1251b}
+.notice{background:#fff8ef;border-color:#f4d4b8;color:#815021}
+.pill{background:#fff0e4;color:#d95c08}
+input[type=checkbox],input[type=radio],input[type=range]{accent-color:#f36b12}
+::selection{background:#ffe0c7;color:#44200a}
+.sidebar-backdrop{background:#20242b88}
+@media(max-width:1000px){.sidebar{width:220px}.content{padding:20px}}
+@media(max-width:700px){
+ .sidebar{background:#fff!important}
+ .topbar{border-bottom-width:2px;padding:0 14px}
+ .content{padding:14px}
+ .nav button.active{background:linear-gradient(100deg,#f36b12,#ff861f)!important}
+ .card{border-radius:13px}
+}
+
+</style><style>
 /* Penyempurnaan khusus HP: desktop tidak berubah */
 @media(max-width:700px){
   html,body{max-width:100%;overflow-x:hidden}
