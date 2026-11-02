@@ -700,6 +700,63 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
   #appLayout table.responsive-table td button{display:inline-flex!important;flex:0 0 auto!important;min-width:max-content!important;white-space:nowrap!important}
 }
 </style><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E"><link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E">
+
+<style>
+/* Mobile usability refinement — isolated to screens <=700px */
+@media(max-width:700px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  #appLayout,#appLayout .main,#appLayout .content,#appLayout .page{min-width:0;max-width:100%}
+  #appLayout .content{overflow-x:hidden;padding:12px 10px 28px}
+  #appLayout .pagehead{gap:10px}
+  #appLayout .pagehead>div{width:100%;min-width:0}
+  #appLayout .pagehead .settingsrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}
+  #appLayout .pagehead .settingsrow button{width:100%;min-width:0;padding:10px 7px;font-size:12px}
+  #appLayout .card{width:100%;min-width:0;padding:12px}
+  #appLayout .toolbar{width:100%;min-width:0;grid-template-columns:minmax(0,1fr)}
+  #appLayout .formgrid,#appLayout .settingsrow{min-width:0}
+  #appLayout .field{min-width:0;width:100%}
+  #appLayout .field input,#appLayout .field select,#appLayout .field textarea,
+  #appLayout .toolbar input,#appLayout .toolbar select{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+  #appLayout .actions{align-items:stretch}
+  #appLayout .actions button{min-width:0;max-width:100%;white-space:normal}
+  #appLayout .mode-switch{width:100%}
+  #appLayout .mode-switch button{min-height:44px}
+  #appLayout .tablewrap{
+    position:relative;display:block;width:100%;max-width:100%;min-width:0;
+    overflow-x:auto!important;overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;scrollbar-width:thin;
+    border:1px solid #e1e5e9!important;border-radius:10px!important;
+  }
+  #appLayout .tablewrap>table,
+  #appLayout table.responsive-table{
+    width:max-content!important;min-width:100%!important;max-width:none!important;
+    table-layout:auto!important;white-space:nowrap!important;
+  }
+  #appLayout .tablewrap th,#appLayout .tablewrap td{
+    min-width:100px;padding:10px 11px;font-size:12px;
+    white-space:nowrap;vertical-align:middle;
+  }
+  #appLayout .tablewrap th{position:sticky;top:0;z-index:2}
+  #appLayout .tablewrap td button{min-height:36px;white-space:nowrap}
+  #appLayout .responsive-table .is-action-col{min-width:118px!important}
+  #appLayout .chart,.chart-wrap,#monthlyChart,#fleetChart{max-width:100%;min-width:0;overflow-x:auto}
+  #appLayout .notice,#appLayout .footnote{overflow-wrap:anywhere}
+  #appLayout .sidebar{max-width:85vw}
+  #appLayout .nav{max-width:100%;overflow-x:hidden}
+  .action-dialog{width:calc(100vw - 16px)!important;max-width:560px;max-height:92dvh!important}
+  .action-dialog .action-dialog-body{overflow-y:auto;overscroll-behavior:contain}
+  .action-dialog .action-dialog-foot{display:flex;flex-wrap:wrap;gap:8px}
+  .action-dialog .action-dialog-foot button{min-width:0;flex:1 1 120px}
+}
+@media(max-width:380px){
+  #appLayout .content{padding-left:8px;padding-right:8px}
+  #appLayout .pagehead h1{font-size:19px}
+  #appLayout .grid{grid-template-columns:minmax(0,1fr)}
+  #appLayout .pagehead .settingsrow{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
