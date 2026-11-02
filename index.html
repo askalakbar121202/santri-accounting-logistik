@@ -530,6 +530,26 @@ input[type=checkbox],input[type=radio],input[type=range]{accent-color:#f36b12}
  .card{border-radius:13px}
 }
 
+
+
+/* Koreksi sesuai referensi: aksen oranye hanya pada sisi bawah sidebar */
+.sidebar{
+ position:relative!important;
+ overflow-x:hidden;
+ padding-bottom:24px!important;
+}
+.sidebar::after{
+ content:"";
+ position:absolute;
+ left:0;right:0;bottom:0;
+ height:5px;
+ background:linear-gradient(90deg,#f36b12 0%,#ff9a3d 55%,#ffc078 100%);
+ pointer-events:none;
+}
+@media(max-width:700px){
+ #appLayout .sidebar::after{position:fixed;left:0;right:auto;width:min(280px,85vw);bottom:0}
+}
+
 </style><style>
 /* Penyempurnaan khusus HP: desktop tidak berubah */
 @media(max-width:700px){
@@ -634,7 +654,8 @@ input[type=checkbox],input[type=radio],input[type=range]{accent-color:#f36b12}
   #appLayout table.responsive-table td.is-action-col{display:table-cell!important}
   #appLayout table.responsive-table td button{display:inline-flex!important;flex:0 0 auto!important;min-width:max-content!important;white-space:nowrap!important}
 }
-</style></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
+</style><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E"><link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E">
+</head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
 </div>
