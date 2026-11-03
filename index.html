@@ -1198,7 +1198,7 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  txt('Accounting - Logistic',width/2,52,'700 25px Arial','#334155','center');
  const today=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
  txt(today,width-52,92,'600 19px Arial','#64748b','right');
- txt('REKAP BBM ARMADA',52,145,'800 43px Arial','#111827');
+ txt('REKAP BBM ARMADA',52,145,'600 43px "Trebuchet MS", Arial, sans-serif','#111827');
  const drivers=unique(rows.map(r=>r.driver));
  const plates=unique(rows.map(r=>r.plate));
  const driverText=drivers.length===0?'-':drivers.length===1?drivers[0]:drivers.join(', ');
@@ -1213,7 +1213,7 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  rect(left,summaryY+(summaryH+gap)*2,summaryW,summaryH,'#e9edf2');
  txt('TOTAL SISA BBM',left+22,summaryY+(summaryH+gap)*2+27,'600 16px Arial','#64748b');
  txt(money(total),left+22,summaryY+(summaryH+gap)*2+58,'700 25px Arial','#111827');
- txt('DAFTAR KIRIMAN',52,449,'800 25px Arial','#111827');
+ txt('DAFTAR KIRIMAN',52,449,'600 27px "Trebuchet MS", Arial, sans-serif','#111827');
  const listTop=470;
  if(!rows.length){
   rect(52,listTop,width-104,90,'#fff');
@@ -1222,9 +1222,8 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  rows.forEach((r,i)=>{
   const y=listTop+i*groupH;
   rect(52,y,width-104,groupH-8,'#fff');
-  rect(52,y,width-104,37,'#fff0e6');
-  txt('TANGGAL KIRIMAN',72,y+25,'700 15px Arial','#c2410c');
-  txt(r.date||'-',width-72,y+25,'700 17px Arial','#111827','right');
+  rect(52,y,width-104,37,'#e65b20');
+  txt(r.date||'-',72,y+25,'600 17px Arial','#ffffff','left');
   const x1=72,x2=355,x3=625,x4=width-72;
   txt('DRIVER / HELPER',x1,y+62,'600 13px Arial','#64748b');
   txt('KIRIMAN',x2,y+62,'600 13px Arial','#64748b');
@@ -1238,11 +1237,11 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
   line(70,y+105,width-70,y+105,'#e2e8f0',1);
  });
  const footerY=listTop+Math.max(rows.length,1)*groupH+5;
- txt('NB : Batas Kiriman Rit-Ritan 3 Hari dan jika terdapat kiriman luar yang terlalu lama, usahakan didahulukan.',52,footerY+20,'600 14px Arial','#475569');
- rect(52,footerY+43,width-104,80,'#e9edf2');
- txt('TOTAL',76,footerY+75,'700 18px Arial','#64748b');
- txt('TOTAL SISA BBM',width-76,footerY+75,'600 16px Arial','#64748b','right');
- txt(money(total),width-76,footerY+105,'700 25px Arial','#111827','right');
+ const note='NB: Batas Kiriman Rit-Ritan 3 Hari dan jika terdapat kiriman luar yang terlalu lama, usahakan didahulukan.';
+ const noteFont='600 18px "Trebuchet MS", Arial, sans-serif';
+ c.font=noteFont;const words=note.split(/\\s+/);const noteLines=[];let noteLine='';
+ words.forEach(word=>{const next=noteLine?noteLine+' '+word:word;if(c.measureText(next).width>width-104&&noteLine){noteLines.push(noteLine);noteLine=word}else noteLine=next;});if(noteLine)noteLines.push(noteLine);
+ noteLines.forEach((lineText,index)=>txt(lineText,52,footerY+25+index*25,noteFont,'#475569'));
  txt('Accounting - Logistic',width/2,height-20,'500 14px Arial','#94a3b8','center');
 }
 function refreshBbmSharePreview(){renderBBM();openBbmSharePreview();}
