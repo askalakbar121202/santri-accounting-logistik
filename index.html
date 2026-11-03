@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Accounting - Logistic</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Accounting - Logistic</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 #cloudGate{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#102b3f,#087f5b);display:flex;align-items:center;justify-content:center;padding:20px;font-family:inherit}#cloudGate .gatecard{background:#fff;color:#183447;width:min(440px,100%);padding:28px;border-radius:18px;box-shadow:0 25px 80px #0004}#cloudGate input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccd8df;border-radius:9px;margin:6px 0 14px}#cloudGate button{width:100%;margin-top:6px}#cloudGate .gatemsg{font-size:13px;color:#a52a2a;min-height:18px}#cloudStatus{font-size:11px;color:#b9f3d8;margin-left:12px}
 
@@ -1188,6 +1188,7 @@ function openBbmSharePreview(){
 function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  const canvas=document.getElementById('bbmShareCanvas');if(!canvas)return;
  const width=1000,headerH=500,groupH=142,footerH=190,height=headerH+Math.max(rows.length,1)*groupH+footerH;
+ if(document.fonts?.check&&!document.fonts.check('600 43px Inter')){await document.fonts.load('600 43px Inter');await document.fonts.load('700 27px Inter');}
  canvas.width=width;canvas.height=height;const c=canvas.getContext('2d');
  const rect=(x,y,w,h,fill)=>{c.fillStyle=fill;c.fillRect(x,y,w,h);};
  const line=(x1,y1,x2,y2,color='#d7dde5',lw=1)=>{c.strokeStyle=color;c.lineWidth=lw;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
@@ -1198,7 +1199,7 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  txt('Accounting - Logistic',width/2,52,'700 25px Arial','#334155','center');
  const today=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
  txt(today,width-52,92,'600 19px Arial','#64748b','right');
- txt('REKAP BBM ARMADA',52,145,'600 43px "Trebuchet MS", Arial, sans-serif','#111827');
+ txt('REKAP BBM ARMADA',52,145,'600 43px Inter, Arial, sans-serif','#111827');
  const drivers=unique(rows.map(r=>r.driver));
  const plates=unique(rows.map(r=>r.plate));
  const driverText=drivers.length===0?'-':drivers.length===1?drivers[0]:drivers.join(', ');
@@ -1213,7 +1214,7 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  rect(left,summaryY+(summaryH+gap)*2,summaryW,summaryH,'#e9edf2');
  txt('TOTAL SISA BBM',left+22,summaryY+(summaryH+gap)*2+27,'600 16px Arial','#64748b');
  txt(money(total),left+22,summaryY+(summaryH+gap)*2+58,'700 25px Arial','#111827');
- txt('DAFTAR KIRIMAN',52,465,'600 27px "Trebuchet MS", Arial, sans-serif','#111827');
+ txt('DAFTAR KIRIMAN',52,465,'700 27px Inter, Arial, sans-serif','#111827');
  const listTop=490;
  if(!rows.length){
   rect(52,listTop,width-104,90,'#fff');
