@@ -1003,7 +1003,7 @@ const responsiveTableObserver=new MutationObserver(records=>{
 });
 responsiveTableObserver.observe(document.body,{childList:true,subtree:true});
 
-function renderTxForm(){let type=document.getElementById('txType').value;let drivers=state.masters.drivers.map(d=>`<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');let helpers=state.masters.helpers.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');let driverList='<datalist id="txDriverOptions">'+drivers+'</datalist>';let helperList='<datalist id="txHelperOptions">'+helpers+'</datalist>';let plates=state.masters.drivers.map(d=>`<option value="${esc(d.plate)}">${esc(d.plate)}　·　${esc(d.name)}</option>`).join('');let common=type!=='solar'?`<div class="field"><label>Tanggal Input</label><input name="date" type="date" value="${today()}" required></div><div class="field"><label>Penggantian Driver ke Helper</label><div class="mode-switch" role="group" aria-label="Pilih peran transaksi"><button type="button" id="txModeDriver" class="mode-switch-active" onclick="setTxPartyMode('driver')">Driver</button><button type="button" id="txModeHelper" class="secondary" onclick="setTxPartyMode('helper')">Helper</button></div><input type="hidden" name="partyMode" id="txPartyMode" value="driver"></div><div id="txPartyFields" class="field"></div>`:'';let extra='';if(type==='solar'){let solarPlates=[...new Set(state.masters.drivers.map(d=>String(d.plate||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));extra=`<div class="field"><label>Tanggal Input</label><input name="date" type="date" value="${today()}" required></div><div class="field"><label>Nama Transaksi</label><input name="shipment" type="text" required maxlength="120" placeholder="Masukkan nama transaksi"></div><div class="field"><label>Kendaraan</label><select name="plate" required><option value="">Pilih plat nomor kendaraan</option>${solarPlates.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('')}</select></div><div class="field"><label>Driver</label><input name="driver" id="txSolarDriver" autocomplete="off" required placeholder="Ketik nama driver" oninput="showPartySuggestions(\'driver\')"><div id="txSolarDriverSuggestions" class="party-suggestions" hidden></div></div><div class="field"><label>Nominal BBM (Rp)</label><input name="fuel" type="number" min="0" step="1" required placeholder="Masukkan nominal BBM"></div>`}else if(type==='ongkir'){extra=`<div class="field route-field"><label>Tujuan Kiriman</label><input type="search" id="routeSearch" placeholder="Ketik nama tujuan atau kota..." autocomplete="off" required oninput="filterRouteOptions()" onfocus="filterRouteOptions()"><input type="hidden" name="route" id="routePick"><div id="routeSuggestions" class="route-suggestions" role="listbox" aria-label="Hasil pencarian tujuan kiriman"></div><small class="muted">Hasil tujuan muncul otomatis saat Anda mengetik.</small></div><div class="field"><label>Nominal BBM / Alokasi</label><input name="fuel" id="fuelPick" type="number" min="0" required></div><div class="field"><label>Nomor Kiriman / SJ</label><input name="shipment" placeholder="Nomor surat jalan"></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else if(type==='etoll'){extra=`<div class="field"><label>Tanggal Tol</label><input name="tollDate" type="date" value="${today()}" required></div><div class="field"><label>Asal Tol</label><select name="from" id="tollFrom" onchange="tollChanged()" required>${[...new Set(state.masters.tolls.map(t=>t.from))].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div><div class="field"><label>Tujuan Tol</label><select name="to" id="tollTo" onchange="tollPriceChanged()" required></select></div><div class="field"><label>Golongan</label><select name="class" id="tollClass" onchange="tollPriceChanged()"><option value="1">Golongan 1</option><option value="2">Golongan 2</option></select></div><div class="field"><label>Tarif</label><input name="tariff" id="tariff" type="number" min="0" readonly></div><div class="field"><label>Nominal Realisasi</label><input name="amount" id="realization" type="number" min="0" required></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else{extra=`<div class="field"><label>Tanggal Nota</label><input name="notaDate" type="date" value="${today()}" required></div><div class="field"><label>Nominal Pembayaran</label><input name="amount" type="number" min="0" required></div><div class="field"><label>Keterangan (wajib)</label><textarea name="note" required placeholder="Isi keterangan nota pembelian"></textarea></div>`}document.getElementById('txFields').innerHTML=(type==='solar'?'':common)+extra;if(type!=='solar')setTxPartyMode('driver');if(type==='ongkir')routeChanged();if(type==='etoll')tollChanged();setTxTabOrder()}
+function renderTxForm(){let type=document.getElementById('txType').value;let drivers=state.masters.drivers.map(d=>`<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');let helpers=state.masters.helpers.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');let driverList='<datalist id="txDriverOptions">'+drivers+'</datalist>';let helperList='<datalist id="txHelperOptions">'+helpers+'</datalist>';let plates=state.masters.drivers.map(d=>`<option value="${esc(d.plate)}">${esc(d.plate)}　·　${esc(d.name)}</option>`).join('');let common=type!=='solar'?`<div class="field"><label>Tanggal Input</label><input name="date" type="date" value="${today()}" required></div><div class="field"><label>Penggantian Driver ke Helper</label><div class="mode-switch" role="group" aria-label="Pilih peran transaksi"><button type="button" id="txModeDriver" class="mode-switch-active" onclick="setTxPartyMode('driver')">Driver</button><button type="button" id="txModeHelper" class="secondary" onclick="setTxPartyMode('helper')">Helper</button></div><input type="hidden" name="partyMode" id="txPartyMode" value="driver"></div><div id="txPartyFields" class="field"></div>`:'';let extra='';if(type==='solar'){let solarPlates=[...new Set(state.masters.drivers.map(d=>String(d.plate||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));extra=`<div class="field"><label>Tanggal Input</label><input name="date" type="date" value="${today()}" required></div><div class="field"><label>Nama Transaksi</label><input name="shipment" type="text" required maxlength="120" placeholder="Masukkan nama transaksi"></div><div class="field"><label>Kendaraan</label><select name="plate" required><option value="">Pilih plat nomor kendaraan</option>${solarPlates.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('')}</select></div><div class="field"><label>Driver</label><input name="driver" id="txSolarDriver" autocomplete="off" required placeholder="Ketik nama driver" oninput="showPartySuggestions(\'driver\')"><div id="txSolarDriverSuggestions" class="party-suggestions" hidden></div></div><div class="field"><label>Nominal BBM (Rp)</label><input name="fuel" type="number" min="0" step="1" required placeholder="Masukkan nominal BBM"></div>`}else if(type==='ongkir'){extra=`<div class="field route-field"><label>Tujuan Kiriman</label><input type="search" id="routeSearch" placeholder="Ketik nama tujuan atau kota..." autocomplete="off" required oninput="filterRouteOptions()" onfocus="filterRouteOptions()"><input type="hidden" name="route" id="routePick"><div id="routeSuggestions" class="route-suggestions" role="listbox" aria-label="Hasil pencarian tujuan kiriman"></div><small class="muted">Hasil tujuan muncul otomatis saat Anda mengetik.</small></div><div class="field"><label>Nominal BBM / Alokasi</label><input name="fuel" id="fuelPick" type="number" min="0" required></div><div class="field"><label>Nomor Kiriman / SJ</label><input name="shipment" placeholder="Nomor surat jalan"></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else if(type==='etoll'){extra=`<div class="field"><label>Tanggal Tol</label><input name="tollDate" type="date" value="${today()}" required></div><div class="field"><label>Asal Tol</label><input name="from" id="tollFrom" type="text" autocomplete="off" placeholder="Ketik nama gerbang asal tol" oninput="showTollSuggestions('from')" onfocus="showTollSuggestions('from')" required><div id="tollFromSuggestions" class="party-suggestions" hidden></div></div><div class="field"><label>Tujuan Tol</label><input name="to" id="tollTo" type="text" autocomplete="off" placeholder="Ketik nama gerbang tujuan tol" oninput="showTollSuggestions('to')" onfocus="showTollSuggestions('to')" required><div id="tollToSuggestions" class="party-suggestions" hidden></div></div><div class="field"><label>Golongan</label><select name="class" id="tollClass" onchange="tollPriceChanged()"><option value="1">Golongan 1</option><option value="2">Golongan 2</option></select></div><div class="field"><label>Tarif</label><input name="tariff" id="tariff" type="number" min="0" readonly></div><div class="field"><label>Nominal Realisasi</label><input name="amount" id="realization" type="number" min="0" required></div><div class="field"><label>Keterangan (opsional)</label><textarea name="note" placeholder="Keterangan transaksi"></textarea></div>`}else{extra=`<div class="field"><label>Tanggal Nota</label><input name="notaDate" type="date" value="${today()}" required></div><div class="field"><label>Nominal Pembayaran</label><input name="amount" type="number" min="0" required></div><div class="field"><label>Keterangan (wajib)</label><textarea name="note" required placeholder="Isi keterangan nota pembelian"></textarea></div>`}document.getElementById('txFields').innerHTML=(type==='solar'?'':common)+extra;if(type!=='solar')setTxPartyMode('driver');if(type==='ongkir')routeChanged();if(type==='etoll')tollChanged();setTxTabOrder()}
 function setTxTabOrder(){
  const form=document.getElementById('txForm');if(!form)return;
  const type=document.getElementById('txType')?.value||'';
@@ -1033,57 +1033,53 @@ function filterRouteOptions(){let input=document.getElementById('routeSearch'),l
 function selectRouteOption(id){let r=state.masters.routes.find(x=>Number(x.id)===Number(id)),input=document.getElementById('routeSearch'),list=document.getElementById('routeSuggestions'),hidden=document.getElementById('routePick');if(!r||!input||!list||!hidden)return;hidden.value=String(r.id);input.value=`${r.name} — ${r.city}`;input.setCustomValidity('');list.dataset.activeIndex='';routeChanged();input.setAttribute('aria-expanded','false');input.focus();list.hidden=true;list.innerHTML=''}
 function routeChanged(){let el=document.getElementById('routePick');if(!el)return;let r=state.masters.routes.find(x=>x.id===Number(el.value));let f=document.getElementById('fuelPick');if(f&&r)f.value=r.fuel}
 
+function showTollSuggestions(kind){
+ const from=document.getElementById('tollFrom'),to=document.getElementById('tollTo');
+ const input=kind==='from'?from:to,list=document.getElementById(kind==='from'?'tollFromSuggestions':'tollToSuggestions');
+ if(!input||!list)return;
+ const normalize=value=>String(value??'').trim().toLocaleLowerCase('id-ID');
+ const rows=state.masters.tolls||[];
+ const choices=kind==='from'
+  ?[...new Set(rows.map(row=>String(row.from??'').trim()).filter(Boolean))]
+  :rows.filter(row=>normalize(row.from)===normalize(from?.value)).map(row=>String(row.to??'').trim()).filter(Boolean).filter((value,index,array)=>array.findIndex(item=>normalize(item)===normalize(value))===index);
+ const query=normalize(input.value);
+ const matches=choices.map((name,index)=>({name,index})).filter(item=>!query||normalize(item.name).includes(query)).slice(0,10);
+ list.innerHTML=matches.map(item=>'<button type="button" tabindex="-1" class="party-suggestion" onclick="chooseTollSuggestion(\''+kind+'\','+item.index+')">'+esc(item.name)+'</button>').join('');
+ list.hidden=!matches.length;
+ list.dataset.activeIndex='';
+}
+function chooseTollSuggestion(kind,index){
+ const from=document.getElementById('tollFrom'),to=document.getElementById('tollTo');
+ const input=kind==='from'?from:to,list=document.getElementById(kind==='from'?'tollFromSuggestions':'tollToSuggestions');
+ const rows=state.masters.tolls||[],normalize=value=>String(value??'').trim().toLocaleLowerCase('id-ID');
+ const choices=kind==='from'
+  ?[...new Set(rows.map(row=>String(row.from??'').trim()).filter(Boolean))]
+  :rows.filter(row=>normalize(row.from)===normalize(from?.value)).map(row=>String(row.to??'').trim()).filter(Boolean).filter((value,i,array)=>array.findIndex(item=>normalize(item)===normalize(value))===i);
+ if(!input||!choices[index])return;
+ input.value=choices[index];if(list){list.hidden=true;list.innerHTML='';}
+ if(kind==='from'){to.value='';tollChanged();}else{tollPriceChanged();}
+ input.focus();
+}
 function tollChanged(){
-  const from = document.getElementById('tollFrom');
-  const to = document.getElementById('tollTo');
-  if (!from || !to) return;
-
-  const normalize = value => String(value ?? '').trim().toLocaleLowerCase('id-ID');
-  const previous = to.value;
-
-  const rows = (state.masters.tolls || []).filter(
-    t => normalize(t.from) === normalize(from.value)
-  );
-
-  to.innerHTML = '<option value="">Pilih tujuan tol</option>' +
-    rows.map(t =>
-      `<option value="${esc(String(t.to ?? '').trim())}">${esc(String(t.to ?? '').trim())}</option>`
-    ).join('');
-
-  if (rows.some(t => normalize(t.to) === normalize(previous))) {
-    const match = rows.find(t => normalize(t.to) === normalize(previous));
-    to.value = String(match.to).trim();
-  } else if (rows.length) {
-    to.value = String(rows[0].to ?? '').trim();
-  }
-
-  tollPriceChanged();
+ const from=document.getElementById('tollFrom'),to=document.getElementById('tollTo');
+ if(!from||!to)return;
+ const normalize=value=>String(value??'').trim().toLocaleLowerCase('id-ID');
+ const validOrigin=(state.masters.tolls||[]).some(row=>normalize(row.from)===normalize(from.value));
+ if(!validOrigin){to.value='';const tariff=document.getElementById('tariff'),realization=document.getElementById('realization');if(tariff)tariff.value='';if(realization)realization.value='';}
+ const fromList=document.getElementById('tollFromSuggestions'),toList=document.getElementById('tollToSuggestions');
+ if(fromList)fromList.hidden=true;if(toList)toList.hidden=true;
+ tollPriceChanged();
 }
-
 function tollPriceChanged(){
-  const from = document.getElementById('tollFrom');
-  const to = document.getElementById('tollTo');
-  const cls = document.getElementById('tollClass');
-  const tariff = document.getElementById('tariff');
-  const realization = document.getElementById('realization');
-  if (!from || !to || !cls || !tariff || !realization) return;
-
-  const normalize = value => String(value ?? '').trim().toLocaleLowerCase('id-ID');
-  const r = (state.masters.tolls || []).find(
-    t => normalize(t.from) === normalize(from.value) &&
-         normalize(t.to) === normalize(to.value)
-  );
-
-  if (r) {
-    const c = cls.value;
-    tariff.value = Number(r['g' + c + 'tarif'] || 0);
-    realization.value = Number(r['g' + c + 'real'] || 0);
-  } else {
-    tariff.value = '';
-    realization.value = '';
-  }
+ const from=document.getElementById('tollFrom'),to=document.getElementById('tollTo');
+ const cls=document.getElementById('tollClass'),tariff=document.getElementById('tariff'),realization=document.getElementById('realization');
+ if(!from||!to||!cls||!tariff||!realization)return;
+ const normalize=value=>String(value??'').trim().toLocaleLowerCase('id-ID');
+ const r=(state.masters.tolls||[]).find(row=>normalize(row.from)===normalize(from.value)&&normalize(row.to)===normalize(to.value));
+ if(r){const c=cls.value;tariff.value=Number(r['g'+c+'tarif']||0);realization.value=Number(r['g'+c+'real']||0);}
+ else{tariff.value='';realization.value='';}
 }
-function saveTx(e){e.preventDefault();let form=e.target,type=document.getElementById('txType').value,fd=new FormData(form),o=Object.fromEntries(fd.entries());if(type==='nota'&&!o.note.trim()){alert('Keterangan nota wajib diisi.');return}let tx={id:'TRX-'+Date.now().toString().slice(-8)+'-'+String(pendingTxBatch.length+1).padStart(2,'0'),created:Date.now(),type:type==='solar'?'ongkir':type,solarInput:type==='solar',date:o.date||today(),driver:o.driver||'',helper:o.helper||'',plate:o.plate||'',note:o.note||'',status:'pending',amount:0,fuel:0};if(type==='solar'){tx.fuel=Number(o.fuel||0);tx.amount=tx.fuel;tx.route='';tx.shipment=(o.shipment||'').trim();tx.nota1=0;tx.nota2=0;tx.nota3=0;tx.noSol=0;tx.gabung=0;tx.status='draft'}else if(type==='ongkir'){let r=state.masters.routes.find(x=>x.id===Number(o.route));tx.route=r?.name||'';tx.city=r?.city||'';tx.routeId=Number(o.route);tx.fuel=Number(o.fuel||0);tx.amount=tx.fuel;tx.shipment=o.shipment||'';tx.nota1=0;tx.nota2=0;tx.nota3=0;tx.noSol=0;tx.gabung=0;tx.status='draft'}else if(type==='etoll'){tx.from=o.from;tx.to=o.to;tx.tollDate=o.tollDate||o.date||today();tx.tollClass=o.class;tx.tariff=Number(o.tariff||0);tx.amount=Number(o.amount||0)}else{tx.notaDate=o.notaDate||o.date||today();tx.amount=Number(o.amount||0)}let matches=findDuplicateMatches([...state.transactions,...pendingTxBatch,tx]).filter(m=>m.a.id===tx.id||m.b.id===tx.id);if(matches.length){let m=matches[0],other=m.a.id===tx.id?m.b:m.a;let msg='PERINGATAN TRANSAKSI MIRIP ('+m.level+'): '+other.id+' — '+typeName(other.type)+', '+(other.type==='etoll'?(other.tollDate||other.date):other.type==='nota'?(other.notaDate||other.date):other.date)+', '+money(other.amount||other.fuel)+'.\n\nPeriksa apakah transaksi ini ganda. Tidak ada data yang dihapus. Tetap masukkan ke rincian sementara?';if(!confirm(msg))return}pendingTxBatch.push(tx);persistPendingBatch();form.reset();renderTxForm();showSavedTxDetail();showToast('Transaksi masuk ke daftar sementara. Lanjutkan proses sesuai alur aplikasi.');if(type==='ongkir')document.getElementById('txDriver')?.focus();}
+function saveTx(e){e.preventDefault();let form=e.target,type=document.getElementById('txType').value;if(type==='etoll'){const normalize=value=>String(value??'').trim().toLocaleLowerCase('id-ID'),from=document.getElementById('tollFrom'),to=document.getElementById('tollTo'),valid=(state.masters.tolls||[]).some(row=>normalize(row.from)===normalize(from?.value)&&normalize(row.to)===normalize(to?.value));if(!valid){alert('Pilih Asal Tol dan Tujuan Tol dari daftar pilihan yang tersedia.');(from?.value?to:from)?.focus();return}}let fd=new FormData(form),o=Object.fromEntries(fd.entries());if(type==='nota'&&!o.note.trim()){alert('Keterangan nota wajib diisi.');return}let tx={id:'TRX-'+Date.now().toString().slice(-8)+'-'+String(pendingTxBatch.length+1).padStart(2,'0'),created:Date.now(),type:type==='solar'?'ongkir':type,solarInput:type==='solar',date:o.date||today(),driver:o.driver||'',helper:o.helper||'',plate:o.plate||'',note:o.note||'',status:'pending',amount:0,fuel:0};if(type==='solar'){tx.fuel=Number(o.fuel||0);tx.amount=tx.fuel;tx.route='';tx.shipment=(o.shipment||'').trim();tx.nota1=0;tx.nota2=0;tx.nota3=0;tx.noSol=0;tx.gabung=0;tx.status='draft'}else if(type==='ongkir'){let r=state.masters.routes.find(x=>x.id===Number(o.route));tx.route=r?.name||'';tx.city=r?.city||'';tx.routeId=Number(o.route);tx.fuel=Number(o.fuel||0);tx.amount=tx.fuel;tx.shipment=o.shipment||'';tx.nota1=0;tx.nota2=0;tx.nota3=0;tx.noSol=0;tx.gabung=0;tx.status='draft'}else if(type==='etoll'){tx.from=o.from;tx.to=o.to;tx.tollDate=o.tollDate||o.date||today();tx.tollClass=o.class;tx.tariff=Number(o.tariff||0);tx.amount=Number(o.amount||0)}else{tx.notaDate=o.notaDate||o.date||today();tx.amount=Number(o.amount||0)}let matches=findDuplicateMatches([...state.transactions,...pendingTxBatch,tx]).filter(m=>m.a.id===tx.id||m.b.id===tx.id);if(matches.length){let m=matches[0],other=m.a.id===tx.id?m.b:m.a;let msg='PERINGATAN TRANSAKSI MIRIP ('+m.level+'): '+other.id+' — '+typeName(other.type)+', '+(other.type==='etoll'?(other.tollDate||other.date):other.type==='nota'?(other.notaDate||other.date):other.date)+', '+money(other.amount||other.fuel)+'.\n\nPeriksa apakah transaksi ini ganda. Tidak ada data yang dihapus. Tetap masukkan ke rincian sementara?';if(!confirm(msg))return}pendingTxBatch.push(tx);persistPendingBatch();form.reset();renderTxForm();showSavedTxDetail();showToast('Transaksi masuk ke daftar sementara. Lanjutkan proses sesuai alur aplikasi.');if(type==='ongkir')document.getElementById('txDriver')?.focus();}
 function bbmStatus(t){let spent=Number(t.nota1||0)+Number(t.nota2||0)+Number(t.nota3||0)+Number(t.noSol||0)-Number(t.gabung||0);if(spent===0)return 'Belum Terbeli';if(spent<t.fuel)return 'Sebagian';if(spent===t.fuel)return 'Terbeli';return 'Lebih'}
 function bbmStatusClass(t){const s=bbmStatus(t);return s==='Terbeli'?'bbm-status--bought':s==='Sebagian'?'bbm-status--partial':s==='Belum Terbeli'?'bbm-status--none':'bbm-status--over'}
 function renderDepoWarnings(){
@@ -1478,6 +1474,8 @@ function showTransactionDetail(id){
     txDriver:'txDriverSuggestions',
     txHelper:'txHelperSuggestions',
     txSolarDriver:'txSolarDriverSuggestions',
+    tollFrom:'tollFromSuggestions',
+    tollTo:'tollToSuggestions',
     routeSearch:'routeSuggestions'
   };
   function options(list){return Array.from(list.querySelectorAll('button.party-suggestion,button.route-suggestion'))}
