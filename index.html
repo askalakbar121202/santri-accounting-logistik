@@ -1239,7 +1239,7 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  const footerY=listTop+Math.max(rows.length,1)*groupH+5;
  const note='NB: Batas Kiriman Rit-Ritan 3 Hari dan jika terdapat kiriman luar yang terlalu lama, usahakan didahulukan.';
  const noteFont='600 18px "Trebuchet MS", Arial, sans-serif';
- c.font=noteFont;const words=note.split(/\\s+/);const noteLines=[];let noteLine='';
+ c.font=noteFont;const words=note.split(/\s+/);const noteLines=[];let noteLine='';
  words.forEach(word=>{const next=noteLine?noteLine+' '+word:word;if(c.measureText(next).width>width-104&&noteLine){noteLines.push(noteLine);noteLine=word}else noteLine=next;});if(noteLine)noteLines.push(noteLine);
  noteLines.forEach((lineText,index)=>txt(lineText,52,footerY+25+index*25,noteFont,'#475569'));
  txt('Accounting - Logistic',width/2,height-20,'500 14px Arial','#94a3b8','center');
