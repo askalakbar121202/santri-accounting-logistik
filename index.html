@@ -723,28 +723,27 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
   #appLayout table.responsive-table td button{display:inline-flex!important;flex:0 0 auto!important;min-width:max-content!important;white-space:nowrap!important}
 }
 </style><style>
-/* Slider horizontal khusus peringatan Ongkir Depo Pasuruan:
-   tetap terbatas di kartu ini pada split-screen, laptop kecil, dan HP. */
-#page-dashboard,#depoWarningCard,#depoWarningList{min-width:0;max-width:100%}
-#depoWarningList{
-  display:block;width:100%;max-width:100%;min-width:0;
-  overflow-x:auto;overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
-  touch-action:pan-x pan-y;scrollbar-width:thin;
-  border-radius:9px;
-}
-#depoWarningList>table{
-  width:max-content;min-width:980px;max-width:none;
-  white-space:nowrap;
-}
-#depoWarningList>table th,#depoWarningList>table td{
-  white-space:nowrap;min-width:105px;
-}
-#depoWarningList>table th:last-child,#depoWarningList>table td:last-child{min-width:145px}
+/* Slider hanya aktif pada layar sempit. Pada layar lebar,
+   tabel mengikuti layout dashboard normal tanpa lebar minimum paksa. */
 @media(max-width:1000px){
-  #depoWarningCard{padding:14px}
-  #depoWarningList{padding-bottom:3px;scrollbar-width:thin}
-  #depoWarningList>table{min-width:980px}
+  #depoWarningCard{box-sizing:border-box;min-width:0;max-width:100%;padding:14px}
+  #depoWarningList{
+    display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;
+    overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;scrollbar-width:thin;
+    padding-bottom:3px;border-radius:9px;
+  }
+  #depoWarningList>table{
+    display:table!important;width:max-content!important;
+    min-width:980px!important;max-width:none!important;
+    table-layout:auto!important;white-space:nowrap!important;
+  }
+  #depoWarningList>table th,#depoWarningList>table td{
+    display:table-cell!important;min-width:105px!important;
+    white-space:nowrap!important;
+  }
+  #depoWarningList>table th:last-child,#depoWarningList>table td:last-child{min-width:145px!important}
 }
 @media(max-width:700px){
   #depoWarningCard{padding:12px}
@@ -760,8 +759,7 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
     display:table-cell!important;min-width:105px!important;
     white-space:nowrap!important;padding:10px 11px!important;
   }
-}
-</style><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E"><link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E">
+}</style><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E"><link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23f3f4f6%22%2F%3E%3Cpath%20d%3D%22M10%2048%2025%2013h8l15%2035h-9l-3-8H22l-3%208zM25%2032h8l-4-11z%22%20fill%3D%22%23252a32%22%2F%3E%3Cpath%20d%3D%22m37%2013%2017%200-17%2038h-9z%22%20fill%3D%22%23f36b12%22%2F%3E%3Cpath%20d%3D%22M41%2013h13L37%2051h-9z%22%20fill%3D%22%23f36b12%22%20opacity%3D%22.95%22%2F%3E%3C%2Fsvg%3E">
 
 <style>
 /* Mobile usability refinement — isolated to screens <=700px */
