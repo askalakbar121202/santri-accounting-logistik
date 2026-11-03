@@ -1187,37 +1187,44 @@ function openBbmSharePreview(){
 }
 function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  const canvas=document.getElementById('bbmShareCanvas');if(!canvas)return;
- const width=900,rowH=178,topH=430,height=topH+Math.max(rows.length,1)*rowH+70;
+ const width=900,headerH=320,rowH=150,footerH=150,height=headerH+Math.max(rows.length,1)*rowH+footerH;
  canvas.width=width;canvas.height=height;const c=canvas.getContext('2d');
- const roundRect=(x,y,w,h,r,fill)=>{c.fillStyle=fill;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();};
- const wrap=(value,x,y,maxWidth,lineHeight,maxLines=2)=>{const words=String(value??'-').split(/\\s+/);let line='',lines=[];for(const word of words){const test=line?line+' '+word:word;if(c.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;}if(line)lines.push(line);if(lines.length>maxLines){lines=lines.slice(0,maxLines);let last=lines[maxLines-1];while(c.measureText(last+'…').width>maxWidth&&last.length)last=last.slice(0,-1);lines[maxLines-1]=last+'…';}lines.forEach((v,i)=>c.fillText(v,x,y+i*lineHeight));};
- c.fillStyle='#f8fafc';c.fillRect(0,0,width,height);
- const now=new Date(),dateText=now.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
- c.textAlign='right';c.fillStyle='#475569';c.font='bold 19px Arial';c.fillText(dateText,width-48,52);
- c.textAlign='left';c.fillStyle='#111827';c.font='bold 42px Arial';c.fillText('REKAP BBM ARMADA',48,112);
- c.fillStyle='#64748b';c.font='21px Arial';c.fillText('Ringkasan armada berdasarkan pencarian dan filter aktif',48,153);
- roundRect(48,190,width-96,166,18,'#fff1e6');
- c.textAlign='center';c.fillStyle='#9a3412';c.font='bold 23px Arial';c.fillText('TOTAL SISA BBM',width/2,245);
- c.fillStyle='#ea580c';c.font='bold 43px Arial';c.fillText(money(total),width/2,310);
- c.textAlign='left';c.fillStyle='#1f2937';c.font='bold 24px Arial';c.fillText('DAFTAR ARMADA',48,405);
- if(!rows.length){roundRect(48,435,width-96,125,14,'#fff');c.textAlign='center';c.fillStyle='#475569';c.font='21px Arial';c.fillText('Tidak ada armada Belum Terbeli atau Sebagian pada filter ini.',width/2,505);}
+ const card=(x,y,w,h,r,fill)=>{c.fillStyle=fill;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();};
+ const text=(value,x,y,font,color,align='left')=>{c.font=font;c.fillStyle=color;c.textAlign=align;c.fillText(String(value??'-'),x,y);};
+ const fit=(value,maxWidth,font)=>{let v=String(value??'-');c.font=font;if(c.measureText(v).width<=maxWidth)return v;while(v.length>1&&c.measureText(v+'…').width>maxWidth)v=v.slice(0,-1);return v+'…';};
+ c.fillStyle='#f7f8fa';c.fillRect(0,0,width,height);
+ const dateText=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+ text(dateText,width-48,52,'600 19px Arial','#64748b','right');
+ text('REKAP BBM ARMADA',48,112,'800 46px Arial','#111827');
+ const plates=[...new Set(rows.map(r=>String(r.plate||'-').trim()).filter(v=>v&&v!=='-'))];
+ const plateText=plates.length?plates.join('  •  '):'-';
+ card(48,150,width-96,112,16,'#e9edf2');
+ text('PLAT',76,190,'600 19px Arial','#64748b');
+ text(fit(plateText,width-152,'700 29px Arial'),76,232,'700 29px Arial','#111827');
+ text('DAFTAR KIRIMAN',48,310,'800 25px Arial','#111827');
+ if(!rows.length){
+  card(48,340,width-96,100,14,'#fff');
+  text('Tidak ada kiriman Belum Terbeli atau Sebagian.',width/2,398,'500 20px Arial','#64748b','center');
+ }
  rows.forEach((r,i)=>{
-  const y=435+i*rowH;
-  roundRect(48,y,width-96,158,14,'#fff');
-  c.save();c.beginPath();c.roundRect(48,y,170,158,[14,0,0,14]);c.clip();c.fillStyle='#f97316';c.fillRect(48,y,170,158);c.restore();
-  c.textAlign='center';c.fillStyle='#fff';c.font='bold 19px Arial';c.fillText('TANGGAL',133,y+48);
-  c.font='bold 24px Arial';wrap(r.date,133,y+88,145,28,2);
-  const x=242,max=width-300;c.textAlign='left';c.fillStyle='#111827';c.font='bold 23px Arial';
-  wrap(String(r.driver||'-')+(r.helper&&r.helper!=='-'?' / '+r.helper:''),x,y+39,max,28,2);
-  c.fillStyle='#475569';c.font='19px Arial';wrap('Plat: '+(r.plate||'-'),x,y+83,max,25,1);
-  wrap('Kiriman: '+(r.shipment||'-'),x,y+111,max,24,1);
-  c.font='bold 19px Arial';c.fillStyle=r.status==='Belum Terbeli'?'#b91c1c':'#a16207';c.fillText(r.status||'-',x,y+143);
-  c.textAlign='right';c.fillStyle='#111827';c.font='bold 20px Arial';c.fillText('Sisa: '+money(r.remaining),width-70,y+143);
+  const y=340+i*rowH;
+  card(48,y,width-96,132,14,'#fff');
+  text(fit(r.date||'-',width-150,'600 16px Arial'),74,y+31,'600 16px Arial','#64748b');
+  text(fit(String(r.driver||'-')+(r.helper&&r.helper!=='-'?' / '+r.helper:''),width-150,'700 25px Arial'),74,y+65,'700 25px Arial','#111827');
+  text(fit('Kiriman: '+(r.shipment||'-'),width-150,'500 19px Arial'),74,y+96,'500 19px Arial','#334155');
+  const statusColor=r.status==='Belum Terbeli'?'#b91c1c':'#a16207';
+  text(r.status||'-',74,y+122,'700 17px Arial',statusColor);
+  text('Sisa BBM',width-74,y+119,'500 15px Arial','#64748b','right');
+  text(money(r.remaining),width-74,y+96,'700 21px Arial','#111827','right');
  });
- c.textAlign='center';c.fillStyle='#64748b';c.font='16px Arial';c.fillText('Rekap BBM Armada',width/2,height-24);
+ const totalY=headerH+Math.max(rows.length,1)*rowH+8;
+ card(48,totalY,width-96,112,16,'#e9edf2');
+ text('TOTAL SISA BBM',width/2,totalY+40,'600 19px Arial','#64748b','center');
+ text(money(total),width/2,totalY+82,'700 30px Arial','#111827','center');
+ text('Rekap BBM Armada',width/2,height-22,'500 15px Arial','#94a3b8','center');
 }
 function refreshBbmSharePreview(){renderBBM();openBbmSharePreview();}
-async async function copyBbmShareImage(){
+async function copyBbmShareImage(){
  const canvas=document.getElementById('bbmShareCanvas'),msg=document.getElementById('bbmShareMessage');if(!canvas)return;
  try{
   if(!navigator.clipboard||!window.ClipboardItem)throw new Error('Clipboard gambar tidak didukung browser ini.');
