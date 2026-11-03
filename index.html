@@ -1217,7 +1217,7 @@ function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  c.textAlign='center';c.fillStyle='#64748b';c.font='16px Arial';c.fillText('Rekap BBM Armada',width/2,height-24);
 }
 function refreshBbmSharePreview(){renderBBM();openBbmSharePreview();}
-async function copyBbmShareImage(){
+async async function copyBbmShareImage(){
  const canvas=document.getElementById('bbmShareCanvas'),msg=document.getElementById('bbmShareMessage');if(!canvas)return;
  try{
   if(!navigator.clipboard||!window.ClipboardItem)throw new Error('Clipboard gambar tidak didukung browser ini.');
