@@ -910,9 +910,12 @@ document.getElementById('cloudLoginForm').addEventListener('submit',async e=>{e.
 
 function logAction(action,tx,detail=''){if(!Array.isArray(state.audit))state.audit=[];state.audit.unshift({at:new Date().toISOString(),action,txId:tx?.id||'-',detail:detail||tx?.note||tx?.route||tx?.from+' - '+tx?.to||'',user:state.admin||'Admin Accounting'});state.audit=state.audit.slice(0,3000)}
 function toggleSidebar(){
-  if(window.matchMedia('(max-width: 700px)').matches){
+  /* Samakan breakpoint JS dengan CSS drawer agar sidebar tetap terbuka pada layar split/resized. */
+  if(window.matchMedia('(max-width: 1000px)').matches){
+    document.getElementById('appLayout').classList.remove('sidebar-hidden');
     document.body.classList.toggle('sidebar-open');
   }else{
+    document.body.classList.remove('sidebar-open');
     document.getElementById('appLayout').classList.toggle('sidebar-hidden');
   }
 }
