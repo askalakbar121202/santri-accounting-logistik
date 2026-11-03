@@ -899,6 +899,40 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
 }
 </style>
 
+
+<style>
+/* Slider Transaksi Terbaru hanya pada layar sempit; desktop tetap normal. */
+@media(max-width:1000px){
+  #recent{
+    display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;
+    overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;scrollbar-width:thin;padding-bottom:3px;
+  }
+  #recent>table,#recent>table.responsive-table{
+    display:table!important;width:max-content!important;
+    min-width:760px!important;max-width:none!important;
+    table-layout:auto!important;white-space:nowrap!important;
+  }
+  #recent>table th,#recent>table td{
+    display:table-cell!important;min-width:105px!important;
+    white-space:nowrap!important;vertical-align:middle;
+  }
+  #recent>table th:last-child,#recent>table td:last-child{min-width:115px!important}
+}
+@media(max-width:700px){
+  #recent{overflow-x:auto!important;overscroll-behavior-x:contain}
+  #recent>table,#recent>table.responsive-table{
+    display:table!important;width:max-content!important;
+    min-width:760px!important;max-width:none!important;
+    table-layout:auto!important;white-space:nowrap!important;
+  }
+  #recent>table th,#recent>table td{
+    display:table-cell!important;min-width:105px!important;
+    padding:10px 11px!important;white-space:nowrap!important;
+  }
+}
+</style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
