@@ -1046,7 +1046,7 @@ function showTollSuggestions(kind){
  // Daftar pilihan hanya dibuka setelah pengguna mengetik.
  if(!query){list.innerHTML='';list.hidden=true;list.dataset.activeIndex='';input.setAttribute('aria-expanded','false');return;}
  const matches=choices.map((name,index)=>({name,index})).filter(item=>normalize(item.name).includes(query)).slice(0,10);
- list.innerHTML=matches.map(item=>'<button type="button" tabindex="-1" class="party-suggestion" onclick="chooseTollSuggestion(\''+kind+'\\','+item.index+')">'+esc(item.name)+'</button>').join('');
+ list.innerHTML=matches.map(item=>'<button type="button" tabindex="-1" class="party-suggestion" onclick="chooseTollSuggestion(\''+kind+'\','+item.index+')">'+esc(item.name)+'</button>').join('');
  list.hidden=matches.length===0;
  list.dataset.activeIndex='';
  input.setAttribute('aria-expanded',String(matches.length>0));
