@@ -1007,16 +1007,22 @@ function renderTxForm(){let type=document.getElementById('txType').value;let dri
 function setTxTabOrder(){
  const form=document.getElementById('txForm');if(!form)return;
  const type=document.getElementById('txType')?.value||'';
+ const mode=document.getElementById('txPartyMode')?.value||'driver';
  form.querySelectorAll('input,select,textarea,button').forEach(el=>{el.tabIndex=-1});
  let fields=[];
  if(type==='ongkir'){
-  const mode=document.getElementById('txPartyMode')?.value||'driver';
   fields=[document.getElementById(mode==='helper'?'txHelper':'txDriver'),document.getElementById('routeSearch'),form.querySelector('textarea[name="note"]')];
+ }else if(type==='solar'){
+  fields=[form.querySelector('[name="shipment"]'),form.querySelector('[name="plate"]'),document.getElementById('txSolarDriver')];
+ }else if(type==='etoll'){
+  fields=[document.getElementById(mode==='helper'?'txHelper':'txDriver'),form.querySelector('[name="tollDate"]'),form.querySelector('[name="from"]'),form.querySelector('[name="to"]'),form.querySelector('[name="class"]')];
+ }else if(type==='nota'){
+  fields=[document.getElementById(mode==='helper'?'txHelper':'txDriver'),form.querySelector('[name="notaDate"]'),form.querySelector('[name="amount"]'),form.querySelector('[name="note"]')];
  }else{
   fields=Array.from(form.querySelectorAll('input,select,textarea')).filter(el=>el.type!=='hidden'&&!el.readOnly&&!el.disabled&&!el.closest('[hidden]'));
  }
  const submit=form.querySelector('button[type="submit"]');
- [...fields,submit].forEach(el=>{if(el)el.tabIndex=0});
+ [...fields,submit].forEach(el=>{if(el&&!el.disabled&&!el.closest('[hidden]'))el.tabIndex=0});
  form.querySelectorAll('#txDriverSuggestions button,#txHelperSuggestions button,#txSolarDriverSuggestions button,#routeSuggestions button').forEach(el=>{el.tabIndex=-1});
 }
 function setTxPartyMode(mode){const normalized=mode==='helper'?'helper':'driver',container=document.getElementById('txPartyFields'),modeInput=document.getElementById('txPartyMode');if(!container||!modeInput)return;modeInput.value=normalized;const driverButton=document.getElementById('txModeDriver'),helperButton=document.getElementById('txModeHelper');if(driverButton){driverButton.classList.toggle('mode-switch-active',normalized==='driver');driverButton.classList.toggle('secondary',normalized!=='driver')}if(helperButton){helperButton.classList.toggle('mode-switch-active',normalized==='helper');helperButton.classList.toggle('secondary',normalized!=='helper')}if(normalized==='driver'){container.innerHTML='<label>Nama Driver</label><input id="txDriver" name="driver" autocomplete="off" required placeholder="Ketik nama driver" oninput="showPartySuggestions(\'driver\');syncTxDriverPlate()"><div id="txDriverSuggestions" class="party-suggestions" hidden></div><label style="margin-top:8px">Plat Armada (otomatis)</label><input id="txDriverPlate" type="text" readonly placeholder="Plat terisi setelah driver dipilih"><input type="hidden" name="plate" id="txPlateValue">';}else{container.innerHTML='<label>Nama Helper</label><input id="txHelper" name="helper" autocomplete="off" required placeholder="Ketik nama helper" oninput="showPartySuggestions(\'helper\')"><div id="txHelperSuggestions" class="party-suggestions" hidden></div><label style="margin-top:8px">Plat Armada (pilih manual)</label><select name="plate" required><option value="">Pilih plat armada</option>'+state.masters.drivers.map(d=>'<option value="'+esc(d.plate)+'">'+esc(d.plate)+' · '+esc(d.name)+'</option>').join('')+'</select>';}setTxTabOrder()}
