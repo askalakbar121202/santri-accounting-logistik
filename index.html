@@ -1187,41 +1187,63 @@ function openBbmSharePreview(){
 }
 function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  const canvas=document.getElementById('bbmShareCanvas');if(!canvas)return;
- const width=900,headerH=320,rowH=150,footerH=150,height=headerH+Math.max(rows.length,1)*rowH+footerH;
+ const width=1000,headerH=500,groupH=142,footerH=190,height=headerH+Math.max(rows.length,1)*groupH+footerH;
  canvas.width=width;canvas.height=height;const c=canvas.getContext('2d');
- const card=(x,y,w,h,r,fill)=>{c.fillStyle=fill;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();};
- const text=(value,x,y,font,color,align='left')=>{c.font=font;c.fillStyle=color;c.textAlign=align;c.fillText(String(value??'-'),x,y);};
- const fit=(value,maxWidth,font)=>{let v=String(value??'-');c.font=font;if(c.measureText(v).width<=maxWidth)return v;while(v.length>1&&c.measureText(v+'…').width>maxWidth)v=v.slice(0,-1);return v+'…';};
+ const rect=(x,y,w,h,fill)=>{c.fillStyle=fill;c.fillRect(x,y,w,h);};
+ const line=(x1,y1,x2,y2,color='#d7dde5',lw=1)=>{c.strokeStyle=color;c.lineWidth=lw;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
+ const txt=(v,x,y,font,color='#111827',align='left')=>{c.font=font;c.fillStyle=color;c.textAlign=align;c.fillText(String(v??'-'),x,y);};
+ const fit=(v,max,font)=>{let t=String(v??'-');c.font=font;if(c.measureText(t).width<=max)return t;while(t.length>1&&c.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…';};
+ const unique=(vals)=>[...new Set(vals.map(v=>String(v||'').trim()).filter(v=>v&&v!=='-'))];
  c.fillStyle='#f7f8fa';c.fillRect(0,0,width,height);
- const dateText=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
- text(dateText,width-48,52,'600 19px Arial','#64748b','right');
- text('REKAP BBM ARMADA',48,112,'800 46px Arial','#111827');
- const plates=[...new Set(rows.map(r=>String(r.plate||'-').trim()).filter(v=>v&&v!=='-'))];
- const plateText=plates.length?plates.join('  •  '):'-';
- card(48,150,width-96,112,16,'#e9edf2');
- text('PLAT',76,190,'600 19px Arial','#64748b');
- text(fit(plateText,width-152,'700 29px Arial'),76,232,'700 29px Arial','#111827');
- text('DAFTAR KIRIMAN',48,310,'800 25px Arial','#111827');
+ txt('Accounting - Logistic',width/2,52,'700 25px Arial','#334155','center');
+ const today=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+ txt(today,width-52,92,'600 19px Arial','#64748b','right');
+ txt('REKAP BBM ARMADA',52,145,'800 43px Arial','#111827');
+ const drivers=unique(rows.map(r=>r.driver));
+ const plates=unique(rows.map(r=>r.plate));
+ const driverText=drivers.length===0?'-':drivers.length===1?drivers[0]:drivers.join(', ');
+ const plateText=plates.length===0?'-':plates.length===1?plates[0]:plates.join(', ');
+ const summaryY=178,summaryH=76,gap=12,left=52,summaryW=width-104;
+ rect(left,summaryY,summaryW,summaryH,'#e9edf2');
+ txt('DRIVER',left+22,summaryY+27,'600 16px Arial','#64748b');
+ txt(fit(driverText,summaryW-44,'700 23px Arial'),left+22,summaryY+58,'700 23px Arial','#111827');
+ rect(left,summaryY+summaryH+gap,summaryW,summaryH,'#e9edf2');
+ txt('PLAT NOMOR',left+22,summaryY+summaryH+gap+27,'600 16px Arial','#64748b');
+ txt(fit(plateText,summaryW-44,'700 23px Arial'),left+22,summaryY+summaryH+gap+58,'700 23px Arial','#111827');
+ rect(left,summaryY+(summaryH+gap)*2,summaryW,summaryH,'#e9edf2');
+ txt('TOTAL SISA BBM',left+22,summaryY+(summaryH+gap)*2+27,'600 16px Arial','#64748b');
+ txt(money(total),left+22,summaryY+(summaryH+gap)*2+58,'700 25px Arial','#111827');
+ txt('DAFTAR KIRIMAN',52,449,'800 25px Arial','#111827');
+ const listTop=470;
  if(!rows.length){
-  card(48,340,width-96,100,14,'#fff');
-  text('Tidak ada kiriman Belum Terbeli atau Sebagian.',width/2,398,'500 20px Arial','#64748b','center');
+  rect(52,listTop,width-104,90,'#fff');
+  txt('Tidak ada kiriman Belum Terbeli atau Sebagian.',width/2,listTop+54,'500 19px Arial','#64748b','center');
  }
  rows.forEach((r,i)=>{
-  const y=340+i*rowH;
-  card(48,y,width-96,132,14,'#fff');
-  text(fit(r.date||'-',width-150,'600 16px Arial'),74,y+31,'600 16px Arial','#64748b');
-  text(fit(String(r.driver||'-')+(r.helper&&r.helper!=='-'?' / '+r.helper:''),width-150,'700 25px Arial'),74,y+65,'700 25px Arial','#111827');
-  text(fit('Kiriman: '+(r.shipment||'-'),width-150,'500 19px Arial'),74,y+96,'500 19px Arial','#334155');
+  const y=listTop+i*groupH;
+  rect(52,y,width-104,groupH-8,'#fff');
+  rect(52,y,width-104,37,'#fff0e6');
+  txt('TANGGAL KIRIMAN',72,y+25,'700 15px Arial','#c2410c');
+  txt(r.date||'-',width-72,y+25,'700 17px Arial','#111827','right');
+  const x1=72,x2=355,x3=625,x4=width-72;
+  txt('DRIVER / HELPER',x1,y+62,'600 13px Arial','#64748b');
+  txt('KIRIMAN',x2,y+62,'600 13px Arial','#64748b');
+  txt('STATUS',x3,y+62,'600 13px Arial','#64748b');
+  txt('SISA BBM',x4,y+62,'600 13px Arial','#64748b','right');
+  txt(fit(String(r.driver||'-')+(r.helper&&r.helper!=='-'?' / '+r.helper:''),250,'700 17px Arial'),x1,y+91,'700 17px Arial','#111827');
+  txt(fit(r.shipment||'-',245,'600 16px Arial'),x2,y+91,'600 16px Arial','#111827');
   const statusColor=r.status==='Belum Terbeli'?'#b91c1c':'#a16207';
-  text(r.status||'-',74,y+122,'700 17px Arial',statusColor);
-  text('Sisa BBM',width-74,y+119,'500 15px Arial','#64748b','right');
-  text(money(r.remaining),width-74,y+96,'700 21px Arial','#111827','right');
+  txt(fit(r.status||'-',150,'700 15px Arial'),x3,y+91,'700 15px Arial',statusColor);
+  txt(money(r.remaining),x4,y+91,'700 17px Arial','#111827','right');
+  line(70,y+105,width-70,y+105,'#e2e8f0',1);
  });
- const totalY=headerH+Math.max(rows.length,1)*rowH+8;
- card(48,totalY,width-96,112,16,'#e9edf2');
- text('TOTAL SISA BBM',width/2,totalY+40,'600 19px Arial','#64748b','center');
- text(money(total),width/2,totalY+82,'700 30px Arial','#111827','center');
- text('Rekap BBM Armada',width/2,height-22,'500 15px Arial','#94a3b8','center');
+ const footerY=listTop+Math.max(rows.length,1)*groupH+5;
+ txt('NB : Batas Kiriman Rit-Ritan 3 Hari dan jika terdapat kiriman luar yang terlalu lama, usahakan didahulukan.',52,footerY+20,'600 14px Arial','#475569');
+ rect(52,footerY+43,width-104,80,'#e9edf2');
+ txt('TOTAL',76,footerY+75,'700 18px Arial','#64748b');
+ txt('TOTAL SISA BBM',width-76,footerY+75,'600 16px Arial','#64748b','right');
+ txt(money(total),width-76,footerY+105,'700 25px Arial','#111827','right');
+ txt('Accounting - Logistic',width/2,height-20,'500 14px Arial','#94a3b8','center');
 }
 function refreshBbmSharePreview(){renderBBM();openBbmSharePreview();}
 async function copyBbmShareImage(){
