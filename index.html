@@ -1436,4 +1436,68 @@ function showTransactionDetail(id){
  openActionDialog('Detail Transaksi','Informasi lengkap transaksi yang dipilih.',body,'',null);
 }
 
+
+/* Navigasi keyboard untuk seluruh dropdown pilihan data berbasis autocomplete */
+(function(){
+  const inputToList={
+    txDriver:'txDriverSuggestions',
+    txHelper:'txHelperSuggestions',
+    txSolarDriver:'txSolarDriverSuggestions',
+    routeSearch:'routeSuggestions'
+  };
+  function options(list){return Array.from(list.querySelectorAll('button.party-suggestion,button.route-suggestion'))}
+  function setActive(list,index){
+    const items=options(list);if(!items.length)return;
+    const next=(index+items.length)%items.length;
+    items.forEach((item,i)=>{item.tabIndex=-1;item.classList.toggle('keyboard-active',i===next);item.setAttribute('aria-selected',i===next?'true':'false')});
+    list.dataset.activeIndex=String(next);items[next].focus({preventScroll:true});items[next].scrollIntoView({block:'nearest'});
+  }
+  function hideList(input,list,returnFocus){
+    list.hidden=true;list.dataset.activeIndex='';options(list).forEach(item=>{item.classList.remove('keyboard-active');item.setAttribute('aria-selected','false')});
+    input.setAttribute('aria-expanded','false');if(returnFocus)input.focus();
+  }
+  document.addEventListener('focusin',event=>{
+    const input=event.target;if(!input||!input.id||!inputToList[input.id])return;
+    input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-expanded','false');
+  });
+  document.addEventListener('keydown',event=>{
+    const target=event.target;
+    const input=target&&inputToList[target.id]?target:null;
+    if(input){
+      const list=document.getElementById(inputToList[input.id]);if(!list||list.hidden)return;
+      const items=options(list);if(!items.length)return;
+      if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+        event.preventDefault();const current=Number(list.dataset.activeIndex??-1);
+        setActive(list,event.key==='ArrowDown'?(current+1):(current<0?items.length-1:current-1));
+      }else if(event.key==='Enter'){
+        event.preventDefault();const current=Number(list.dataset.activeIndex??0);items[Math.max(0,Math.min(items.length-1,current))].click();
+      }else if(event.key==='Escape'){event.preventDefault();hideList(input,list,false)}
+      return;
+    }
+    const list=target&&target.closest?target.closest('.party-suggestions,.route-suggestions'):null;
+    if(!list||list.hidden)return;
+    const items=options(list);if(!items.length)return;
+    const owner=Object.keys(inputToList).map(id=>document.getElementById(id)).find(el=>el&&document.getElementById(inputToList[el.id])===list);
+    if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+      event.preventDefault();const current=items.indexOf(target);
+      setActive(list,event.key==='ArrowDown'?current+1:(current<0?items.length-1:current-1));
+    }else if(event.key==='Escape'){
+      event.preventDefault();if(owner)hideList(owner,list,true);else list.hidden=true;
+    }
+  });
+  document.addEventListener('input',event=>{
+    const input=event.target;if(!input||!input.id||!inputToList[input.id])return;
+    const list=document.getElementById(inputToList[input.id]);if(list){list.dataset.activeIndex='';input.setAttribute('aria-expanded',String(!list.hidden&&options(list).length>0));}
+  });
+  document.addEventListener('click',event=>{
+    const input=event.target&&event.target.id&&inputToList[event.target.id]?event.target:null;
+    if(input){const list=document.getElementById(inputToList[input.id]);if(list)input.setAttribute('aria-expanded',String(!list.hidden&&options(list).length>0));}
+    const option=event.target&&event.target.closest?event.target.closest('.party-suggestion,.route-suggestion'):null;
+    if(option){const list=option.closest('.party-suggestions,.route-suggestions');if(list){list.dataset.activeIndex='';const owner=Object.keys(inputToList).map(id=>document.getElementById(id)).find(el=>el&&document.getElementById(inputToList[el.id])===list);if(owner)owner.setAttribute('aria-expanded','false');}}
+  });
+  document.addEventListener('change',event=>{
+    const el=event.target;if(el&&el.tagName==='SELECT')el.dataset.keyboardChoice='true';
+  });
+})();
+
 </script></body></html>
