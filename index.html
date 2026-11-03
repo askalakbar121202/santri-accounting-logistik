@@ -1188,7 +1188,6 @@ function openBbmSharePreview(){
 function drawBbmShareCanvas(rows,total,countBelum,countSebagian){
  const canvas=document.getElementById('bbmShareCanvas');if(!canvas)return;
  const width=1000,headerH=500,groupH=142,footerH=190,height=headerH+Math.max(rows.length,1)*groupH+footerH;
- if(document.fonts?.check&&!document.fonts.check('600 43px Inter')){await document.fonts.load('600 43px Inter');await document.fonts.load('700 27px Inter');}
  canvas.width=width;canvas.height=height;const c=canvas.getContext('2d');
  const rect=(x,y,w,h,fill)=>{c.fillStyle=fill;c.fillRect(x,y,w,h);};
  const line=(x1,y1,x2,y2,color='#d7dde5',lw=1)=>{c.strokeStyle=color;c.lineWidth=lw;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
