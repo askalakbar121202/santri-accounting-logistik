@@ -1015,9 +1015,25 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 #bbmTable th:nth-child(13),#bbmTable td:nth-child(13){width:110px;min-width:110px;white-space:nowrap}
 #bbmTable th:nth-child(14),#bbmTable td:nth-child(14){width:110px;white-space:nowrap}
 
-/* Sidebar desktop tetap menempel pada viewport sepanjang halaman digulir, tanpa scroll mandiri */
+/* Sidebar bersama: selector tidak bergantung pada urutan elemen di dalam appLayout.
+   Berlaku untuk seluruh halaman menu dan tidak membuat scrollbar vertikal terpisah. */
 @media(min-width:701px){
-  #appLayout>.sidebar{position:sticky!important;top:0!important;align-self:flex-start;overflow:visible!important;max-height:none!important;height:auto!important;box-sizing:border-box}
+  #appLayout .sidebar{
+    position:sticky!important;
+    top:0!important;
+    align-self:flex-start;
+    overflow:visible!important;
+    max-height:none!important;
+    height:auto!important;
+    box-sizing:border-box;
+  }
+}
+/* Laporan Utama: tabel hanya menjadi area geser horizontal,
+   agar scroll vertikal halaman tidak tertahan/terasa terlalu sensitif di atas tabel. */
+#arTable .tablewrap{
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-y:auto;
 }
 </style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
