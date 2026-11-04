@@ -1015,11 +1015,9 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 #bbmTable th:nth-child(13),#bbmTable td:nth-child(13){width:110px;min-width:110px;white-space:nowrap}
 #bbmTable th:nth-child(14),#bbmTable td:nth-child(14){width:110px;white-space:nowrap}
 
-/* Sidebar tetap terlihat saat halaman digulir; daftar menu dapat digulir sendiri */
+/* Sidebar mengikuti halaman dan tetap terlihat saat konten utama digulir; tanpa scroll mandiri */
 @media(min-width:701px){
-  #appLayout>.sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;box-sizing:border-box}
-  #appLayout>.sidebar::-webkit-scrollbar{width:6px}
-  #appLayout>.sidebar::-webkit-scrollbar-thumb{background:#ffffff45;border:1px solid transparent}
+  #appLayout>.sidebar{position:sticky;top:0;align-self:flex-start;overflow:visible;box-sizing:border-box}
 }
 </style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
