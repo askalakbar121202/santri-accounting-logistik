@@ -1401,7 +1401,10 @@ function renderHistory(){
  const audit=Array.isArray(state.audit)?state.audit:[];
  const activityEl=document.getElementById('historyActivity'),selected=activityEl?.value||'';
  if(activityEl){const actions=[...new Set(audit.map(x=>String(x.action||'Aktivitas lain')).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));activityEl.innerHTML='<option value="">Semua Aktivitas</option>'+actions.map(a=>'<option value="'+esc(a)+'">'+esc(a)+'</option>').join('');activityEl.value=actions.includes(selected)?selected:'';}
- const from=document.getElementById('historyFrom')?.value||'',to=document.getElementById('historyTo')?.value||'',q=(document.getElementById('historySearch')?.value||'').trim().toLocaleLowerCase('id'),activity=activityEl?.value||'';
+ const fromInput=document.getElementById('historyFrom')?.value||'',toInput=document.getElementById('historyTo')?.value||'';
+ const defaultToday=!fromInput&&!toInput?today():'';
+ const from=fromInput||defaultToday,to=toInput||defaultToday;
+ const q=(document.getElementById('historySearch')?.value||'').trim().toLocaleLowerCase('id'),activity=activityEl?.value||'';
  const items=audit.filter(x=>{const date=historyLocalDate(x.at);return (!from||date>=from)&&(!to||date<=to)&&(!activity||String(x.action||'Aktivitas lain')===activity)&&(`${x.action} ${x.txId} ${x.detail} ${x.user}`.toLocaleLowerCase('id').includes(q));}).sort((a,b)=>new Date(b.at)-new Date(a.at));
  const list=document.getElementById('historyList');
  list.innerHTML=items.length?items.slice(0,500).map(x=>`<div class="audit-item"><div><strong>${esc(x.action)}</strong> <span class="pill">${esc(x.txId||'-')}</span><span style="float:right" class="muted">${new Date(x.at).toLocaleString('id-ID')}</span></div><div class="muted" style="margin-top:5px">${esc(x.detail||'-')} • Oleh: ${esc(x.user||'Admin')}</div></div>`).join(''):'<div class="empty">Tidak ada riwayat perubahan pada rentang tanggal atau aktivitas yang dipilih.</div>';
