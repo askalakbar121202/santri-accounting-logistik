@@ -1284,7 +1284,7 @@ function renderBBM(){
  document.getElementById('bbmTotalRemaining').textContent=money(totalRemaining);
  document.getElementById('bbmTotalNoSolCount').textContent=totalNoSolCount+' kali';
  document.getElementById('bbmTotalNoSolAmount').textContent=money(totalNoSolAmount);
- document.getElementById('bbmTotalShipments').textContent=rows.length;
+ document.getElementById('bbmTotalShipments').textContent=rows.filter(t=>['Belum Terbeli','Sebagian'].includes(bbmStatus(t))).length;
  document.getElementById('bbmTable').innerHTML=table(['Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status','Aksi'],rows.map(t=>{let spent=Number(t.nota1||0)+Number(t.nota2||0)+Number(t.nota3||0)+Number(t.noSol||0)-Number(t.gabung||0);let remaining=t.fuel-spent;return [t.date,esc(t.driver||'-'),esc(t.helper||'-'),esc(t.plate||'-'),esc(txDetail(t)),money(t.fuel),money(t.nota1),money(t.nota2),money(t.nota3),money(t.noSol),money(t.gabung),money(remaining),`<span class="status bbm-status ${bbmStatusClass(t)}">${bbmStatus(t)}</span>`,`<button class="secondary" onclick="editFuel('${t.id}')">Isi nota</button>`]}));
  window.bbmShareRows=rows.filter(t=>['Belum Terbeli','Sebagian'].includes(bbmStatus(t))).map(t=>{const spent=Number(t.nota1||0)+Number(t.nota2||0)+Number(t.nota3||0)+Number(t.noSol||0)-Number(t.gabung||0);return {date:t.date,driver:t.driver||'-',helper:t.helper||'-',plate:t.plate||'-',shipment:txDetail(t)||'-',status:bbmStatus(t),remaining:Number(t.fuel||0)-spent};});
  window.bbmShareTotal=window.bbmShareRows.reduce((sum,t)=>sum+t.remaining,0);
