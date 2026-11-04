@@ -933,7 +933,19 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
   }
 }
 </style>
-</head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
+<style>
+/* Header orange dan identitas akun pada sidebar */
+#appLayout .topbar{background:linear-gradient(105deg,#ed650b,#ff861f)!important;color:#fff!important;border:0!important;box-shadow:0 2px 12px #d95c0828!important}
+#appLayout .topbar .topbar-brand strong{color:#fff!important;font-size:16px;font-weight:800;letter-spacing:.1px}
+#appLayout .topbar .topbar-brand small{color:#fff!important;font-size:11px;font-weight:600;opacity:.94}
+#appLayout .topbar #today,#appLayout .topbar #cloudStatus{color:#fff!important}
+#appLayout .topbar .sidebar-toggle{background:#fff!important;color:#d95c08!important;border:1px solid #ffffff80!important;box-shadow:none!important}
+#appLayout .sidebar-identity{display:flex;flex-direction:column;gap:3px;margin:-7px 8px 20px;padding:10px 11px;border:1px solid #f2c6a6;border-radius:10px;background:#fff7f0;color:#303640;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+#appLayout .sidebar-identity span:first-child{font-weight:750;color:#252a32}
+#appLayout .sidebar-identity span:last-child{font-size:11px;color:#d95c08;font-weight:650}
+@media(max-width:700px){#appLayout .topbar{height:auto;min-height:62px;padding:8px 12px;gap:8px}#appLayout .topbar .topbar-brand strong{font-size:13px}#appLayout .topbar .topbar-brand small{font-size:10px}#appLayout .topbar .topbar-meta{min-width:0!important}#appLayout .topbar #today{font-size:10px!important}#appLayout .topbar .topbar-meta button{padding:5px 8px!important;margin-top:0!important}#appLayout .sidebar-identity{margin:0 4px 14px}}
+body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:#303640!important;border-color:#f2c6a6!important}
+</style></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
 </div>
@@ -947,16 +959,16 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
 
 <div id="cloudLoginMsg" class="gatemsg"></div>
 <p style="font-size:11px;color:#71808b">Pastikan Koneksi Internet Terhubung. Jika Mengalami Kendala Hubungi Wong Pusat.</p></div></div><div class="layout" id="appLayout" style="display:none">
-<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()" aria-hidden="true"></div><aside class="sidebar"><button type="button" class="sidebar-inner-toggle" onclick="closeSidebar()" aria-label="Tutup menu">×</button><div class="brand"><div class="sidebar-wordmark" aria-label="Accounting - Logistic, By askalwddakbr"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><div class="brand-copy"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div><nav class="nav" id="nav">
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()" aria-hidden="true"></div><aside class="sidebar"><button type="button" class="sidebar-inner-toggle" onclick="closeSidebar()" aria-label="Tutup menu">×</button><div class="brand"><div class="sidebar-wordmark" aria-label="Accounting - Logistic, By askalwddakbr"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><div class="brand-copy"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div><div id="cloudIdentity" class="sidebar-identity" aria-live="polite"></div><nav class="nav" id="nav">
 <div class="section">Dashboard</div><a href="?page=dashboard" class="active" data-page="dashboard">▦ Dashboard Utama</a><a href="?page=bbm" data-page="bbm">⛽ Dashboard BBM Armada</a><a href="?page=fleet-analysis" data-page="fleet-analysis">📊 Analisis Biaya Armada</a>
 <div class="section">Transaksi</div><a href="?page=input" data-page="input">＋ Input Transaksi</a><a href="?page=payments" data-page="payments">✓ Pembayaran <span id="paymentNavCount" class="work-nav-count" hidden></span></a><a href="?page=auto-reports" data-page="auto-reports">📈 Laporan Otomatis</a><a href="?page=reports" data-page="reports">▤ Laporan Transaksi</a><a href="?page=history" data-page="history">◷ Riwayat Perubahan</a>
 <div class="section">Pekerjaan</div><a href="?page=work" data-page="work" id="workNavButton">☑ Daftar Pekerjaan <span id="workNavCount" class="work-nav-count"></span></a><a href="?page=work-schedule" data-page="work-schedule">◷ Jadwal Pekerjaan</a>
 <div class="section">Data & Sistem</div><a href="?page=masters" data-page="masters">▣ Master Data</a><a href="?page=users" data-page="users">👥 Pengguna Lokal</a><a href="?page=settings" data-page="settings">⚙ Pengaturan & Backup</a></nav></aside>
-<main class="main"><header class="topbar"><button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Buka atau tutup menu" title="Buka atau tutup menu">☰</button><div><strong id="topTitle">Dashboard Utama</strong><br><small>Accounting - Logistic · V8.5 Cloud Multi-user</small></div>
+<main class="main"><header class="topbar"><button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Buka atau tutup menu" title="Buka atau tutup menu">☰</button><div class="topbar-brand"><strong>Accounting - Logistic V12.12</strong><br><small>by askalwddakbar</small></div>
 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:170px;text-align:right">
   <small id="cloudStatus" style="font-size:11px;color:#b9f3d8"></small>
   <small id="today" style="font-size:12px"></small>
-  <div id="cloudIdentity" style="font-size:12px;font-weight:700;line-height:1.35"></div>
+  <button type="button" onclick="logoutCloud()" style="background:#dc2626;color:white;padding:7px 12px;border:0;border-radius:6px;cursor:pointer;margin-top:3px">Keluar</button>
   <button type="button" onclick="logoutCloud()" style="background:#dc2626;color:white;padding:7px 12px;border:0;border-radius:6px;cursor:pointer;margin-top:3px">Keluar</button>
 </div></header>
 <div class="content">
