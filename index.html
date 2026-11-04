@@ -602,7 +602,7 @@ button.yellow:hover{background:#ffc04d!important;color:#38270e!important}
 }
 button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
 
-.route-field{position:relative}.route-suggestions{position:absolute;top:calc(100% - 25px);left:0;right:0;z-index:1200;max-height:230px;overflow:auto;background:#fff;border:1px solid #d6e0e8;border-radius:9px;box-shadow:0 10px 26px #102b3f20}.route-suggestion{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:0;border-radius:0;background:#fff;color:#193448;text-align:left;box-shadow:none}.route-suggestion:hover,.route-suggestion:focus{background:#fff3e6;color:#8a4b0a;filter:none}.route-suggestion span{font-size:11px;color:#718096;text-align:right}.route-no-results{padding:12px;color:#718096;font-size:12px}@media(max-width:700px){.route-suggestion{align-items:flex-start;flex-direction:column;gap:3px}.route-suggestion span{text-align:left}}.bbm-filter-field{position:relative;min-width:0;flex:1}.bbm-filter-field input{width:100%;box-sizing:border-box}.bbm-filter-field .party-suggestions{position:absolute;top:100%;left:0;right:0;max-height:190px;overflow-y:auto;background:var(--surface,#fff)}
+.route-field{position:relative}.route-suggestions{position:absolute;top:calc(100% - 25px);left:0;right:0;z-index:1200;max-height:230px;overflow:auto;background:#fff;border:1px solid #d6e0e8;border-radius:9px;box-shadow:0 10px 26px #102b3f20}.route-suggestion{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:0;border-radius:0;background:#fff;color:#193448;text-align:left;box-shadow:none}.route-suggestion:hover,.route-suggestion:focus{background:#fff3e6;color:#8a4b0a;filter:none}.route-suggestion span{font-size:11px;color:#718096;text-align:right}.route-no-results{padding:12px;color:#718096;font-size:12px}@media(max-width:700px){.route-suggestion{align-items:flex-start;flex-direction:column;gap:3px}.route-suggestion span{text-align:left}}.bbm-filter-field{position:relative;min-width:0;flex:1}.bbm-filter-field input{width:100%;box-sizing:border-box}.bbm-filter-field .party-suggestions{position:absolute;top:100%;left:0;right:0;box-sizing:border-box;width:100%;max-height:190px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;background:var(--surface,#fff)}.bbm-filter-field .party-suggestions::-webkit-scrollbar{width:8px}.bbm-filter-field .party-suggestions::-webkit-scrollbar-thumb{background:#aab3c0;border-radius:8px}.bbm-filter-field .party-suggestions::-webkit-scrollbar-track{background:#eef1f5}
 /* Mode Driver/Helper khusus transaksi Ongkir */
 .mode-switch{display:flex;gap:8px}.mode-switch button{flex:1}.mode-switch .mode-switch-active{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff}
 .party-suggestions{position:relative;z-index:30;display:flex;flex-direction:column;max-height:180px;overflow-y:auto;margin-top:4px;border:1px solid var(--border,#d1d5db);border-radius:8px;background:var(--surface,#fff);box-shadow:0 5px 14px rgba(0,0,0,.10)}.party-suggestions[hidden]{display:none}.party-suggestion{display:block;width:100%;padding:9px 12px;border:0;border-bottom:1px solid var(--border,#e5e7eb);background:transparent;text-align:left;color:inherit;cursor:pointer}.party-suggestion:last-child{border-bottom:0}.party-suggestion:hover{background:var(--hover,#f3f4f6)}
@@ -1299,6 +1299,7 @@ function handleBbmFilterKeydown(event,type){
   active=event.key==='ArrowDown'?Math.min(active+1,items.length-1):Math.max(active-1,0);
   list.dataset.activeIndex=String(active);
   items.forEach((item,index)=>{item.classList.toggle('keyboard-active',index===active);item.setAttribute('aria-selected',index===active?'true':'false');});
+  if(items[active])items[active].scrollIntoView({block:'nearest'});
   return;
  }
  if(event.key==='Enter'){
@@ -1318,7 +1319,7 @@ function showBbmFilterSuggestions(type){
  if(!input||!list)return;
  const query=input.value.trim().toLocaleLowerCase('id');
  if(!query){list.hidden=true;list.innerHTML='';return;}
- const matches=config.source.filter(v=>v.toLocaleLowerCase('id').includes(query)).sort((a,b)=>a.localeCompare(b,'id')).slice(0,8);
+ const matches=config.source.filter(v=>v.toLocaleLowerCase('id').includes(query)).sort((a,b)=>a.localeCompare(b,'id'));
  list.dataset.activeIndex='-1';
  list.innerHTML=matches.map(v=>'<button type="button" tabindex="-1" class="party-suggestion" data-value="'+esc(v)+'" onclick="chooseBbmFilterSuggestion(\''+type+'\',this.dataset.value)">'+esc(v)+'</button>').join('');
  list.hidden=!matches.length;
