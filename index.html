@@ -1015,17 +1015,17 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 #bbmTable th:nth-child(13),#bbmTable td:nth-child(13){width:110px;min-width:110px;white-space:nowrap}
 #bbmTable th:nth-child(14),#bbmTable td:nth-child(14){width:110px;white-space:nowrap}
 
-/* Sidebar bersama: selector tidak bergantung pada urutan elemen di dalam appLayout.
-   Berlaku untuk seluruh halaman menu dan tidak membuat scrollbar vertikal terpisah. */
+/* Sidebar desktop: ikut bergerak bersama halaman sampai sisi bawah menu
+   mencapai bawah viewport, lalu tertahan di sana sementara konten lanjut discroll. */
 @media(min-width:701px){
   #appLayout .sidebar{
     position:sticky!important;
-    top:0!important;
+    top:var(--sidebar-sticky-top,0px)!important;
     bottom:auto!important;
-    align-self:flex-start;
+    align-self:flex-start!important;
     overflow:visible!important;
-    height:100vh!important;
-    max-height:100vh!important;
+    height:auto!important;
+    max-height:none!important;
     box-sizing:border-box;
   }
 }
@@ -1871,6 +1871,28 @@ function showTransactionDetail(id){
   document.addEventListener('change',event=>{
     const el=event.target;if(el&&el.tagName==='SELECT')el.dataset.keyboardChoice='true';
   });
+})();
+
+
+// Hitung offset sticky berdasarkan tinggi aktual sidebar. Jika sidebar lebih tinggi
+// dari layar, offset negatif membuatnya ikut scroll dulu sampai menu terbawah terlihat.
+(function(){
+ const sidebar=document.querySelector('#appLayout .sidebar');
+ if(!sidebar)return;
+ const updateSidebarStickyOffset=()=>{
+  if(window.matchMedia('(min-width:701px)').matches){
+   const height=sidebar.getBoundingClientRect().height;
+   sidebar.style.setProperty('--sidebar-sticky-top',Math.min(0,window.innerHeight-height)+'px');
+  }else{
+   sidebar.style.removeProperty('--sidebar-sticky-top');
+  }
+ };
+ updateSidebarStickyOffset();
+ if(typeof ResizeObserver!=='undefined'){
+  const observer=new ResizeObserver(updateSidebarStickyOffset);
+  observer.observe(sidebar);
+ }
+ window.addEventListener('resize',updateSidebarStickyOffset,{passive:true});
 })();
 
 </script></body></html>
