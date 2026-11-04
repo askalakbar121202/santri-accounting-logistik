@@ -953,7 +953,17 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
 #appLayout .sidebar-identity span:last-child{font-size:11px;color:#d95c08;font-weight:650}
 @media(max-width:700px){#appLayout .topbar{height:auto;min-height:62px;padding:8px 10px;gap:7px}#appLayout .topbar-left{gap:7px;flex:1.15}#appLayout .topbar #today{font-size:9px!important;white-space:normal;line-height:1.25}#appLayout .topbar .topbar-brand{display:none}#appLayout .topbar .topbar-meta{min-width:0!important;flex:0 0 auto;gap:8px}#appLayout .topbar .internet-status{font-size:10px}#appLayout .topbar .topbar-logout{padding:6px 8px!important;font-size:11px}#appLayout .topbar .sidebar-toggle{padding:7px 9px!important}#appLayout .sidebar-identity{margin:0 4px 14px}}
 body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:#303640!important;border-color:#f2c6a6!important}
-</style>\n<style>\n/* Dashboard utama: enam kartu ringkasan, tiga kolom per baris dan responsif. */\n#metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}\n#metrics>.card{min-width:0;padding:14px}\n#metrics .metric-label{font-size:11px;line-height:1.35;min-height:30px}\n#metrics .metric{font-size:clamp(16px,1.55vw,23px);overflow-wrap:anywhere;line-height:1.2}\n@media(max-width:700px){#metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:420px){#metrics{grid-template-columns:1fr}}\n</style>\n</head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
+</style>
+<style>
+/* Dashboard utama: enam kartu ringkasan, tiga kolom per baris dan responsif. */
+#metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#metrics>.card{min-width:0;padding:14px}
+#metrics .metric-label{font-size:11px;line-height:1.35;min-height:30px}
+#metrics .metric{font-size:clamp(16px,1.55vw,23px);overflow-wrap:anywhere;line-height:1.2}
+@media(max-width:700px){#metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){#metrics{grid-template-columns:1fr}}
+</style>
+</head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
 </div>
