@@ -5,20 +5,20 @@
 
 :root{--green:#176b45;--green2:#228653;--yellow:#f5c842;--bg:#f4f7f5;--ink:#1e2a24;--muted:#6a786f;--card:#fff;--line:#e2e9e4;--font:14px}
 *{box-sizing:border-box}body{margin:0;font:var(--font) "Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 13px;background:var(--green);color:white;font-weight:600}button.secondary{background:#e8f1eb;color:var(--green)}button.danger{background:#b42318}button.yellow{background:var(--yellow);color:#243026}.layout{display:flex;min-height:100vh}.sidebar{width:240px;background:var(--sidebar-bg,#123d2b);color:#fff;padding:20px 14px;flex-shrink:0;transition:background .18s ease}.brand{display:flex;gap:10px;align-items:center;margin:0 8px 26px}.logo{width:42px;height:42px;border-radius:12px;background:var(--yellow);color:#16472f;display:grid;place-items:center;font-weight:900;font-size:19px}.brand strong{font-size:15px}.brand small{display:block;color:#bcd8c7;margin-top:4px}.nav{display:grid;gap:6px}.nav button{background:transparent;text-align:left;color:#d7e9de;font-weight:500}.nav button.active,.nav button:hover{background:#246345;color:#fff}.nav .section{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#8fb6a0;margin:17px 10px 4px}.main{flex:1;min-width:0}.topbar{height:66px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:12px}.topbar small{color:var(--muted)}.content{padding:24px;max-width:1600px;margin:auto}.pagehead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.pagehead h1{margin:0;font-size:23px}.pagehead p{color:var(--muted);margin:6px 0 0}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 2px 8px #193b2a08}.metric-label{color:var(--muted);font-size:12px}.metric{font-size:25px;font-weight:750;margin-top:10px}.ar-metrics{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.ar-metric-card{max-width:100%;min-width:0;padding:7px 8px;border-radius:9px}.ar-metric-card .metric-label{font-size:10px;line-height:1.2}.ar-metric-card .metric{font-size:14px;line-height:1.25;margin-top:4px;overflow-wrap:anywhere}.metric-icon{float:right;background:#eaf5ed;color:var(--green);border-radius:10px;padding:9px}.wide{grid-column:span 2}.panel-title{font-weight:700;margin:0 0 14px}.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:#526259;font-weight:650}.field input,.field select,.field textarea,.toolbar input,.toolbar select{width:100%;border:1px solid #d7e1da;border-radius:8px;padding:10px;background:white;color:var(--ink);min-width:0}.field textarea{min-height:70px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar input{max-width:320px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;white-space:nowrap;background:#fff}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}th{background:#f0f6f1;color:#425449;position:sticky;top:0}tr:last-child td{border-bottom:0}.status{display:inline-block;border-radius:30px;padding:5px 8px;font-size:11px;font-weight:700;background:#eef2ef;color:#536158}.status.paid,.status.terbeli{background:#dff5e5;color:#176b45}.status.pending,.status.sebagian{background:#fff2c7;color:#815e00}.status.rejected,.status.lebih{background:#ffe3df;color:#a1251b}.status.belum{background:#ffe3df;color:#a1251b}
-/* Tata letak Laporan Utama: 10 kolom termasuk nomor otomatis di sisi kiri */
+/* Tata letak Laporan Utama: isi seluruh lebar panel tanpa ruang kosong di kanan */
 #arTable .tablewrap{width:100%;max-width:100%;overflow-x:auto;overflow-y:visible}
-#arTable table{table-layout:fixed;width:1380px;min-width:1380px;white-space:normal}
+#arTable table{table-layout:fixed;width:100%;min-width:1080px;white-space:normal}
 #arTable th,#arTable td{padding:10px 9px;vertical-align:top;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.45}
-#arTable th:nth-child(1),#arTable td:nth-child(1){width:55px;min-width:55px}
-#arTable th:nth-child(2),#arTable td:nth-child(2){width:115px}
-#arTable th:nth-child(3),#arTable td:nth-child(3){width:145px}
-#arTable th:nth-child(4),#arTable td:nth-child(4){width:125px}
-#arTable th:nth-child(5),#arTable td:nth-child(5){width:130px}
-#arTable th:nth-child(6),#arTable td:nth-child(6){width:110px}
-#arTable th:nth-child(7),#arTable td:nth-child(7){width:260px;overflow-wrap:break-word}
-#arTable th:nth-child(8),#arTable td:nth-child(8){width:135px;white-space:nowrap;overflow-wrap:normal}
-#arTable th:nth-child(9),#arTable td:nth-child(9){width:115px;white-space:nowrap}
-#arTable th:nth-child(10),#arTable td:nth-child(10){width:190px;overflow-wrap:break-word}
+#arTable th:nth-child(1),#arTable td:nth-child(1){width:4%}
+#arTable th:nth-child(2),#arTable td:nth-child(2){width:9%}
+#arTable th:nth-child(3),#arTable td:nth-child(3){width:11%}
+#arTable th:nth-child(4),#arTable td:nth-child(4){width:9%}
+#arTable th:nth-child(5),#arTable td:nth-child(5){width:9%}
+#arTable th:nth-child(6),#arTable td:nth-child(6){width:8%}
+#arTable th:nth-child(7),#arTable td:nth-child(7){width:19%;overflow-wrap:break-word}
+#arTable th:nth-child(8),#arTable td:nth-child(8){width:10%;white-space:nowrap;overflow-wrap:normal}
+#arTable th:nth-child(9),#arTable td:nth-child(9){width:8%;white-space:nowrap}
+#arTable th:nth-child(10),#arTable td:nth-child(10){width:13%;overflow-wrap:break-word}
 #arTable td:nth-child(8){font-variant-numeric:tabular-nums}
 /* Warna status BBM dibuat eksplisit agar konsisten di semua tabel */
 .status.bbm-status{font-weight:800!important;border:1px solid transparent}.status.bbm-status--bought{background:#dff5e5!important;color:#176b45!important;border-color:#a9dfba!important}.status.bbm-status--partial{background:#fff2c7!important;color:#815e00!important;border-color:#f1d77d!important}.status.bbm-status--none{background:#ffe3df!important;color:#a1251b!important;border-color:#f3b8b0!important}.status.bbm-status--over{background:#eee5ff!important;color:#6236a4!important;border-color:#d4c2fa!important}
