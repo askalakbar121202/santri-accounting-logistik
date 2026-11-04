@@ -1037,6 +1037,47 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   overscroll-behavior-y:auto;
 }
 </style>
+
+<style>
+/* Master Data: rapatkan jarak antar kontrol, kartu, dan baris tabel tanpa
+   mengubah ukuran tabel atau form pada menu lainnya. */
+#page-masters>.pagehead{margin-bottom:13px}
+#page-masters>.pagehead h1{margin-bottom:3px}
+#page-masters>.pagehead p{margin-top:4px}
+#page-masters>.toolbar{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+}
+#page-masters>.toolbar select,
+#page-masters>.toolbar input{
+  min-height:38px;padding:8px 10px;font-size:12px;
+}
+#page-masters>.toolbar select{flex:0 1 220px;min-width:170px}
+#page-masters>.toolbar input{flex:1 1 220px;max-width:360px}
+#page-masters>.toolbar button{min-height:38px;padding:8px 12px;font-size:12px;white-space:nowrap}
+#page-masters>.card{padding:12px;border-radius:12px}
+#page-masters #masterForm{margin-bottom:10px}
+#page-masters #masterTable{border-radius:9px}
+#page-masters #masterTable table{width:100%}
+#page-masters #masterTable th,
+#page-masters #masterTable td{
+  padding:7px 9px;font-size:11px;line-height:1.35;vertical-align:middle;
+}
+#page-masters #masterTable th{font-size:10px;letter-spacing:.25px}
+#page-masters #masterTable td button{
+  min-height:29px;padding:5px 9px;font-size:11px;border-radius:7px;
+}
+#page-masters #masterTable .empty{padding:18px;font-size:12px}
+@media(max-width:700px){
+  #page-masters>.toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px}
+  #page-masters>.toolbar select,
+  #page-masters>.toolbar input{width:100%;min-width:0;max-width:none;grid-column:1/-1}
+  #page-masters>.toolbar button{width:100%;grid-column:1/-1}
+  #page-masters>.card{padding:8px}
+  #page-masters #masterTable th,
+  #page-masters #masterTable td{padding:7px 8px;font-size:11px}
+}
+</style>
+
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
