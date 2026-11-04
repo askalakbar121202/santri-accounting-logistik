@@ -1077,26 +1077,21 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   #page-masters #masterTable td{padding:7px 8px;font-size:11px}
 }
 
-/* Pembayaran: rapatkan baris tabel tanpa mengubah isi atau aksi transaksi. */
+/* Pembayaran: rapikan baris dan susunan aksi; ukuran font mengikuti gaya tabel awal. */
 #page-payments>.pagehead{margin-bottom:12px}
 #page-payments>.toolbar{gap:8px;margin-bottom:10px}
 #page-payments>.card{padding:12px;border-radius:12px}
 #page-payments #payTable{border-radius:9px}
 #page-payments #payTable table{width:100%}
 #page-payments #payTable th,
-#page-payments #payTable td{
-  padding:6px 8px;font-size:11px;line-height:1.3;vertical-align:middle;
-}
-#page-payments #payTable th{font-size:10px;letter-spacing:.2px}
-#page-payments #payTable td button{
-  min-height:28px;padding:4px 8px;font-size:11px;border-radius:7px;
-}
-#page-payments #payTable .status{padding:3px 7px;font-size:10px}
-#page-payments #payTable .empty{padding:18px;font-size:12px}
+#page-payments #payTable td{padding:6px 8px;line-height:1.35;vertical-align:middle}
+#page-payments #payTable .payment-actions{display:flex;align-items:center;justify-content:flex-start;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+#page-payments #payTable .payment-actions button{min-height:30px;padding:5px 10px;white-space:nowrap}
+#page-payments #payTable .empty{padding:18px}
 @media(max-width:700px){
   #page-payments>.card{padding:8px}
   #page-payments #payTable th,
-  #page-payments #payTable td{padding:6px 7px;font-size:11px}
+  #page-payments #payTable td{padding:6px 7px}
 }
 </style>
 
@@ -1497,7 +1492,7 @@ function editFuel(id){
  fields.forEach(([key])=>form.elements[key].addEventListener('input',updatePreview));updatePreview();
 }
 function updatePaymentNavCount(){const badge=document.getElementById('paymentNavCount');if(!badge)return;const count=state.transactions.filter(t=>(t.type==='etoll'||t.type==='nota')&&t.status==='pending').length;badge.textContent=count>99?'99+':String(count);badge.hidden=count===0;}
-function renderPayments(){updatePaymentNavCount();let type=document.getElementById('payType').value,q=(document.getElementById('paySearch').value||'').toLowerCase();let rows=state.transactions.filter(t=>t.type===type&&t.status!=='paid').sort((a,b)=>b.created-a.created).filter(t=>`${t.id} ${t.driver} ${t.helper} ${t.plate} ${t.note} ${t.route} ${t.shipment||''} ${t.from||''} ${t.to||''}`.toLowerCase().includes(q));document.getElementById('payTable').innerHTML=table(['No Transaksi','Tanggal Input','Tanggal Aksi','Driver','Helper','Plat','Detail','Nota / Keterangan','Nominal','Status','Aksi'],rows.map(t=>[t.id,t.date,esc(t.type==='etoll'?(t.tollDate||t.date):t.type==='nota'?(t.notaDate||t.date):'-'),esc(t.driver||'-'),esc(t.helper||'-'),esc(t.plate||'-'),esc(txDetail(t)),esc(t.note||'-'),money(t.amount),statusTag(t.status),t.status==='paid'?'Lunas':`<button onclick="pay('${t.id}')">Bayar (Pay)</button> <button class="secondary" onclick="reject('${t.id}')">Tolak</button>`]))}
+function renderPayments(){updatePaymentNavCount();let type=document.getElementById('payType').value,q=(document.getElementById('paySearch').value||'').toLowerCase();let rows=state.transactions.filter(t=>t.type===type&&t.status!=='paid').sort((a,b)=>b.created-a.created).filter(t=>`${t.id} ${t.driver} ${t.helper} ${t.plate} ${t.note} ${t.route} ${t.shipment||''} ${t.from||''} ${t.to||''}`.toLowerCase().includes(q));document.getElementById('payTable').innerHTML=table(['No Transaksi','Tanggal Input','Tanggal Aksi','Driver / Helper','Plat','Detail','Nota / Keterangan','Nominal','Status','Aksi'],rows.map(t=>[t.id,t.date,esc(t.type==='etoll'?(t.tollDate||t.date):t.type==='nota'?(t.notaDate||t.date):'-'),esc([t.driver,t.helper].filter(Boolean).join(' / ')||'-'),esc(t.plate||'-'),esc(txDetail(t)),esc(t.note||'-'),money(t.amount),statusTag(t.status),t.status==='paid'?'Lunas':`<div class="payment-actions"><button onclick="pay('${t.id}')">Pay</button><button class="secondary" onclick="reject('${t.id}')">Tolak</button></div>`]))}
 function pay(id){
  const t=state.transactions.find(x=>x.id===id);if(!t)return;const amount=Number(t.amount||t.fuel||0);
  const body='<div class="action-summary"><div><small>No. Transaksi</small><strong>'+esc(t.id)+'</strong></div><div><small>Jenis</small><strong>'+esc(typeName(t.type))+'</strong></div><div><small>Driver</small><strong>'+esc(t.driver||'-')+'</strong></div><div><small>Nominal pembayaran</small><strong>'+money(amount)+'</strong></div></div><label class="action-field">Tanggal pembayaran<input type="date" name="paidDate" value="'+today()+'" required></label><p class="action-hint">Simpan pembayaran akan menandai transaksi ini sebagai Lunas.</p>';
