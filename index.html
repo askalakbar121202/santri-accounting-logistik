@@ -1000,6 +1000,15 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 #reportTable table.report-table .report-action-group{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
 #reportTable table.report-table .report-action-btn{display:inline-flex!important;flex:0 0 28px!important;width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;padding:0!important;align-items:center;justify-content:center;white-space:nowrap}
 @media(max-width:700px){#reportTable table.report-table{min-width:1320px}}
+
+/* Dashboard BBM Armada: ringkas setelah Driver dan Helper digabung */
+#bbmTable .tablewrap{width:100%;max-width:100%;overflow-x:auto}
+#bbmTable table{width:100%;min-width:1180px;table-layout:auto}
+#bbmTable th,#bbmTable td{padding:8px 7px;vertical-align:middle;line-height:1.35}
+#bbmTable td:nth-child(3){white-space:nowrap}
+#bbmTable td:nth-child(4){min-width:150px}
+#bbmTable td:nth-child(5),#bbmTable td:nth-child(n+6):nth-child(-n+12){white-space:nowrap}
+#bbmTable td:last-child{white-space:nowrap}
 </style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
@@ -1380,7 +1389,7 @@ function renderBBM(){
  document.getElementById('bbmTotalNoSolCount').textContent=totalNoSolCount+' kali';
  document.getElementById('bbmTotalNoSolAmount').textContent=money(totalNoSolAmount);
  document.getElementById('bbmTotalShipments').textContent=rows.filter(t=>['Belum Terbeli','Sebagian'].includes(bbmStatus(t))).length;
- document.getElementById('bbmTable').innerHTML=table(['Tanggal','Driver','Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status','Aksi'],rows.map(t=>{let spent=Number(t.nota1||0)+Number(t.nota2||0)+Number(t.nota3||0)+Number(t.noSol||0)-Number(t.gabung||0);let remaining=t.fuel-spent;return [t.date,esc(t.driver||'-'),esc(t.helper||'-'),esc(t.plate||'-'),esc(txDetail(t)),money(t.fuel),money(t.nota1),money(t.nota2),money(t.nota3),money(t.noSol),money(t.gabung),money(remaining),`<span class="status bbm-status ${bbmStatusClass(t)}">${bbmStatus(t)}</span>`,`<button class="secondary" onclick="editFuel('${t.id}')">Isi nota</button>`]}));
+ document.getElementById('bbmTable').innerHTML=table(['Tanggal','Driver / Helper','Plat','Kiriman','Nominal BBM','Nota 1','Nota 2','Nota 3','No Sol','Nominal Gabung','Sisa BBM','Status','Aksi'],rows.map(t=>{let spent=Number(t.nota1||0)+Number(t.nota2||0)+Number(t.nota3||0)+Number(t.noSol||0)-Number(t.gabung||0);let remaining=t.fuel-spent;return [t.date,esc([t.driver,t.helper].filter(Boolean).join(' / ')||'-'),esc(t.plate||'-'),esc(txDetail(t)),money(t.fuel),money(t.nota1),money(t.nota2),money(t.nota3),money(t.noSol),money(t.gabung),money(remaining),`<span class="status bbm-status ${bbmStatusClass(t)}">${bbmStatus(t)}</span>`,`<button class="secondary" onclick="editFuel('${t.id}')">Isi nota</button>`]}));
  window.bbmShareRows=rows.filter(t=>['Belum Terbeli','Sebagian'].includes(bbmStatus(t))).map(t=>{const spent=Number(t.nota1||0)+Number(t.nota2||0)+Number(t.nota3||0)+Number(t.noSol||0)-Number(t.gabung||0);return {date:t.date,driver:t.driver||'-',helper:t.helper||'-',plate:t.plate||'-',shipment:txDetail(t)||'-',status:bbmStatus(t),remaining:Number(t.fuel||0)-spent};});
  window.bbmShareTotal=window.bbmShareRows.reduce((sum,t)=>sum+t.remaining,0);
 
