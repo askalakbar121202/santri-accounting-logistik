@@ -934,16 +934,24 @@ button:focus-visible{outline:2px solid #f36b12;outline-offset:2px}
 }
 </style>
 <style>
-/* Header orange dan identitas akun pada sidebar */
-#appLayout .topbar{background:linear-gradient(105deg,#ed650b,#ff861f)!important;color:#fff!important;border:0!important;box-shadow:0 2px 12px #d95c0828!important}
+/* Header orange, tanggal di kiri, indikator internet dan keluar di kanan */
+#appLayout .topbar{background:linear-gradient(105deg,#ed650b,#ff861f)!important;color:#fff!important;border:0!important;box-shadow:0 2px 12px #d95c0828!important;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px}
+#appLayout .topbar-left{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+#appLayout .topbar #today{color:#fff!important;font-size:12px;white-space:nowrap}
+#appLayout .topbar .topbar-brand{flex:1;text-align:center;min-width:0}
 #appLayout .topbar .topbar-brand strong{color:#fff!important;font-size:16px;font-weight:800;letter-spacing:.1px}
 #appLayout .topbar .topbar-brand small{color:#fff!important;font-size:11px;font-weight:600;opacity:.94}
-#appLayout .topbar #today,#appLayout .topbar #cloudStatus{color:#fff!important}
-#appLayout .topbar .sidebar-toggle{background:#fff!important;color:#d95c08!important;border:1px solid #ffffff80!important;box-shadow:none!important}
+#appLayout .topbar .topbar-meta{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-width:150px;flex:1}
+#appLayout .topbar .sidebar-toggle{background:#fff!important;color:#d95c08!important;border:1px solid #ffffff80!important;box-shadow:none!important;flex-shrink:0}
+#appLayout .topbar .topbar-logout{background:#dc2626!important;color:#fff!important;padding:8px 13px!important;border:0!important;border-radius:7px!important;margin:0!important;white-space:nowrap}
+#appLayout .internet-status{display:inline-flex;align-items:center;gap:6px;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
+#appLayout .internet-status i{width:9px;height:9px;border-radius:50%;background:#facc15;box-shadow:0 0 0 3px #ffffff30;display:inline-block}
+#appLayout .internet-status.is-online i{background:#b7f7c8}
+#appLayout .internet-status.is-offline i{background:#ffd0d0}
 #appLayout .sidebar-identity{display:flex;flex-direction:column;gap:3px;margin:-7px 8px 20px;padding:10px 11px;border:1px solid #f2c6a6;border-radius:10px;background:#fff7f0;color:#303640;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
 #appLayout .sidebar-identity span:first-child{font-weight:750;color:#252a32}
 #appLayout .sidebar-identity span:last-child{font-size:11px;color:#d95c08;font-weight:650}
-@media(max-width:700px){#appLayout .topbar{height:auto;min-height:62px;padding:8px 12px;gap:8px}#appLayout .topbar .topbar-brand strong{font-size:13px}#appLayout .topbar .topbar-brand small{font-size:10px}#appLayout .topbar .topbar-meta{min-width:0!important}#appLayout .topbar #today{font-size:10px!important}#appLayout .topbar .topbar-meta button{padding:5px 8px!important;margin-top:0!important}#appLayout .sidebar-identity{margin:0 4px 14px}}
+@media(max-width:700px){#appLayout .topbar{height:auto;min-height:62px;padding:8px 10px;gap:7px}#appLayout .topbar-left{gap:7px;flex:1.15}#appLayout .topbar #today{font-size:9px!important;white-space:normal;line-height:1.25}#appLayout .topbar .topbar-brand{display:none}#appLayout .topbar .topbar-meta{min-width:0!important;flex:0 0 auto;gap:8px}#appLayout .topbar .internet-status{font-size:10px}#appLayout .topbar .topbar-logout{padding:6px 8px!important;font-size:11px}#appLayout .topbar .sidebar-toggle{padding:7px 9px!important}#appLayout .sidebar-identity{margin:0 4px 14px}}
 body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:#303640!important;border-color:#f2c6a6!important}
 </style></head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
@@ -964,11 +972,8 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 <div class="section">Transaksi</div><a href="?page=input" data-page="input">＋ Input Transaksi</a><a href="?page=payments" data-page="payments">✓ Pembayaran <span id="paymentNavCount" class="work-nav-count" hidden></span></a><a href="?page=auto-reports" data-page="auto-reports">📈 Laporan Otomatis</a><a href="?page=reports" data-page="reports">▤ Laporan Transaksi</a><a href="?page=history" data-page="history">◷ Riwayat Perubahan</a>
 <div class="section">Pekerjaan</div><a href="?page=work" data-page="work" id="workNavButton">☑ Daftar Pekerjaan <span id="workNavCount" class="work-nav-count"></span></a><a href="?page=work-schedule" data-page="work-schedule">◷ Jadwal Pekerjaan</a>
 <div class="section">Data & Sistem</div><a href="?page=masters" data-page="masters">▣ Master Data</a><a href="?page=users" data-page="users">👥 Pengguna Lokal</a><a href="?page=settings" data-page="settings">⚙ Pengaturan & Backup</a></nav></aside>
-<main class="main"><header class="topbar"><button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Buka atau tutup menu" title="Buka atau tutup menu">☰</button><div class="topbar-brand"><strong>Accounting - Logistic V12.12</strong><br><small>by askalwddakbar</small></div>
-<div class="topbar-meta" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:170px;text-align:right">
-  <small id="cloudStatus" style="font-size:11px;color:#b9f3d8"></small>
-  <small id="today" style="font-size:12px"></small>
-  <button type="button" onclick="logoutCloud()" style="background:#dc2626;color:white;padding:7px 12px;border:0;border-radius:6px;cursor:pointer;margin-top:3px">Keluar</button>
+<main class="main"><header class="topbar"><div class="topbar-left"><button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Buka atau tutup menu" title="Buka atau tutup menu">☰</button><small id="today"></small></div><div class="topbar-brand"><strong>Accounting - Logistic V12.12</strong><br><small>by askalwddakbar</small></div>
+ <div class="topbar-meta"><span id="internetStatus" class="internet-status" role="status" aria-live="polite"><i></i><span>Memeriksa…</span></span><small id="cloudStatus" style="display:none"></small><button type="button" onclick="logoutCloud()" class="topbar-logout">Keluar</button></div></header>
 </div></header>
 <div class="content">
 <section id="page-dashboard" class="page"><div class="pagehead"><div><h1>Dashboard Utama</h1><p>Ringkasan transaksi operasional logistik.</p></div><button onclick="go('input')">＋ Input transaksi</button></div><div class="grid" id="metrics"></div><div class="card" id="depoWarningCard" style="margin-top:14px;border-left:4px solid #dc2626"><h3 class="panel-title">⚠️ Peringatan Ongkir Depo Pasuruan</h3><p class="muted" style="margin:0 0 10px">Kiriman Depo Pasuruan 1 Rit, 2 Rit, atau 3 Rit yang sudah lebih dari 3 hari sejak tanggal transaksi.</p><div id="depoWarningList"></div></div><div class="split" style="margin-top:14px"><div class="card"><h3 class="panel-title">Pengeluaran BBM per Bulan</h3><div id="monthlyChart" class="chartbar"></div></div><div class="card"><h3 class="panel-title">Transaksi Terbaru</h3><div id="recent"></div></div></div></section>
@@ -1549,6 +1554,22 @@ async function editCloudAccountActions(id,role,isActive,hasEmail,isCurrentUser){
  dialog.addEventListener('close',()=>dialog.remove(),{once:true});
  dialog.showModal();
 }
+function updateInternetIndicator(online){
+ const el=document.getElementById('internetStatus');if(!el)return;
+ el.classList.toggle('is-online',!!online);el.classList.toggle('is-offline',!online);
+ const label=el.querySelector('span');if(label)label.textContent=online?'Terhubung':'Terputus';
+}
+async function checkInternetConnection(){
+ if(!navigator.onLine){updateInternetIndicator(false);return}
+ const controller=typeof AbortController!=='undefined'?new AbortController():null;
+ const timeout=controller?setTimeout(()=>controller.abort(),5000):null;
+ try{const response=await fetch('/api/health',{method:'GET',cache:'no-store',signal:controller?controller.signal:undefined});updateInternetIndicator(response.ok)}
+ catch(error){updateInternetIndicator(false)}
+ finally{if(timeout)clearTimeout(timeout)}
+}
+window.addEventListener('online',checkInternetConnection);
+window.addEventListener('offline',()=>updateInternetIndicator(false));
+checkInternetConnection();setInterval(checkInternetConnection,30000);
 function renderCloudIdentity(username,role){
  const el=document.getElementById('cloudIdentity');if(!el)return;
  const labels={admin:'Admin',accounting:'Accounting',staff:'Staff'};
