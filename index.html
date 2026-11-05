@@ -71,6 +71,16 @@ input[type=checkbox],input[type=radio]{accent-color:#087f5b}::selection{backgrou
 #appLayout.sidebar-hidden .sidebar .nav{display:none!important}
 #appLayout.sidebar-hidden .sidebar .sidebar-inner-toggle{display:inline-flex;margin:0 auto;position:static}
 .sidebar-backdrop{display:none}
+/* Layar split/tablet: sidebar yang diciutkan benar-benar keluar dari layout,
+   sehingga area konten melebar penuh. Tombol di topbar tetap menjadi akses buka. */
+@media (min-width:701px) and (max-width:1000px){
+  #appLayout.sidebar-hidden .sidebar{
+    width:0!important;min-width:0!important;flex:0 0 0!important;
+    padding:0!important;margin:0!important;border:0!important;overflow:hidden!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .sidebar-inner-toggle{display:none!important}
+  #appLayout.sidebar-hidden .main{min-width:0;width:100%}
+}
 @media(max-width:700px){
   #appLayout.layout{display:flex;min-height:100vh}
   #appLayout .sidebar{position:fixed;top:0;bottom:0;left:0;z-index:10001;width:min(280px,85vw);height:100vh;height:100dvh;overflow-y:auto;transform:translateX(-105%);transition:transform .22s ease;padding:54px 14px 20px;box-shadow:0 10px 35px #0003}
