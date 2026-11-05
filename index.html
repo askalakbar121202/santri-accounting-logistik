@@ -1137,6 +1137,44 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   body.sidebar-open #appLayout .sidebar-backdrop{display:block!important}
 }
 </style>
+<style id="sidebar-icon-rail">
+/* Desktop: sidebar mini menampilkan seluruh ikon tanpa menggeser area halaman.
+   Lebar layout tetap 240px seperti mode terbuka; hanya bidang visual sidebar
+   yang menyisakan rail 64px agar posisi konten utama tidak berubah. */
+@media (min-width:1401px){
+  #appLayout.sidebar-hidden .sidebar{
+    width:64px!important;min-width:0!important;flex:0 0 240px!important;
+    padding:22px 8px!important;overflow:visible!important;
+    background:linear-gradient(90deg,var(--sidebar-bg,#102b3f) 0 64px,transparent 64px 100%)!important;
+    box-shadow:none!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .brand,
+  #appLayout.sidebar-hidden .sidebar #cloudIdentity{display:none!important}
+  #appLayout.sidebar-hidden .sidebar .nav{
+    display:grid!important;width:48px;gap:8px;margin:0;padding:0;
+    overflow:visible!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .nav .section{display:none!important}
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page]{
+    position:relative;display:flex!important;align-items:center;justify-content:center;
+    width:48px;height:44px;min-height:44px;margin:0 auto;padding:0!important;
+    overflow:visible!important;white-space:nowrap;text-align:center!important;
+    font-size:0!important;border-radius:10px;
+  }
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page]::first-letter{
+    font-size:22px;line-height:1;
+  }
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .work-nav-count{display:none!important}
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page]:hover::after,
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page]:focus-visible::after{
+    content:attr(title);position:absolute;left:calc(100% + 10px);top:50%;
+    transform:translateY(-50%);z-index:2147483000;
+    padding:7px 10px;border-radius:7px;background:#172b3a;color:#fff;
+    font-size:12px;font-weight:600;line-height:1.3;white-space:nowrap;
+    box-shadow:0 5px 18px #0003;pointer-events:none;
+  }
+}
+</style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
@@ -1194,6 +1232,11 @@ document.getElementById('cloudLoginForm').addEventListener('submit',async e=>{e.
 
 function logAction(action,tx,detail=''){if(!Array.isArray(state.audit))state.audit=[];state.audit.unshift({at:new Date().toISOString(),action,txId:tx?.id||'-',detail:detail||tx?.note||tx?.route||tx?.from+' - '+tx?.to||'',user:state.admin||'Admin Accounting'});state.audit=state.audit.slice(0,3000)}
 function toggleSidebar(){
+  /* Siapkan nama menu sebagai tooltip saat sidebar berada pada mode ikon. */
+  document.querySelectorAll("#nav a[data-page]").forEach(link=>{
+    if(!link.title)link.title=link.textContent.replace(/\\s+/g," ").trim();
+    if(!link.getAttribute("aria-label"))link.setAttribute("aria-label",link.title);
+  });
   /* Pada layar split/tablet dan mobile, sidebar tampil sebagai overlay.
      Konten utama tetap pada posisi dan lebar penuh di belakang sidebar. */
   if(window.matchMedia('(max-width: 1400px)').matches){
