@@ -1163,7 +1163,15 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
     display:inline-flex!important;align-items:center;justify-content:center;
     width:100%;height:100%;font-size:22px!important;line-height:1;
   }
-  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-label,
+  #appLayout.sidebar .nav a[data-page] .nav-label{
+    display:inline-block!important;max-width:240px;overflow:hidden;
+    white-space:nowrap;transition:max-width .62s cubic-bezier(.22,1,.36,1),opacity .28s ease,transform .62s cubic-bezier(.22,1,.36,1);
+    opacity:1;transform:translateX(0);
+  }
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-label{
+    max-width:0!important;opacity:0;transform:translateX(-16px);
+    font-size:12px!important;margin:0!important;padding:0!important;
+  }
   #appLayout.sidebar-hidden .sidebar .nav a[data-page] .work-nav-count{display:none!important}
   #appLayout.sidebar-hidden .sidebar .nav a[data-page]:hover::after,
   #appLayout.sidebar-hidden .sidebar .nav a[data-page]:focus-visible::after{
@@ -1185,8 +1193,13 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   /* Label tidak ikut menggeser ikon: rail mini hanya menampilkan ikon. */
   #appLayout.sidebar-hidden .sidebar .brand,
   #appLayout.sidebar-hidden .sidebar .nav .section,
-  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-label,
   #appLayout.sidebar-hidden .sidebar .nav a[data-page] .work-nav-count{display:none!important}
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-label{
+    display:inline-block!important;max-width:0!important;opacity:0;
+    transform:translateX(-16px);overflow:hidden;white-space:nowrap;
+    font-size:12px!important;margin:0!important;padding:0!important;
+    transition:max-width .62s cubic-bezier(.22,1,.36,1),opacity .28s ease,transform .62s cubic-bezier(.22,1,.36,1);
+  }
   #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-icon{
     transition:transform .35s ease,opacity .35s ease!important;
     transform:scale(1);opacity:1;
