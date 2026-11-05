@@ -1111,6 +1111,32 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 }
 </style>
 
+<style id="sidebar-split-overlay-fix">
+/* Layar split/tablet: sidebar dibuka sebagai lapisan di atas konten.
+   Konten utama tidak bergeser dan tetap memakai lebar penuh. */
+@media (min-width:701px) and (max-width:1400px){
+  #appLayout .sidebar{
+    position:fixed!important;top:0!important;bottom:0!important;left:0!important;
+    z-index:10001!important;width:min(280px,85vw)!important;min-width:0!important;
+    height:100vh!important;height:100dvh!important;flex:none!important;
+    padding:22px 14px!important;overflow-y:auto!important;overflow-x:hidden!important;
+    transform:translateX(-105%)!important;
+    transition:transform .22s ease!important;
+    box-shadow:0 10px 35px #0003!important;
+  }
+  #appLayout .sidebar .brand,
+  #appLayout .sidebar #cloudIdentity,
+  #appLayout .sidebar .nav{display:revert!important}
+  #appLayout .sidebar .sidebar-inner-toggle{display:none!important}
+  body.sidebar-open #appLayout .sidebar{transform:translateX(0)!important}
+  #appLayout .main{width:100%!important;min-width:0!important;flex:1 1 100%!important}
+  #appLayout .sidebar-backdrop{
+    display:none;position:fixed!important;inset:0!important;
+    z-index:10000!important;background:#0b1725a6!important;
+  }
+  body.sidebar-open #appLayout .sidebar-backdrop{display:block!important}
+}
+</style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
@@ -1125,7 +1151,7 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 
 <div id="cloudLoginMsg" class="gatemsg"></div>
 <p style="font-size:11px;color:#71808b">Pastikan Koneksi Internet Terhubung. Jika Mengalami Kendala Hubungi Wong Pusat.</p></div></div><div class="layout" id="appLayout" style="display:none">
-<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()" aria-hidden="true"></div><aside class="sidebar"><button type="button" class="sidebar-inner-toggle" onclick="toggleSidebar()" aria-label="Buka atau ciutkan menu" title="Buka atau ciutkan menu">☰</button><div class="brand"><div class="sidebar-wordmark" aria-label="Accounting - Logistic, By askalwddakbr"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><div class="brand-copy"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div><div id="cloudIdentity" class="sidebar-identity" aria-live="polite"></div><nav class="nav" id="nav">
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()" aria-hidden="true"></div><aside class="sidebar"><div class="brand"><div class="sidebar-wordmark" aria-label="Accounting - Logistic, By askalwddakbr"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><div class="brand-copy"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div><div id="cloudIdentity" class="sidebar-identity" aria-live="polite"></div><nav class="nav" id="nav">
 <div class="section">Dashboard</div><a href="?page=dashboard" class="active" data-page="dashboard">▦ Dashboard Utama</a><a href="?page=bbm" data-page="bbm">⛽ Dashboard BBM Armada</a><a href="?page=fleet-analysis" data-page="fleet-analysis">📊 Analisis Biaya Armada</a>
 <div class="section">Transaksi</div><a href="?page=input" data-page="input">＋ Input Transaksi</a><a href="?page=payments" data-page="payments">✓ Pembayaran <span id="paymentNavCount" class="work-nav-count" hidden></span></a><a href="?page=auto-reports" data-page="auto-reports">📈 Laporan Utama</a><a href="?page=reports" data-page="reports">▤ Laporan Transaksi</a><a href="?page=history" data-page="history">◷ Riwayat Perubahan</a>
 <div class="section">Pekerjaan</div><a href="?page=work" data-page="work" id="workNavButton">☑ Daftar Pekerjaan <span id="workNavCount" class="work-nav-count"></span></a><a href="?page=work-schedule" data-page="work-schedule">◷ Jadwal Pekerjaan</a>
@@ -1168,8 +1194,9 @@ document.getElementById('cloudLoginForm').addEventListener('submit',async e=>{e.
 
 function logAction(action,tx,detail=''){if(!Array.isArray(state.audit))state.audit=[];state.audit.unshift({at:new Date().toISOString(),action,txId:tx?.id||'-',detail:detail||tx?.note||tx?.route||tx?.from+' - '+tx?.to||'',user:state.admin||'Admin Accounting'});state.audit=state.audit.slice(0,3000)}
 function toggleSidebar(){
-  /* Layar kecil memakai drawer; layar desktop memakai sidebar mini ber-header ikon. */
-  if(window.matchMedia('(max-width: 700px)').matches){
+  /* Pada layar split/tablet dan mobile, sidebar tampil sebagai overlay.
+     Konten utama tetap pada posisi dan lebar penuh di belakang sidebar. */
+  if(window.matchMedia('(max-width: 1400px)').matches){
     document.getElementById('appLayout').classList.remove('sidebar-hidden');
     document.body.classList.toggle('sidebar-open');
   }else{
