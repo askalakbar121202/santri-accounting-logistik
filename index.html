@@ -1175,44 +1175,26 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   }
 }
 
-/* Sidebar mini: pertahankan tinggi struktur sidebar terbuka agar rail tidak
-   memendek mendadak; teks memudar/bergeser halus saat mode berubah. */
+/* Sidebar mini: tinggi rail mengikuti tinggi sidebar terbuka yang diukur aktual. */
 @media (min-width:1401px){
   #appLayout.sidebar-hidden .sidebar{
-    min-height:100vh!important;
-    transition:width .62s cubic-bezier(.22,1,.36,1),min-width .62s cubic-bezier(.22,1,.36,1),flex-basis .62s cubic-bezier(.22,1,.36,1),padding .62s cubic-bezier(.22,1,.36,1)!important;
+    height:var(--sidebar-expanded-height,auto)!important;
+    min-height:0!important;max-height:none!important;
+    transition:width .62s cubic-bezier(.22,1,.36,1),min-width .62s cubic-bezier(.22,1,.36,1),flex-basis .62s cubic-bezier(.22,1,.36,1),padding .62s cubic-bezier(.22,1,.36,1),height .42s ease!important;
   }
-  #appLayout.sidebar-hidden .sidebar .brand{
-    display:flex!important;visibility:hidden!important;opacity:0!important;
-    transition:opacity .32s ease,visibility .32s ease!important;
-    pointer-events:none!important;
-  }
-  #appLayout.sidebar-hidden .sidebar .nav .section{
-    display:block!important;visibility:hidden!important;opacity:0!important;
-  }
+  /* Label tidak ikut menggeser ikon: rail mini hanya menampilkan ikon. */
+  #appLayout.sidebar-hidden .sidebar .brand,
+  #appLayout.sidebar-hidden .sidebar .nav .section,
   #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-label,
-  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .work-nav-count{
-    display:inline!important;opacity:0!important;visibility:hidden!important;
-    transform:translateX(-8px)!important;
-    transition:opacity .28s ease,transform .38s ease,visibility .28s ease!important;
-    pointer-events:none!important;
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .work-nav-count{display:none!important}
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-icon{
+    transition:transform .35s ease,opacity .35s ease!important;
+    transform:scale(1);opacity:1;
   }
-  #appLayout.sidebar-hidden .sidebar #cloudIdentity .identity-details{
-    display:none!important;
-  }
-}
-@media (min-width:1401px){
-  #appLayout .sidebar .brand,
-  #appLayout .sidebar .nav .section,
-  #appLayout .sidebar .nav a[data-page] .nav-label,
-  #appLayout .sidebar .nav a[data-page] .work-nav-count{
-    transition:opacity .38s ease,transform .42s ease,visibility .38s ease!important;
-  }
-  #appLayout:not(.sidebar-hidden) .sidebar .brand,
-  #appLayout:not(.sidebar-hidden) .sidebar .nav .section,
-  #appLayout:not(.sidebar-hidden) .sidebar .nav a[data-page] .nav-label,
-  #appLayout:not(.sidebar-hidden) .sidebar .nav a[data-page] .work-nav-count{
-    opacity:1;visibility:visible;transform:translateX(0);
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page]{
+    justify-content:center!important;align-items:center!important;
+    width:48px!important;height:44px!important;min-height:44px!important;
+    padding:0!important;margin-left:auto!important;margin-right:auto!important;
   }
 }
 </style>
@@ -2086,20 +2068,27 @@ function showTransactionDetail(id){
 (function(){
  const sidebar=document.querySelector('#appLayout .sidebar');
  if(!sidebar)return;
- const updateSidebarStickyOffset=()=>{
+ const layout=document.getElementById('appLayout');
+ const updateSidebarMeasurements=()=>{
   if(window.matchMedia('(min-width:701px)').matches){
+   if(!layout.classList.contains('sidebar-hidden')){
+    const expandedHeight=sidebar.scrollHeight;
+    sidebar.style.setProperty('--sidebar-expanded-height',expandedHeight+'px');
+   }
    const height=sidebar.getBoundingClientRect().height;
    sidebar.style.setProperty('--sidebar-sticky-top',Math.min(0,window.innerHeight-height)+'px');
   }else{
    sidebar.style.removeProperty('--sidebar-sticky-top');
   }
  };
- updateSidebarStickyOffset();
+ updateSidebarMeasurements();
  if(typeof ResizeObserver!=='undefined'){
-  const observer=new ResizeObserver(updateSidebarStickyOffset);
+  const observer=new ResizeObserver(updateSidebarMeasurements);
   observer.observe(sidebar);
  }
- window.addEventListener('resize',updateSidebarStickyOffset,{passive:true});
+ window.addEventListener('resize',updateSidebarMeasurements,{passive:true});
+ const sidebarToggle=document.querySelector('.sidebar-toggle');
+ if(sidebarToggle)sidebarToggle.addEventListener('click',()=>requestAnimationFrame(updateSidebarMeasurements));
 })();
 
 </script></body></html>
