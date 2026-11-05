@@ -1174,6 +1174,47 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
     box-shadow:0 5px 18px #0003;pointer-events:none;
   }
 }
+
+/* Sidebar mini: pertahankan tinggi struktur sidebar terbuka agar rail tidak
+   memendek mendadak; teks memudar/bergeser halus saat mode berubah. */
+@media (min-width:1401px){
+  #appLayout.sidebar-hidden .sidebar{
+    min-height:100vh!important;
+    transition:width .62s cubic-bezier(.22,1,.36,1),min-width .62s cubic-bezier(.22,1,.36,1),flex-basis .62s cubic-bezier(.22,1,.36,1),padding .62s cubic-bezier(.22,1,.36,1)!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .brand{
+    display:flex!important;visibility:hidden!important;opacity:0!important;
+    transition:opacity .32s ease,visibility .32s ease!important;
+    pointer-events:none!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .nav .section{
+    display:block!important;visibility:hidden!important;opacity:0!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-label,
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .work-nav-count{
+    display:inline!important;opacity:0!important;visibility:hidden!important;
+    transform:translateX(-8px)!important;
+    transition:opacity .28s ease,transform .38s ease,visibility .28s ease!important;
+    pointer-events:none!important;
+  }
+  #appLayout.sidebar-hidden .sidebar #cloudIdentity .identity-details{
+    display:none!important;
+  }
+}
+@media (min-width:1401px){
+  #appLayout .sidebar .brand,
+  #appLayout .sidebar .nav .section,
+  #appLayout .sidebar .nav a[data-page] .nav-label,
+  #appLayout .sidebar .nav a[data-page] .work-nav-count{
+    transition:opacity .38s ease,transform .42s ease,visibility .38s ease!important;
+  }
+  #appLayout:not(.sidebar-hidden) .sidebar .brand,
+  #appLayout:not(.sidebar-hidden) .sidebar .nav .section,
+  #appLayout:not(.sidebar-hidden) .sidebar .nav a[data-page] .nav-label,
+  #appLayout:not(.sidebar-hidden) .sidebar .nav a[data-page] .work-nav-count{
+    opacity:1;visibility:visible;transform:translateX(0);
+  }
+}
 </style>
 
 <style id="sidebar-mini-group-spacing">
