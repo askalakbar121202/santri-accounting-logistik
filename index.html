@@ -2442,7 +2442,7 @@ async function scanMakeColumnCanvas(image,x1,x2,scale){
  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(image,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
  return {canvas,offsetY:sy,scale};
 }
-async async function scanReadColumn(worker,image,x1,x2,scale){
+async function scanReadColumn(worker,image,x1,x2,scale){
  const part=scanMakeColumnCanvas(image,x1,x2,scale);
  const result=await worker.recognize(part.canvas);
  const words=(result.data.words||[]).filter(w=>String(w.text||'').trim()&&w.bbox).map(w=>({text:String(w.text).trim(),y:(w.bbox.y0+w.bbox.y1)/(2*scale)+part.offsetY,confidence:w.confidence||0}));
