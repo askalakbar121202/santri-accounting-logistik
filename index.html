@@ -1138,15 +1138,13 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 }
 </style>
 <style id="sidebar-icon-rail">
-/* Desktop: sidebar mini menampilkan seluruh ikon tanpa menggeser area halaman.
-   Lebar layout tetap 240px seperti mode terbuka; hanya bidang visual sidebar
-   yang menyisakan rail 64px agar posisi konten utama tidak berubah. */
+/* Desktop: sidebar mini memakai rail ikon 64px dan konten melebar
+   mengisi ruang yang sebelumnya dipakai sidebar penuh. */
 @media (min-width:1401px){
   #appLayout.sidebar-hidden .sidebar{
-    width:64px!important;min-width:0!important;flex:0 0 240px!important;
+    width:64px!important;min-width:64px!important;flex:0 0 64px!important;
     padding:22px 8px!important;overflow:visible!important;
-    background:linear-gradient(90deg,var(--sidebar-bg,#102b3f) 0 64px,transparent 64px 100%)!important;
-    box-shadow:none!important;
+    transition:width .22s ease,min-width .22s ease,flex-basis .22s ease,padding .22s ease!important;
   }
   #appLayout.sidebar-hidden .sidebar .brand,
   #appLayout.sidebar-hidden .sidebar #cloudIdentity{display:none!important}
@@ -1161,9 +1159,11 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
     overflow:visible!important;white-space:nowrap;text-align:center!important;
     font-size:0!important;border-radius:10px;
   }
-  #appLayout.sidebar-hidden .sidebar .nav a[data-page]::first-letter{
-    font-size:22px;line-height:1;
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-icon{
+    display:inline-flex!important;align-items:center;justify-content:center;
+    width:100%;height:100%;font-size:22px!important;line-height:1;
   }
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page] .nav-label,
   #appLayout.sidebar-hidden .sidebar .nav a[data-page] .work-nav-count{display:none!important}
   #appLayout.sidebar-hidden .sidebar .nav a[data-page]:hover::after,
   #appLayout.sidebar-hidden .sidebar .nav a[data-page]:focus-visible::after{
@@ -1190,10 +1190,10 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
 <div id="cloudLoginMsg" class="gatemsg"></div>
 <p style="font-size:11px;color:#71808b">Pastikan Koneksi Internet Terhubung. Jika Mengalami Kendala Hubungi Wong Pusat.</p></div></div><div class="layout" id="appLayout" style="display:none">
 <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeSidebar()" aria-hidden="true"></div><aside class="sidebar"><div class="brand"><div class="sidebar-wordmark" aria-label="Accounting - Logistic, By askalwddakbr"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><div class="brand-copy"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div><div id="cloudIdentity" class="sidebar-identity" aria-live="polite"></div><nav class="nav" id="nav">
-<div class="section">Dashboard</div><a href="?page=dashboard" class="active" data-page="dashboard">📊 Dashboard Utama</a><a href="?page=bbm" data-page="bbm">🚚 Dashboard BBM Armada</a><a href="?page=fleet-analysis" data-page="fleet-analysis">📍 Analisis Biaya Armada</a>
-<div class="section">Transaksi</div><a href="?page=input" data-page="input">＋ Input Transaksi</a><a href="?page=payments" data-page="payments">💰 Pembayaran <span id="paymentNavCount" class="work-nav-count" hidden></span></a><a href="?page=auto-reports" data-page="auto-reports">📈 Laporan Utama</a><a href="?page=reports" data-page="reports">📋 Laporan Transaksi</a><a href="?page=history" data-page="history">⏳ Riwayat Perubahan</a>
-<div class="section">Pekerjaan</div><a href="?page=work" data-page="work" id="workNavButton">💼 Daftar Pekerjaan <span id="workNavCount" class="work-nav-count"></span></a><a href="?page=work-schedule" data-page="work-schedule">🗓️ Jadwal Pekerjaan</a>
-<div class="section">Data & Sistem</div><a href="?page=masters" data-page="masters">🔒 Master Data</a><a href="?page=users" data-page="users">♙ User</a><a href="?page=settings" data-page="settings">⚙ Pengaturan & Backup</a></nav></aside>
+<div class="section">Dashboard</div><a href="?page=dashboard" class="active" data-page="dashboard"><span class="nav-icon" aria-hidden="true">📊</span><span class="nav-label">Dashboard Utama</span></a><a href="?page=bbm" data-page="bbm"><span class="nav-icon" aria-hidden="true">🚚</span><span class="nav-label">Dashboard BBM Armada</span></a><a href="?page=fleet-analysis" data-page="fleet-analysis"><span class="nav-icon" aria-hidden="true">📍</span><span class="nav-label">Analisis Biaya Armada</span></a>
+<div class="section">Transaksi</div><a href="?page=input" data-page="input"><span class="nav-icon" aria-hidden="true">＋</span><span class="nav-label">Input Transaksi</span></a><a href="?page=payments" data-page="payments"><span class="nav-icon" aria-hidden="true">💰</span><span class="nav-label">Pembayaran</span> <span id="paymentNavCount" class="work-nav-count" hidden></span></a><a href="?page=auto-reports" data-page="auto-reports"><span class="nav-icon" aria-hidden="true">📈</span><span class="nav-label">Laporan Utama</span></a><a href="?page=reports" data-page="reports"><span class="nav-icon" aria-hidden="true">📋</span><span class="nav-label">Laporan Transaksi</span></a><a href="?page=history" data-page="history"><span class="nav-icon" aria-hidden="true">⏳</span><span class="nav-label">Riwayat Perubahan</span></a>
+<div class="section">Pekerjaan</div><a href="?page=work" data-page="work" id="workNavButton"><span class="nav-icon" aria-hidden="true">💼</span><span class="nav-label">Daftar Pekerjaan</span> <span id="workNavCount" class="work-nav-count"></span></a><a href="?page=work-schedule" data-page="work-schedule"><span class="nav-icon" aria-hidden="true">🗓️</span><span class="nav-label">Jadwal Pekerjaan</span></a>
+<div class="section">Data & Sistem</div><a href="?page=masters" data-page="masters"><span class="nav-icon" aria-hidden="true">🔒</span><span class="nav-label">Master Data</span></a><a href="?page=users" data-page="users"><span class="nav-icon" aria-hidden="true">♙</span><span class="nav-label">User</span></a><a href="?page=settings" data-page="settings"><span class="nav-icon" aria-hidden="true">⚙</span><span class="nav-label">Pengaturan &amp; Backup</span></a></nav></aside>
 <main class="main"><header class="topbar"><div class="topbar-left"><button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Buka atau tutup menu" title="Buka atau tutup menu">☰</button><small id="today"></small></div><div class="topbar-brand"><strong>Accounting - Logistic V12.12</strong><br><small>by askalwddakbar</small></div>
  <div class="topbar-meta"><span id="internetStatus" class="internet-status" role="status" aria-live="polite"><i></i><span>Memeriksa…</span></span><small id="cloudStatus" style="display:none"></small><button type="button" onclick="logoutCloud()" class="topbar-logout">Keluar</button></div></header>
 <div class="content">
@@ -1234,7 +1234,7 @@ function logAction(action,tx,detail=''){if(!Array.isArray(state.audit))state.aud
 function toggleSidebar(){
   /* Siapkan nama menu sebagai tooltip saat sidebar berada pada mode ikon. */
   document.querySelectorAll("#nav a[data-page]").forEach(link=>{
-    if(!link.title)link.title=link.textContent.replace(/\\s+/g," ").trim();
+    if(!link.title)link.title=link.querySelector(".nav-label")?.textContent.trim()||link.textContent.replace(/\\s+/g," ").trim();
     if(!link.getAttribute("aria-label"))link.setAttribute("aria-label",link.title);
   });
   /* Pada layar split/tablet dan mobile, sidebar tampil sebagai overlay.
