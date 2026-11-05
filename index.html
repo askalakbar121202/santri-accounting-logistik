@@ -1262,6 +1262,21 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   }
 }
 </style>
+<style id="cloud-profile-avatar">
+#appLayout .sidebar-identity .identity-avatar{
+  appearance:none!important;-webkit-appearance:none!important;border:0!important;padding:0!important;
+  overflow:hidden!important;cursor:pointer!important;flex:0 0 38px!important;width:38px!important;height:38px!important;
+  border-radius:50%!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  background:#e8ece9!important;color:#39443d!important;font-size:20px!important;line-height:1!important;
+}
+#appLayout .sidebar-identity .identity-avatar:focus-visible{outline:3px solid #6aa8d5;outline-offset:2px}
+#appLayout .sidebar-identity .identity-photo-hint{font-size:10px;color:var(--muted,#6a786f);font-weight:500}
+#appLayout .sidebar-identity .identity-avatar img{pointer-events:none}
+@media(min-width:1401px){
+ #appLayout.sidebar-hidden .sidebar #cloudIdentity .identity-avatar{flex:0 0 38px!important;width:38px!important;height:38px!important}
+ #appLayout.sidebar-hidden .sidebar #cloudIdentity .identity-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+}
+</style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
@@ -1313,7 +1328,7 @@ let cloudSaveTimer=null,cloudSaveBusy=false,cloudSaveAgain=false;
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){alert('Penyimpanan lokal penuh atau tidak tersedia. Silakan ekspor backup, lalu kurangi lampiran/data.');}
  if(window.CLOUD_AUTH){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(syncStateToCloud,500)} }
 async function syncStateToCloud(){if(!window.CLOUD_AUTH)return;if(cloudSaveBusy){cloudSaveAgain=true;return}cloudSaveBusy=true;try{const res=await fetch('/api/state',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({state,pendingTxBatch})});if(res.status===409){document.getElementById('cloudStatus').textContent='● Konflik sinkronisasi — muat ulang data';document.getElementById('cloudStatus').style.color='#ffcf80';alert('Data di server berubah dari pengguna lain. Untuk mencegah menimpa perubahan tersebut, muat ulang aplikasi sebelum melanjutkan.');return}if(!res.ok)throw new Error('HTTP '+res.status);document.getElementById('cloudStatus').textContent='● Data tersimpan di server';document.getElementById('cloudStatus').style.color='#b9f3d8'}catch(e){document.getElementById('cloudStatus').textContent='● Gagal sinkron — backup lokal tersedia';document.getElementById('cloudStatus').style.color='#ffcf80'}finally{cloudSaveBusy=false;if(cloudSaveAgain){cloudSaveAgain=false;syncStateToCloud()}}}
-async function cloudBoot(){const gate=document.getElementById('cloudGate'),layout=document.getElementById('appLayout'),msg=document.getElementById('cloudLoginMsg'),splash=document.getElementById('loginSplash');let showSplash=false,splashStarted=0;try{showSplash=sessionStorage.getItem('alShowLoginSplash')==='1';sessionStorage.removeItem('alShowLoginSplash')}catch(e){}if(showSplash && splash){splashStarted=Date.now();splash.classList.add('show');splash.setAttribute('aria-hidden','false')}try{const r=await fetch('/api/me');if(!r.ok){if(r.status===401){msg.textContent='Sesi login belum aktif. Silakan masuk kembali.'}else{msg.textContent='Tidak dapat memeriksa sesi login (HTTP '+r.status+'). Silakan coba muat ulang halaman.'}throw new Error('Pemeriksaan sesi gagal: HTTP '+r.status)}const me=await r.json();window.CLOUD_AUTH=true;window.CLOUD_USER_ID=me.id;window.CLOUD_USERNAME=me.username;window.CLOUD_ROLE=me.role;renderCloudIdentity(me.username,me.role);try{await loadCloudState()}catch(e){window.CLOUD_AUTH=false;msg.textContent='Login berhasil, tetapi data aplikasi gagal dimuat dari server: '+(e.message||'Kesalahan tidak diketahui')+'. Silakan muat ulang halaman untuk mencoba lagi.';throw e}document.getElementById('cloudStatus').textContent='● Terhubung';document.getElementById('cloudStatus').style.color='#b9f3d8';if(showSplash && splash){const remaining=Math.max(0,2600-(Date.now()-splashStarted));if(remaining)await new Promise(resolve=>setTimeout(resolve,remaining))}gate.style.display='none';layout.style.display='';const requestedPage=new URLSearchParams(location.search).get('page');if(requestedPage&&document.querySelector(`#nav a[data-page="${requestedPage}"]`))go(requestedPage);if(showSplash && splash){splash.classList.remove('show');splash.setAttribute('aria-hidden','true')}return}catch(e){if(showSplash && splash){splash.classList.remove('show');splash.setAttribute('aria-hidden','true')}gate.style.display='flex';layout.style.display='none';if(!msg.textContent)msg.textContent='Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi.'}}
+async function cloudBoot(){const gate=document.getElementById('cloudGate'),layout=document.getElementById('appLayout'),msg=document.getElementById('cloudLoginMsg'),splash=document.getElementById('loginSplash');let showSplash=false,splashStarted=0;try{showSplash=sessionStorage.getItem('alShowLoginSplash')==='1';sessionStorage.removeItem('alShowLoginSplash')}catch(e){}if(showSplash && splash){splashStarted=Date.now();splash.classList.add('show');splash.setAttribute('aria-hidden','false')}try{const r=await fetch('/api/me');if(!r.ok){if(r.status===401){msg.textContent='Sesi login belum aktif. Silakan masuk kembali.'}else{msg.textContent='Tidak dapat memeriksa sesi login (HTTP '+r.status+'). Silakan coba muat ulang halaman.'}throw new Error('Pemeriksaan sesi gagal: HTTP '+r.status)}const me=await r.json();window.CLOUD_AUTH=true;window.CLOUD_USER_ID=me.id;window.CLOUD_USERNAME=me.username;window.CLOUD_ROLE=me.role;renderCloudIdentity(me.username,me.role,me.profileImage||null);try{await loadCloudState()}catch(e){window.CLOUD_AUTH=false;msg.textContent='Login berhasil, tetapi data aplikasi gagal dimuat dari server: '+(e.message||'Kesalahan tidak diketahui')+'. Silakan muat ulang halaman untuk mencoba lagi.';throw e}document.getElementById('cloudStatus').textContent='● Terhubung';document.getElementById('cloudStatus').style.color='#b9f3d8';if(showSplash && splash){const remaining=Math.max(0,2600-(Date.now()-splashStarted));if(remaining)await new Promise(resolve=>setTimeout(resolve,remaining))}gate.style.display='none';layout.style.display='';const requestedPage=new URLSearchParams(location.search).get('page');if(requestedPage&&document.querySelector(`#nav a[data-page="${requestedPage}"]`))go(requestedPage);if(showSplash && splash){splash.classList.remove('show');splash.setAttribute('aria-hidden','true')}return}catch(e){if(showSplash && splash){splash.classList.remove('show');splash.setAttribute('aria-hidden','true')}gate.style.display='flex';layout.style.display='none';if(!msg.textContent)msg.textContent='Tidak dapat terhubung ke server. Periksa koneksi internet lalu coba lagi.'}}
 async function loadCloudState(){const r=await fetch('/api/state');if(!r.ok)throw new Error('Tidak dapat memuat database');const x=await r.json();if(x.state&&Array.isArray(x.state.transactions)&&x.state.masters&&Object.keys(x.state.masters).length){localStorage.setItem(KEY,JSON.stringify(x.state));state=x.state}else{await syncStateToCloud()}if(Array.isArray(x.pendingTxBatch)){pendingTxBatch=x.pendingTxBatch;localStorage.setItem(PENDING_KEY,JSON.stringify(pendingTxBatch))}}
 document.getElementById('cloudLoginForm').addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('cloudLoginMsg');msg.textContent='Menghubungkan ke server…';try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.getElementById('cloudUsername').value.trim(),password:document.getElementById('cloudPassword').value})});const x=await r.json();if(!r.ok)throw new Error(x.error||'Login gagal');window.CLOUD_AUTH=true;window.CLOUD_USERNAME=x.username;window.CLOUD_ROLE=x.role;renderCloudIdentity(x.username,x.role);try{sessionStorage.setItem('alShowLoginSplash','1')}catch(e){}location.reload()}catch(err){msg.textContent=err.message||'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.'}});
 
@@ -1950,10 +1965,33 @@ async function checkInternetConnection(){
 window.addEventListener('online',checkInternetConnection);
 window.addEventListener('offline',()=>updateInternetIndicator(false));
 checkInternetConnection();setInterval(checkInternetConnection,30000);
-function renderCloudIdentity(username,role){
+function renderCloudIdentity(username,role,profileImage=null){
  const el=document.getElementById('cloudIdentity');if(!el)return;
  const labels={admin:'Admin',accounting:'Accounting',staff:'Staff'};
- el.innerHTML='<span class="identity-avatar" aria-hidden="true">♙</span><span class="identity-details"><strong>'+esc(username||'Pengguna')+'</strong><small>'+esc(labels[role]||role||'Staff')+'</small></span>';
+ const avatar=profileImage
+  ?'<img src="'+esc(profileImage)+'" alt="Foto profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block">'
+  :'♙';
+ el.innerHTML='<button type="button" class="identity-avatar" id="cloudAvatarButton" aria-label="Ganti foto profil" title="Klik untuk mengganti foto">'+avatar+'</button><span class="identity-details"><strong>'+esc(username||'Pengguna')+'</strong><small>'+esc(labels[role]||role||'Staff')+'</small><small class="identity-photo-hint">Klik foto untuk mengganti avatar</small></span><input id="cloudAvatarFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>';
+ const button=el.querySelector('#cloudAvatarButton'),file=el.querySelector('#cloudAvatarFile');
+ button?.addEventListener('click',()=>file?.click());
+ file?.addEventListener('change',async()=>{
+  const selected=file.files?.[0];if(!selected)return;
+  if(!['image/png','image/jpeg','image/webp'].includes(selected.type)){showToast('Gunakan foto PNG, JPG, atau WebP.','error');file.value='';return}
+  if(selected.size>2*1024*1024){showToast('Ukuran foto maksimal 2 MB.','error');file.value='';return}
+  const reader=new FileReader();
+  reader.onload=async()=>{
+   try{
+    const response=await fetch('/api/profile-image',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({imageData:reader.result})});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(result.error||'Foto profil gagal disimpan.');
+    renderCloudIdentity(username,role,result.profileImage);
+    showToast('Foto profil berhasil diperbarui.','success');
+   }catch(error){showToast(error.message||'Foto profil gagal disimpan.','error')}
+   finally{file.value=''}
+  };
+  reader.onerror=()=>{showToast('Foto tidak dapat dibaca.','error');file.value=''};
+  reader.readAsDataURL(selected);
+ });
 }
 async function editCloudUser(id,currentRole,isActive){
  const old=document.getElementById('editCloudUserDialog');if(old)old.remove();
