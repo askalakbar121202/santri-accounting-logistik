@@ -1175,6 +1175,28 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   }
 }
 </style>
+
+<style id="sidebar-mini-group-spacing">
+/* Sidebar mini: User di urutan teratas dan jarak antarkelompok
+   mengikuti pembagian menu pada sidebar terbuka. */
+@media (min-width:1401px){
+  #appLayout.sidebar-hidden .sidebar .nav{
+    display:grid!important;
+    grid-auto-flow:row;
+    gap:7px!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page]{order:1}
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page="users"]{
+    order:0;
+    margin-bottom:12px!important;
+  }
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page="input"],
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page="work"],
+  #appLayout.sidebar-hidden .sidebar .nav a[data-page="masters"]{
+    margin-top:12px!important;
+  }
+}
+</style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
