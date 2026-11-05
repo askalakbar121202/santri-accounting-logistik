@@ -1232,6 +1232,36 @@ body.theme-dark #appLayout .sidebar-identity{background:#fff7f0!important;color:
   #appLayout.sidebar-hidden .sidebar .nav a[data-page="masters"]{margin-top:12px!important}
 }
 </style>
+<style id="sidebar-horizontal-expanded-text">
+/* Saat sidebar melebar, teks tetap satu baris dan bergerak mendatar,
+   bukan membungkus ke bawah ketika lebar sedang bertransisi. */
+@media (min-width:1401px){
+  #appLayout .sidebar{overflow-x:hidden}
+  #appLayout .sidebar .brand{min-width:0;overflow:hidden;white-space:nowrap}
+  #appLayout .sidebar .brand strong,
+  #appLayout .sidebar .brand small{
+    display:block;white-space:nowrap;word-break:normal;overflow-wrap:normal;
+    max-width:240px;transition:opacity .28s ease,transform .62s cubic-bezier(.22,1,.36,1);
+  }
+  #appLayout .sidebar .brand .logo{flex:0 0 42px}
+  #appLayout .sidebar #cloudIdentity .identity-details{
+    min-width:0;white-space:nowrap;overflow:hidden;
+    transition:opacity .28s ease,transform .62s cubic-bezier(.22,1,.36,1);
+  }
+  #appLayout .sidebar #cloudIdentity .identity-details *{
+    white-space:nowrap;word-break:normal;overflow-wrap:normal;
+  }
+  #appLayout .sidebar .nav .section{
+    white-space:nowrap;word-break:normal;overflow-wrap:normal;
+    transition:opacity .28s ease,transform .62s cubic-bezier(.22,1,.36,1);
+  }
+  #appLayout .sidebar .nav a[data-page]{white-space:nowrap;overflow:hidden}
+  #appLayout .sidebar .nav a[data-page] .nav-label{
+    display:inline-block;white-space:nowrap;word-break:normal;overflow-wrap:normal;
+    max-width:240px;transition:max-width .62s cubic-bezier(.22,1,.36,1),opacity .28s ease,transform .62s cubic-bezier(.22,1,.36,1);
+  }
+}
+</style>
 </head><body><div id="loginSplash" aria-hidden="true"><div class="splash-content"><div class="splash-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div></div></div><div id="cloudGate"><div class="gatecard"><div class="login-wordmark"><strong>Accounting - Logistic</strong><small>By askalwddakbr</small></div><p style="color:#617584;font-size:13px">Sistem Akuntansi Operasional Logistik • Versi 8.5</p><form id="cloudLoginForm"><label>Nama Pengguna</label><input id="cloudUsername" autocomplete="username" required placeholder="Masukkan Nama Pengguna"><label>Kata Sandi</label><div style="position:relative;display:flex;align-items:center">
   <input id="cloudPassword" type="password" autocomplete="current-password" required placeholder="Masukkan Kata Sandi" style="width:100%;padding-right:45px;box-sizing:border-box">
   <button type="button" id="toggleCloudPassword" aria-label="Tampilkan kata sandi" title="Tampilkan kata sandi" style="position:absolute;right:5px;width:36px;height:36px;padding:0;border:0;background:transparent;color:#617584;cursor:pointer;font-size:18px">👁</button>
