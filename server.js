@@ -46,6 +46,11 @@ async function init() {
   `);
 
   await pool.query(`
+    ALTER TABLE app_users
+    ADD COLUMN IF NOT EXISTS profile_image TEXT
+  `);
+
+  await pool.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS app_users_email_unique
     ON app_users (LOWER(email))
     WHERE email IS NOT NULL AND email <> ''
@@ -390,7 +395,25 @@ app.post('/api/reset-password', async (req, res) => {
 });
 
 app.post('/api/logout',auth,(req,res)=>req.session.destroy(()=>res.clearCookie('connect.sid').json({ok:true})));
-app.get('/api/me',auth,(req,res)=>res.json(req.session.user));
+app.get('/api/me',auth,async(req,res)=>{try{const q=await pool.query('SELECT profile_image FROM app_users WHERE id=$1',[req.session.user.id]);res.json({...req.session.user,profileImage:q.rows[0]?.profile_image||null})}catch(e){console.error('Gagal memuat profil pengguna:',e.message);res.status(500).json({error:'Profil pengguna gagal dimuat.'})}});
+app.put('/api/profile-image',auth,async(req,res)=>{
+  try{
+    const imageData=String(req.body?.imageData||'');
+    if(imageData.length>2800000||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(imageData)){
+      return res.status(400).json({error:'Foto harus berupa PNG, JPG, atau WebP dengan ukuran maksimal 2 MB.'});
+    }
+    const encoded=imageData.slice(imageData.indexOf(',')+1);
+    if(encoded.length%4!==0)return res.status(400).json({error:'Format foto tidak valid.'});
+    const bytes=Buffer.from(encoded,'base64');
+    if(!bytes.length||bytes.length>2*1024*1024)return res.status(400).json({error:'Ukuran foto maksimal 2 MB.'});
+    await pool.query('UPDATE app_users SET profile_image=$1 WHERE id=$2',[imageData,req.session.user.id]);
+    res.json({ok:true,profileImage:imageData});
+  }catch(e){console.error('Gagal menyimpan foto profil:',e.message);res.status(500).json({error:'Foto profil gagal disimpan.'})}
+});
+app.delete('/api/profile-image',auth,async(req,res)=>{
+  try{await pool.query('UPDATE app_users SET profile_image=NULL WHERE id=$1',[req.session.user.id]);res.json({ok:true})}
+  catch(e){console.error('Gagal menghapus foto profil:',e.message);res.status(500).json({error:'Foto profil gagal dihapus.'})}
+});
 app.get('/api/operators',auth,async(req,res)=>{try{const q=await pool.query("SELECT id,username,role FROM app_users WHERE active=TRUE ORDER BY username");res.json(q.rows.map(u=>({...u,isCurrentUser:Number(u.id)===Number(req.session.user.id)})))}catch(e){console.error('Gagal memuat operator cloud:',e.message);res.status(500).json({error:'Daftar operator cloud gagal dimuat.'})}});
 app.get('/api/state',auth,async(req,res)=>{try{const q=await pool.query('SELECT state,pending_tx_batch,revision,updated_at,updated_by FROM app_state WHERE id=1');res.json({...q.rows[0],revision:Number(q.rows[0].revision)})}catch(e){console.error(e);res.status(500).json({error:'Gagal membaca database.'})}});
 app.put('/api/state',auth,async(req,res)=>{
